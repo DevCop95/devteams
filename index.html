@@ -70,7 +70,24 @@ header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;ba
 .badge.wk.on{display:inline-flex;gap:4px;align-items:center}
 .badge.wk.on::before{content:'';width:4px;height:4px;border-radius:50%;background:var(--cyan);animation:pulse 1.5s infinite}
 .h-right{display:flex;align-items:center;gap:6px;margin-left:auto}
-.hbtn{font-family:var(--mono);font-size:9px;padding:4px 10px;background:var(--bg3);border:1px solid var(--b2);color:var(--t2);cursor:pointer;letter-spacing:.06em;text-transform:uppercase;transition:all .15s}
+.hbtn{
+  font-family:var(--mono);
+  font-size:9px;
+  height:28px;
+  min-width:28px;
+  padding:0 8px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+  background:var(--bg3);
+  border:1px solid var(--b2);
+  color:var(--t2);
+  cursor:pointer;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  transition:all .15s;
+}
 .hbtn:hover{border-color:var(--b3);color:var(--t1)}
 .hbtn.acc{border-color:var(--acc2);color:var(--acc)}.hbtn.acc:hover{background:rgba(15,168,85,.1)}
 /*  FPS button pulse when active  */
@@ -526,55 +543,42 @@ footer{display:flex;align-items:center;justify-content:space-between;padding:0 1
 </div>
 <div class="h-right">
   <div style="display:flex;gap:2px;border:1px solid var(--b2);padding:2px 4px;align-items:center">
-    <button class="hbtn" id="sndBtn" onclick="toggleSound()" title="Sonido">
+    <button class="hbtn" id="sndBtn" onclick="toggleSound()" title="Audio general">
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
     </button>
-    <button class="hbtn" id="musicBtn" onclick="toggleGenerativeMusic()" title="Música">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+    <button class="hbtn" id="fpsBtnHdr" onclick="toggleFPS()" title="FPS [F]">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"></circle>
+        <path d="M12 2v3M12 19v3M2 12h3M19 12h3"></path>
+        <path d="M4 4h3M4 4v3M20 4h-3M20 4v3M4 20h3M4 20v-3M20 20h-3M20 20v-3"></path>
+      </svg>
     </button>
-<button class="hbtn" id="fpsBtnHdr" onclick="toggleFPS()" title="FPS [F]">
-  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" 
-       stroke="currentColor" stroke-width="2" 
-       stroke-linecap="round" stroke-linejoin="round">
-
-    <!-- Marco de visor -->
-    <circle cx="12" cy="12" r="3"></circle>
-
-    <!-- Crosshair -->
-    <path d="M12 2v3M12 19v3M2 12h3M19 12h3"></path>
-
-    <!-- Esquinas tipo HUD -->
-    <path d="M4 4h3M4 4v3M20 4h-3M20 4v3M4 20h3M4 20v-3M20 20h-3M20 20v-3"></path>
-
-  </svg>
-</button>
     <button class="hbtn" id="dnBtn" onclick="toggleDayNight()" title="Día/Noche [N]">
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
     </button>
-    <button class="hbtn" id="autoDNBtn" onclick="toggleAutoDayNight()" title="Auto ciclo">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-    </button>
-    <button class="hbtn" id="sa3dBtn" onclick="toggle3DAudio()" title="Audio 3D">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>
-    </button>
+
   </div>
   <div style="width:1px;height:18px;background:var(--b2)"></div>
   <div style="display:flex;gap:2px;border:1px solid var(--b2);padding:2px 4px;align-items:center">
     <button class="hbtn" id="kbdBtnHdr" onclick="document.getElementById('kbdOv').classList.toggle('show')" title="Atajos [?]">
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M8 12h.01M12 12h.01M16 12h.01M7 16h10"/></svg>
     </button>
-    <button class="hbtn" id="apiBtnHdr" onclick="openApi()" title="Configuración">
+    <button class="hbtn acc" id="apiBtnHdr" onclick="openApi()" title="Configuración API" style="display:flex;align-items:center;gap:4px;padding:4px 8px;background:rgba(58,140,204,.12);border-color:#3a8ccc66;color:#86d7ff">
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>
+      API
     </button>
-    <button class="hbtn" id="cleanBtn" onclick="toggleCleanMode()" title="Modo limpio">
-      LIMPIO
+    <button class="hbtn" id="cleanBtn" onclick="toggleCleanMode()" title="Modo limpio" style="display:flex;align-items:center;justify-content:center;padding:4px 8px">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="4" y="5" width="16" height="14" rx="2"></rect>
+        <path d="M8 9h8M8 13h8M8 17h5"></path>
+      </svg>
     </button>
   </div>
   <div style="width:1px;height:18px;background:var(--b2)"></div>
-  <button class="hbtn acc" onclick="runMeeting()" style="padding:4px 14px;display:flex;align-items:center;gap:5px">
+  <button class="hbtn acc" onclick="runMeeting()" title="Reunión" style="padding:4px 10px;display:flex;align-items:center;gap:0">
     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-    Reunión
   </button>
+
   <button class="hbtn" id="meet1on1Btn" onclick="open1on1Picker()" title="Reunión 1:1" style="padding:4px 10px;display:flex;align-items:center;gap:4px;background:rgba(15,168,85,.06);border-color:var(--acc2);color:var(--acc)">
   <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
   1:1
@@ -582,10 +586,9 @@ footer{display:flex;align-items:center;justify-content:space-between;padding:0 1
   <div style="display:flex;gap:2px">
 <!-- demo guiada removida -->
 
-    <button class="hbtn" id="modeBtn" onclick="toggleUIMode()" title="Cambiar modo" style="padding:4px 10px;border-color:var(--acc2);color:var(--acc)">launch</button>
-    <button class="hbtn" onclick="openTask()" style="padding:4px 14px;background:rgba(15,168,85,.06);border-color:var(--acc2);color:var(--acc);display:flex;align-items:center;gap:5px">
+    <!-- modo launch fijo -->
+    <button class="hbtn" onclick="openTask()" title="Tarea" style="padding:4px 10px;background:rgba(15,168,85,.06);border-color:var(--acc2);color:var(--acc);display:flex;align-items:center;gap:0">
       <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
-      Tarea
     </button>
     <div id="sandboxBtns" class="sandbox-only" style="display:flex;gap:2px">
       <button class="hbtn" onclick="openXPPanel()" title="XP y Niveles" style="padding:4px 8px">
@@ -876,8 +879,29 @@ function tone(f,t,v=0.1,tp='sine'){try{const c=getACtx(),o=c.createOscillator(),
 function playCmp(){if(!sndOn)return;tone(523,'sine',.09);setTimeout(()=>tone(659,.11),80);setTimeout(()=>tone(784,.18),165);}
 function playTk(){if(!sndOn)return;tone(440,.06,.05);}
 function playNt(){if(!sndOn)return;tone(1047,.07,.06);}
-function toggleSound(){sndOn=!sndOn;localStorage.setItem('snd',sndOn?'1':'0');const b=document.getElementById('sndBtn');b.textContent=sndOn?'SND':'MUT';showToast(sndOn?'Sonido activado':'Sonido desactivado');}
-if(!sndOn)document.getElementById('sndBtn').textContent='MUT';
+function syncSoundBtn(){
+  const b=document.getElementById('sndBtn');
+  if(!b)return;
+  b.classList.toggle('sa-on',sndOn);
+  b.title=sndOn?'Audio activado':'Audio silenciado';
+  b.innerHTML=sndOn
+    ? `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>`
+    : `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>`;
+}
+function toggleSound(){
+  sndOn=!sndOn;
+  localStorage.setItem('snd',sndOn?'1':'0');
+  if(!sndOn){
+    if(typeof _musicOn!=='undefined'&&_musicOn)stopGenerativeMusic();
+    if(typeof _sa3dOn!=='undefined'&&_sa3dOn){
+      _sa3dOn=false;
+      if(_hvacGain&&_sACtx)try{_hvacGain.gain.setTargetAtTime(0,_sACtx.currentTime,.3);}catch(e){}
+    }
+  }
+  syncSoundBtn();
+  showToast(sndOn?'Audio activado':'Audio silenciado');
+}
+syncSoundBtn();
 
 /*  #9 AUDIO 3D ESPACIAL  */
 let _sACtx=null,_hvacGain=null,_sa3dOn=false;
@@ -1378,16 +1402,16 @@ function updApiUI(){const b=document.getElementById('apiBadge'),m=document.getEl
 const ACFG={
 // Colores MUY contrastados tipo Claw3D
 ceo:  {name:'Ana García',    role:'CEO',             col:'#c8a040',homeX:-22,homeZ:-12, bodyC:0xc8a040,pantsC:0x2a2010,skinC:0xf0c8a0,hairC:0x0a0806},
-pm:   {name:'Sofía Castro',  role:'Product Manager', col:'#5b9bd5',homeX:-14,homeZ:-4,  bodyC:0x1a5fa8,pantsC:0x0e1a28,skinC:0xc8946a,hairC:0x180e06},
+pm:   {name:'Sofía Castro',  role:'Product Manager', col:'#5b9bd5',homeX:-22.9,homeZ:7.8,  bodyC:0x1a5fa8,pantsC:0x0e1a28,skinC:0xc8946a,hairC:0x180e06},
 devbe:{name:'Yared Henriquez',role:'Founder & Architect',col:'#3a8ccc',homeX:-9,homeZ:-12, bodyC:0x1a4a8a,pantsC:0x0e1428,skinC:0x5c3418,hairC:0x080808},
 devfe:{name:'Diego Herrera', role:'Dev Frontend',    col:'#9060cc',homeX:0, homeZ:-12, bodyC:0x6030aa,pantsC:0x1a0828,skinC:0xecd4b8,hairC:0x060406},
 qa:   {name:'Marta López',   role:'QA Engineer',     col:'#d97020',homeX:11,homeZ:-12, bodyC:0xd97020,pantsC:0x1c0a00,skinC:0xd4926a,hairC:0x3a1008},
-devops:{name:'Luis Mendoza', role:'DevOps Engineer', col:'#4caf50',homeX:21,homeZ:-12, bodyC:0x2a8a30,pantsC:0x0e1a0e,skinC:0x3c2010,hairC:0x040404},
-ux:   {name:'Valentina Ramos',role:'UX Designer',    col:'#e91e8c',homeX:-3,homeZ:-4,  bodyC:0xc8106a,pantsC:0x280418,skinC:0xf4d0b8,hairC:0x0c0608},
-data: {name:'Andrés Torres', role:'Data Analyst',    col:'#00bcd4',homeX:9, homeZ:-2.8,  bodyC:0x0898aa,pantsC:0x041018,skinC:0xa07848,hairC:0x100c06},
+devops:{name:'Luis Mendoza', role:'DevOps Engineer', col:'#4caf50',homeX:23.5,homeZ:-10.2, bodyC:0x2a8a30,pantsC:0x0e1a0e,skinC:0x3c2010,hairC:0x040404},
+ux:   {name:'Valentina Ramos',role:'UX Designer',    col:'#e91e8c',homeX:-22.6,homeZ:-1.4,  bodyC:0xc8106a,pantsC:0x280418,skinC:0xf4d0b8,hairC:0x0c0608},
+data: {name:'Andrés Torres', role:'Data Analyst',    col:'#00bcd4',homeX:9, homeZ:-.4,  bodyC:0x0898aa,pantsC:0x041018,skinC:0xa07848,hairC:0x100c06},
 };
 
-let _uiMode=localStorage.getItem('uiMode')||'launch';
+let _uiMode='launch';
 let _eventLog=[];
 try{_eventLog=JSON.parse(localStorage.getItem('eventLog')||'[]');}catch(e){}
 let _demoTourOn=false;
@@ -1432,22 +1456,12 @@ function logEvent(type,title,detail='',col='#0fa855',agKey=''){
   if(typeof renderDashboard==='function'&&currentPanel==='dash')renderDashboard();
 }
 function setUIMode(mode){
-  _uiMode=mode==='sandbox'?'sandbox':'launch';
-  localStorage.setItem('uiMode',_uiMode);
-  document.body.dataset.uiMode=_uiMode;
-  const btn=document.getElementById('modeBtn');
-  if(btn){
-    btn.textContent=_uiMode;
-    btn.style.color=_uiMode==='sandbox'?'var(--cyan)':'var(--acc)';
-    btn.style.borderColor=_uiMode==='sandbox'?'var(--cyan)':'var(--acc2)';
-  }
+  _uiMode='launch';
+  document.body.dataset.uiMode='launch';
   refreshOpsBar();
 }
-function toggleUIMode(){
-  setUIMode(_uiMode==='launch'?'sandbox':'launch');
-  showToast(_uiMode==='sandbox'?'Sandbox mode activo':'Launch mode activo',_uiMode==='sandbox'?'#00bcd4':'#0fa855');
-  logEvent('mode','Modo UI actualizado',_uiMode==='sandbox'?'Herramientas extra visibles':'Interfaz lista para lanzamiento',_uiMode==='sandbox'?'#00bcd4':'#0fa855','ceo');
-}
+function toggleUIMode(){}
+
 function _activeAgentsCount(){
   if(typeof AG==='undefined'||!AG)return 0;
   return Object.values(AG).filter(ag=>ag&&ag.state&&ag.state!=='idle').length;
@@ -1462,11 +1476,11 @@ function refreshOpsBar(){
   else if(activeAg&&typeof AG!=='undefined'&&AG[activeAg])now=`${ACFG[activeAg].name.split(' ')[0]} · ${AG[activeAg].state}`;
   const panelMap={tree:'equipo',flujo:'flujo',consola:'chat',status:'estado',dash:'dashboard'};
   metaEl.textContent=[
-    _uiMode==='sandbox'?'sandbox mode':'launch mode',
     GKEY?'IA real conectada':'demo mode',
     `panel ${panelMap[currentPanel]||currentPanel}`,
     `${_activeAgentsCount()} activos`
   ].join(' · ');
+
   nowEl.textContent=now;
 }
 function _nextActionFor(agKey){
@@ -2058,6 +2072,7 @@ function buildDesk(cfg){
   g.add(mHit);
 
   g.position.set(cfg.x,-.02,cfg.z);
+  g.rotation.y=cfg.rotY||0;
   scene.add(g);
 }
 
@@ -2576,16 +2591,41 @@ function buildDevBEZone(){
   scene.add(g);
 
   for(let ri=0;ri<2;ri++){
+    const rx=-6.6+ri*2.0;
     const rg=new THREE.Group();
-    bx(1.8,2.2,1.4,M.rack,0,1.1,0,rg);
-    for(let ui=0;ui<5;ui++){
-      bx(1.7,.3,1.3,new THREE.MeshLambertMaterial({color:0x0c0c0c}),0,.25+ui*.38,0,rg);
-      bx(.06,.06,.06,new THREE.MeshBasicMaterial({color:ui%3===0?0x3a8ccc:0x0fa855}),-.7,.25+ui*.38,.66,rg);
-      bx(.06,.06,.06,new THREE.MeshBasicMaterial({color:0xcc3344}),-.5,.25+ui*.38,.66,rg);
+    const rackShellM=new THREE.MeshLambertMaterial({color:0x101722});
+    const rackFaceM=new THREE.MeshLambertMaterial({color:0x05080c});
+    const rackTrimM=new THREE.MeshLambertMaterial({color:0x304255});
+    const rackGlassM=new THREE.MeshPhongMaterial({color:0x8cb7d6,transparent:true,opacity:.14,shininess:110});
+
+    bx(1.9,2.75,1.42,rackShellM,0,1.38,0,rg);
+    bx(1.74,2.5,1.22,rackFaceM,0,1.38,0,rg);
+    bx(.05,2.44,1.18,rackTrimM,-.82,1.38,0,rg);
+    bx(.05,2.44,1.18,rackTrimM,.82,1.38,0,rg);
+    bx(1.8,.08,1.42,new THREE.MeshLambertMaterial({color:0x1b2836}),0,2.73,0,rg);
+
+    const front=new THREE.Mesh(new THREE.BoxGeometry(1.56,2.3,.04),rackGlassM);
+    front.position.set(0,1.38,.72);
+    rg.add(front);
+
+    for(let ui=0;ui<6;ui++){
+      const uy=.3+ui*.36;
+      bx(1.46,.16,1.02,new THREE.MeshLambertMaterial({color:0x020406}),0,uy,0,rg);
+      bx(.42,.012,.02,new THREE.MeshBasicMaterial({color:0x3a8ccc}),.12,uy,.52,rg);
+      bx(.06,.06,.06,new THREE.MeshBasicMaterial({color:ui%2===0?0x0fa855:0xffb000}),-.58,uy,.54,rg);
+      bx(.06,.06,.06,new THREE.MeshBasicMaterial({color:ui%3===0?0xcc3344:0x3a8ccc}),-.4,uy,.54,rg);
     }
-    rg.position.set(-4.2+ri*2.0,0,-16.5);
+
+    const ledBar=new THREE.Mesh(new THREE.BoxGeometry(.72,.03,.03),new THREE.MeshBasicMaterial({color:ri===0?0x3a8ccc:0x0fa855}));
+    ledBar.position.set(0,2.46,.72);
+    rg.add(ledBar);
+
+    rg.position.set(rx,0,-16.5);
     scene.add(rg);
+    pL(ri===0?0x3a8ccc:0x0fa855,.12,2.6,rx,2.8,-15.9);
   }
+
+
 
   pL(0x0fa855,.3,10,-4,3,-14);
   plantAt(-16.5,-18.5,1.);
@@ -2816,17 +2856,66 @@ function updateQAScr(){
   ctx.fillText('Coverage 78% · Tests 14/16 · Marta · Dev Teams QA',8,236);
   qaTex.needsUpdate=true;
 }
-function buildDevOpsZone(){zSign('DEVOPS LAB','#4caf50',17,6.5,-13);buildDesk({key:'devops',col:'#4caf50',w:4.5,x:21,z:-14});for(let ri=0;ri<3;ri++){const rg=new THREE.Group();bx(.8,5.,1.2,M.rack,0,2.5,0,rg);for(let ui=0;ui<11;ui++){bx(.73,.32,1.12,new THREE.MeshLambertMaterial({color:0x0c0c0c}),0,.28+ui*.44,0,rg);bx(.05,.05,.05,new THREE.MeshBasicMaterial({color:ui%4===0?0x3a8ccc:ui%4===1?0xcc3344:0x0fa855}),-.28,.28+ui*.44,.57,rg);}rg.position.set(24.5+ri,0,-14);scene.add(rg);
-// Click hitbox para rack
-const rHit=new THREE.Mesh(new THREE.BoxGeometry(3.5,5.5,1.4),new THREE.MeshBasicMaterial({transparent:true,opacity:0}));rHit.position.set(25.5,2.5,-14);rHit.userData.clickAction='rack';scene.add(rHit);}pL(0x0fa855,.35,12,25,3,-13);plantAt(27,-18,.9);}
+function buildDevOpsZone(){
+  zSign('DEVOPS LAB','#4caf50',17,6.5,-13);
+  buildDesk({key:'devops',col:'#4caf50',w:4.5,x:26.2,z:-10.2,rotY:-Math.PI/2});
+
+
+  for(let ri=0;ri<3;ri++){
+    const rx=-13.5+ri*2.0;
+    const rg=new THREE.Group();
+    const rackShellM=new THREE.MeshLambertMaterial({color:0x101722});
+    const rackFaceM=new THREE.MeshLambertMaterial({color:0x05080c});
+    const rackTrimM=new THREE.MeshLambertMaterial({color:0x304255});
+    const rackGlassM=new THREE.MeshPhongMaterial({color:0x8cb7d6,transparent:true,opacity:.14,shininess:110});
+
+    bx(1.9,2.75,1.42,rackShellM,0,1.38,0,rg);
+    bx(1.74,2.5,1.22,rackFaceM,0,1.38,0,rg);
+    bx(.05,2.44,1.18,rackTrimM,-.82,1.38,0,rg);
+    bx(.05,2.44,1.18,rackTrimM,.82,1.38,0,rg);
+    bx(1.8,.08,1.42,new THREE.MeshLambertMaterial({color:0x1b2836}),0,2.73,0,rg);
+
+    const front=new THREE.Mesh(new THREE.BoxGeometry(1.56,2.3,.04),rackGlassM);
+    front.position.set(0,1.38,.72);
+    rg.add(front);
+
+    for(let ui=0;ui<6;ui++){
+      const uy=.3+ui*.36;
+      bx(1.46,.16,1.02,new THREE.MeshLambertMaterial({color:0x020406}),0,uy,0,rg);
+      bx(.42,.012,.02,new THREE.MeshBasicMaterial({color:0x3a8ccc}),.12,uy,.52,rg);
+      bx(.06,.06,.06,new THREE.MeshBasicMaterial({color:ui%2===0?0x0fa855:0xffb000}),-.58,uy,.54,rg);
+      bx(.06,.06,.06,new THREE.MeshBasicMaterial({color:ui%3===0?0xcc3344:0x3a8ccc}),-.4,uy,.54,rg);
+    }
+
+    const ledBar=new THREE.Mesh(new THREE.BoxGeometry(.72,.03,.03),new THREE.MeshBasicMaterial({color:ri===1?0x0fa855:0x3a8ccc}));
+    ledBar.position.set(0,2.46,.72);
+    rg.add(ledBar);
+
+    rg.position.set(rx,0,-16.5);
+    scene.add(rg);
+    pL(ri===1?0x0fa855:0x3a8ccc,.12,2.6,rx,2.8,-15.9);
+  }
+
+  const rHit=new THREE.Mesh(new THREE.BoxGeometry(6.2,5.5,1.6),new THREE.MeshBasicMaterial({transparent:true,opacity:0}));
+  rHit.position.set(-14.5,2.5,-16.5);
+  rHit.userData.clickAction='rack';
+  scene.add(rHit);
+
+  pL(0x0fa855,.22,8,-14.5,3.1,-15.4);
+  plantAt(27,-18,.9);
+}
+
+
 function buildPMZone(){
-  buildDesk({key:'pm',col:'#5b9bd5',w:5.,x:-14,z:-2});
+  buildDesk({key:'pm',col:'#5b9bd5',w:5.,x:-26.9,z:7.8,rotY:Math.PI/2});
 // textura tablero PM removida
   // tablero PM removido
-  pL(0x5b9bd5,.25,5,-18,3,0);
-  plantAt(-20,-19.5,1.);
+  pL(0x5b9bd5,.25,5,-25.2,3,7.8);
+  plantAt(-26,2.2,1.);
 }
-function buildUXZone(){zSign('UX DESIGN','#e91e8c',5.5,6.5,-1,Math.PI);buildDesk({key:'ux',col:'#e91e8c',w:5.,x:-3,z:-2});plantAt(-6,-19.5,.9);}
+
+
+function buildUXZone(){zSign('UX DESIGN','#e91e8c',5.5,6.5,-1,Math.PI);buildDesk({key:'ux',col:'#e91e8c',w:5.,x:-26.6,z:-1.4,rotY:Math.PI/2});plantAt(-6,-19.5,.9);}
 function buildDataZone(){zSign('DATA ANALYTICS','#00bcd4',5.5,6.5,2.5);buildDesk({key:'data',col:'#00bcd4',w:6.,x:9,z:-2});pL(0x00bcd4,.25,8,9,3,0);plantAt(15,-19.5,1.);}
 let ckCvs=null,ckTex=null;
 function initClock(sc){ckCvs=document.createElement('canvas');ckCvs.width=128;ckCvs.height=128;ckTex=new THREE.CanvasTexture(ckCvs);const m=new THREE.Mesh(new THREE.PlaneGeometry(2.2,2.2),new THREE.MeshBasicMaterial({map:ckTex,transparent:true}));
@@ -2921,11 +3010,12 @@ for(let i=0;i<6;i++){
   const back=new THREE.Mesh(new THREE.BoxGeometry(1.6,1.,.12),chairMat);
     back.position.set(cx+Math.sin(angle)*.78,2.22,cz+Math.cos(angle)*.78);
   back.rotation.y=angle;g.add(back);
-  // Patas
+  // Patas más largas para que apoyen bien en el piso
   const legMat=new THREE.MeshLambertMaterial({color:0x1a1a28});
   [[.6,.5],[-.6,.5],[.6,-.5],[-.6,-.5]].forEach(([lx,lz])=>{
-    const leg=new THREE.Mesh(new THREE.BoxGeometry(.1,.68,.1),legMat);
-    leg.position.set(cx+lx*.6,1.28,cz+lz*.6);g.add(leg);
+    const leg=new THREE.Mesh(new THREE.BoxGeometry(.1,1.46,.1),legMat);
+    leg.position.set(cx+lx*.6,.81,cz+lz*.6);
+    g.add(leg);
   });
 }
   g.position.set(0,0,9);scene.add(g);
@@ -4079,69 +4169,114 @@ async function runMeeting1on1(k1,k2){
   const cfg1=ACFG[k1],cfg2=ACFG[k2];
   if(!ag1||!ag2)return;
 
+  const tag=`oneonone-${k1}-${k2}`;
+  const left={x:-3.5,z:5,rotY:Math.PI/2};
+  const right={x:-0.5,z:5,rotY:-Math.PI/2};
+
+  if(ag1._activityLock)ag1.releaseActivity({state:'idle'});
+  if(ag2._activityLock)ag2.releaseActivity({state:'idle'});
+
+  ag1.engageActivity(tag,{state:'walking'});
+  ag2.engageActivity(tag,{state:'walking'});
+
   showToast(`Reunion 1:1: ${cfg1.name.split(' ')[0]} / ${cfg2.name.split(' ')[0]}`,cfg1.col);
   logEvent('1on1','Reunion 1:1 iniciada',`${cfg1.name.split(' ')[0]} / ${cfg2.name.split(' ')[0]}`,cfg1.col,k1);
 
-  const cx=-2,cz=5;
-  ag1.moveTo(cx-1.5,cz);ag2.moveTo(cx+1.5,cz);
+  try{
+    ag1.moveTo(left.x,left.z,{force:true,tag});
+    ag2.moveTo(right.x,right.z,{force:true,tag});
 
-  await new Promise(r=>{
-    const i=setInterval(()=>{
-      if(Math.hypot(ag1.group.position.x-(cx-1.5),ag1.group.position.z-cz)<2&&Math.hypot(ag2.group.position.x-(cx+1.5),ag2.group.position.z-cz)<2){clearInterval(i);r();}
-    },300);
-    setTimeout(()=>{clearInterval(i);r();},7000);
-  });
+    await new Promise(r=>{
+      const i=setInterval(()=>{
+        const d1=Math.hypot(ag1.group.position.x-left.x,ag1.group.position.z-left.z);
+        const d2=Math.hypot(ag2.group.position.x-right.x,ag2.group.position.z-right.z);
+        if(d1<1.1&&d2<1.1){clearInterval(i);r();}
+      },250);
+      setTimeout(()=>{clearInterval(i);r();},9000);
+    });
 
-  orientAgentToward(k1,k2);
-  orientAgentToward(k2,k1);
-  showDelegationArrow(k1,k2);
-  switchPanel('flujo');
+    ag1.lockAt(left.x,left.z,{rotY:left.rotY,state:'thinking'});
+    ag2.lockAt(right.x,right.z,{rotY:right.rotY,state:'thinking'});
 
-  const w=document.getElementById('swrap');
-  w.innerHTML=`<div style="padding:8px 12px;font-family:var(--mono);font-size:9px;color:var(--t2);border-bottom:1px solid var(--b1);margin-bottom:6px;font-weight:700">1:1 - ${cfg1.name.split(' ')[0]} / ${cfg2.name.split(' ')[0]}</div>`;
-  const log=document.createElement('div');
-  log.style.cssText='display:flex;flex-direction:column;gap:4px;padding:8px 12px';
-  w.appendChild(log);
+    showDelegationArrow(k1,k2);
+    switchPanel('flujo');
 
-  const turns=[
-    {k:k1,prompt:`Inicia una reunion 1:1 con ${cfg2.name.split(' ')[0]}. 20 palabras.`},
-    {k:k2,prompt:`Responde al opening de ${cfg1.name.split(' ')[0]}. 20 palabras.`},
-    {k:k1,prompt:`Plantea un tema de colaboracion con ${cfg2.name.split(' ')[0]}. 20 palabras.`},
-    {k:k2,prompt:`Da tu opinion y propon siguiente paso. 20 palabras.`},
-    {k:k1,prompt:`Cierra la reunion con un acuerdo concreto. 15 palabras.`},
-  ];
+    const w=document.getElementById('swrap');
+    w.innerHTML=`<div style="padding:8px 12px;font-family:var(--mono);font-size:9px;color:var(--t2);border-bottom:1px solid var(--b1);margin-bottom:6px;font-weight:700">1:1 - ${cfg1.name.split(' ')[0]} / ${cfg2.name.split(' ')[0]} · bloqueado hasta finalizar</div>`;
+    const log=document.createElement('div');
+    log.style.cssText='display:flex;flex-direction:column;gap:4px;padding:8px 12px';
+    w.appendChild(log);
 
-  for(const turn of turns){
-    const ag=AG[turn.k],cfg=ACFG[turn.k];
-    ag.setState('thinking');
-    const entry=document.createElement('div');
-    entry.style.cssText=`display:flex;gap:6px;padding:5px 8px;background:var(--bg2);border:1px solid var(--b1);border-left:3px solid ${cfg.col};animation:fadeUp .2s`;
-    entry.innerHTML=`<span style="font-family:var(--mono);font-size:8px;font-weight:700;color:${cfg.col};min-width:48px">${cfg.name.split(' ')[0]}</span><span style="font-family:var(--mono);font-size:9px;color:var(--t1);flex:1"><span class="tcur"></span></span>`;
-    log.appendChild(entry);
-    log.scrollTop=log.scrollHeight;
+    const turns=[
+      {k:k1,prompt:`Inicia una reunion 1:1 con ${cfg2.name.split(' ')[0]}. Resume contexto, objetivo y tono profesional. Max 24 palabras.`},
+      {k:k2,prompt:`Responde al opening de ${cfg1.name.split(' ')[0]} y valida prioridad. Max 24 palabras.`},
+      {k:k1,prompt:`Plantea un bloqueo o decision que deban resolver juntos. Max 24 palabras.`},
+      {k:k2,prompt:`Propone una solucion concreta, con siguiente paso y responsable. Max 24 palabras.`},
+      {k:k1,prompt:`Aclara riesgo, dependencia o fecha de seguimiento. Max 22 palabras.`},
+      {k:k2,prompt:`Confirma acuerdo final y punto de control. Max 22 palabras.`},
+      {k:k1,prompt:`Cierra la reunion 1:1 con compromiso concreto y fecha corta de seguimiento. Max 18 palabras.`},
+    ];
 
-    const msgEl=entry.querySelector('span:last-child');
-    const r=await groq([{role:'system',content:mkSys(turn.k)},{role:'user',content:turn.prompt}],(tok,full)=>{renderRichText(msgEl,full,{allowEmphasis:false,cursor:true});ag.speech=full.slice(-20);ag.sa=.9;},50);
-    if(r){renderRichText(msgEl,r,{allowEmphasis:false});ag.setState('idle');}
-    await new Promise(res=>setTimeout(res,600));
+    for(const turn of turns){
+      const ag=AG[turn.k];
+      const cfg=ACFG[turn.k];
+      const other=turn.k===k1?ag2:ag1;
+      const slot=turn.k===k1?left:right;
+      const otherSlot=turn.k===k1?right:left;
+
+      ag.lockAt(slot.x,slot.z,{rotY:slot.rotY,state:'thinking'});
+      other.lockAt(otherSlot.x,otherSlot.z,{rotY:otherSlot.rotY,state:'reading'});
+
+      const entry=document.createElement('div');
+      entry.style.cssText=`display:flex;gap:6px;padding:5px 8px;background:var(--bg2);border:1px solid var(--b1);border-left:3px solid ${cfg.col};animation:fadeUp .2s`;
+      entry.innerHTML=`<span style="font-family:var(--mono);font-size:8px;font-weight:700;color:${cfg.col};min-width:48px">${cfg.name.split(' ')[0]}</span><span style="font-family:var(--mono);font-size:9px;color:var(--t1);flex:1"><span class="tcur"></span></span>`;
+      log.appendChild(entry);
+      log.scrollTop=log.scrollHeight;
+
+      const msgEl=entry.querySelector('span:last-child');
+      const r=await groq(
+        [{role:'system',content:mkSys(turn.k)},{role:'user',content:turn.prompt}],
+        (tok,full)=>{
+          renderRichText(msgEl,full,{allowEmphasis:false,cursor:true});
+          ag.speech=full.slice(-24);
+          ag.sa=.9;
+        },
+        60
+      );
+
+      if(r){
+        renderRichText(msgEl,r,{allowEmphasis:false});
+        ag.say(r.slice(0,36));
+        ag.lockAt(slot.x,slot.z,{rotY:slot.rotY,state:'speaking'});
+        other.lockAt(otherSlot.x,otherSlot.z,{rotY:otherSlot.rotY,state:'reading'});
+      }else{
+        ag.lockAt(slot.x,slot.z,{rotY:slot.rotY,state:'idle'});
+      }
+
+      await new Promise(res=>setTimeout(res,1300));
+    }
+
+    await new Promise(res=>setTimeout(res,2200));
+
+    appendOutcomeCard(w,{
+      title:'Acuerdo 1:1',
+      ownerKey:k1,
+      outcome:`1:1 completado entre ${cfg1.name.split(' ')[0]} y ${cfg2.name.split(' ')[0]}.`,
+      nextStep:'Registrar el acuerdo y convertirlo en tarea concreta',
+      risk:'La conversacion puede quedar sin seguimiento si no se asigna owner'
+    });
+
+    showToast('1:1 finalizado ✓',cfg1.col);
+    logEvent('1on1','Reunion 1:1 finalizada',`${cfg1.name.split(' ')[0]} / ${cfg2.name.split(' ')[0]}`,cfg1.col,k1);
+    refreshOpsBar();
+  } finally {
+    ag1.releaseActivity({state:'idle'});
+    ag2.releaseActivity({state:'idle'});
+    ag1.back({force:true,tag});
+    ag2.back({force:true,tag});
   }
-
-  await new Promise(res=>setTimeout(res,1500));
-  ag1.back();
-  ag2.back();
-
-  appendOutcomeCard(w,{
-    title:'Acuerdo 1:1',
-    ownerKey:k1,
-    outcome:`1:1 completado entre ${cfg1.name.split(' ')[0]} y ${cfg2.name.split(' ')[0]}.`,
-    nextStep:'Registrar el acuerdo y convertirlo en tarea concreta',
-    risk:'La conversacion puede quedar sin seguimiento si no se asigna owner'
-  });
-
-  showToast('1:1 finalizado ✓',cfg1.col);
-  logEvent('1on1','Reunion 1:1 finalizada',`${cfg1.name.split(' ')[0]} / ${cfg2.name.split(' ')[0]}`,cfg1.col,k1);
-  refreshOpsBar();
 }
+
 
 
 function open1on1Picker(){
@@ -6096,31 +6231,40 @@ function _buildChart(canvas,labels,tokData,cols,byAgent){
 //  DASHBOARD EJECUTIVO 
 const _dashKPIs={velocity:94,coverage:87,bugRate:2.1,deploys:14,nps:72,morale:88,uptime:99.8,sprint:62};
 function renderDashboard(){
-  const startOfDay=new Date();startOfDay.setHours(0,0,0,0);
+  const startOfDay=new Date();
+  startOfDay.setHours(0,0,0,0);
   const t0=startOfDay.getTime();
+  const nowTs=Date.now();
 
-  const metricsToday=_metricsLog.filter(m=>m.ts>=t0);
-  const tasksToday=_taskHistory.filter(t=>(t.id||0)>=t0);
-  const meetsToday=_meetHistory.filter(m=>(m.id||0)>=t0);
+  const agents=typeof AG!=='undefined'&&AG?Object.entries(AG):[];
+  const totalAgents=Math.max(1,agents.length);
+
   const eventsToday=_eventLog.filter(e=>e.ts>=t0);
-  const activeNow=typeof AG!=='undefined'&&AG?Object.values(AG).filter(ag=>ag.state!=='idle'&&ag.state!=='walking').length:0;
+  const meetsToday=_meetHistory.filter(m=>(m.id||m.ts||0)>=t0);
 
-  const totalTokens=metricsToday.reduce((a,b)=>a+b.tokens,0);
-  const totalCost=metricsToday.reduce((a,b)=>a+b.cost,0);
-  const activePct=Math.round((activeNow/Math.max(1,Object.keys(ACFG).length))*100);
+  const busyNow=agents.filter(([,ag])=>ag.state!=='idle').length;
+  const walkingNow=agents.filter(([,ag])=>ag.state==='walking').length;
+  const focusNow=agents.filter(([,ag])=>['thinking','working','reading','speaking','fps'].includes(ag.state)).length;
+  const lockedNow=agents.filter(([,ag])=>!!(ag._activityLock||ag._lockPos)).length;
+
+  const apiState=GKEY?'Groq activa':'Demo mode';
+  const envState=dayMode?'Dia':'Noche';
+
   const kpis=[
-    ['Agentes activos',`${activeNow}/8`,'#0fa855',activeNow/8],
-    ['Flujos hoy',metricsToday.length,'#3a8ccc',Math.min(1,metricsToday.length/8)],
-    ['Tareas hoy',tasksToday.length,'#c8a040',Math.min(1,tasksToday.length/6)],
-    ['Reuniones hoy',meetsToday.length,'#9060cc',Math.min(1,meetsToday.length/4)],
-    ['Tokens hoy',totalTokens,'#00bcd4',Math.min(1,totalTokens/2000)],
-    ['Costo hoy','$'+totalCost.toFixed(4),'#d97020',Math.min(1,totalCost/0.02)],
-    ['Cobertura',activePct+'%','#e91e8c',activePct/100],
-    ['Modo',_uiMode,'#4caf50',_uiMode==='launch'?1:.65]
+    ['Agentes ocupados',`${busyNow}/${totalAgents}`,'#0fa855',busyNow/totalAgents],
+    ['Caminando ahora',walkingNow,'#3a8ccc',Math.min(1,walkingNow/totalAgents)],
+    ['En foco',focusNow,'#c8a040',Math.min(1,focusNow/totalAgents)],
+    ['Bloqueados',lockedNow,'#9060cc',Math.min(1,lockedNow/totalAgents)],
+    ['Eventos hoy',eventsToday.length,'#00bcd4',Math.min(1,eventsToday.length/12)],
+    ['Reuniones hoy',meetsToday.length,'#d97020',Math.min(1,meetsToday.length/6)],
+    ['API',apiState,GKEY?'#0fa855':'#cc3344',GKEY?1:.35],
+    ['Ambiente',envState,dayMode?'#c8a040':'#5b9bd5',1]
   ];
 
   const el=document.getElementById('dashKpis');
   if(!el)return;
+
+  if(el.childElementCount!==kpis.length)el.innerHTML='';
 
   kpis.forEach(([l,v,c,t],i)=>{
     if(!document.getElementById('dk-'+i)){
@@ -6132,7 +6276,25 @@ function renderDashboard(){
     document.getElementById('dk-'+i).innerHTML=`<div style="font-family:var(--mono);font-size:7px;color:var(--t3);text-transform:uppercase">${l}</div><div style="font-family:var(--mono);font-size:13px;font-weight:800;color:${c};margin:2px 0">${v}</div><div style="height:2px;background:var(--b1)"><div style="height:100%;width:${Math.max(0,Math.min(100,t*100)).toFixed(0)}%;background:${c};transition:width .6s"></div></div>`;
   });
 
-  const acts=_eventLog.slice(0,6).map(ev=>`
+  const liveActs=agents
+    .filter(([,ag])=>ag.state!=='idle'||ag._activityLock||ag._lockPos)
+    .sort((a,b)=>b[1].stateTime-a[1].stateTime)
+    .map(([k,ag])=>({
+      title:`${ACFG[k].name.split(' ')[0]} · ${ag.state}`,
+      detail:ag._activityLock
+        ?`Actividad bloqueada: ${ag._activityLock}`
+        :ag._lockPos
+          ?`Fijado en ${ag._lockPos.x.toFixed(1)}, ${ag._lockPos.z.toFixed(1)}`
+          :ag.path.length
+            ?`Ruta activa · ${ag.path.length} nodos`
+            :`Tiempo en estado · ${Math.round(ag.stateTime)}s`,
+      ts:nowTs,
+      col:ACFG[k].col
+    }));
+
+  const feed=[...liveActs.slice(0,3),...eventsToday.slice(0,3)].slice(0,6);
+
+  document.getElementById('dashActivity').innerHTML=feed.map(ev=>`
     <div style="display:flex;gap:6px;align-items:flex-start;padding:5px 7px;background:var(--bg2);border:1px solid var(--b1)">
       <div style="width:5px;height:5px;border-radius:50%;background:${ev.col||'#0fa855'};flex-shrink:0;margin-top:4px"></div>
       <div style="flex:1;min-width:0">
@@ -6141,13 +6303,12 @@ function renderDashboard(){
       </div>
       <div style="font-family:var(--mono);font-size:7px;color:var(--t3);flex-shrink:0">${fmtEventTime(ev.ts)}</div>
     </div>
-  `).join('');
-
-  document.getElementById('dashActivity').innerHTML=acts||'<div style="font-family:var(--mono);font-size:9px;color:var(--t3);padding:6px">Sin actividad aun.</div>';
+  `).join('')||'<div style="font-family:var(--mono);font-size:9px;color:var(--t3);padding:6px">Sin actividad aun.</div>';
 }
 
 
 /*  GROQ  */
+
 function readGroqText(content){
   if(Array.isArray(content)){
     return content.map(part=>typeof part==='string'?part:(part?.text||'')).join('');
@@ -7106,9 +7267,13 @@ let _cleanMode=localStorage.getItem('cleanMode')==='1';
 function applyCleanMode(){
   document.body.classList.toggle('clean-mode',_cleanMode);
   const btn=document.getElementById('cleanBtn');
-  if(btn)btn.textContent=_cleanMode?'NORMAL':'LIMPIO';
+  if(btn){
+    btn.classList.toggle('acc',_cleanMode);
+    btn.title=_cleanMode?'Salir de modo limpio':'Modo limpio';
+  }
   if(_cleanMode&&currentPanel!=='consola')switchPanel('consola');
 }
+
 
 function toggleCleanMode(){
   _cleanMode=!_cleanMode;
