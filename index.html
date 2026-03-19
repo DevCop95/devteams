@@ -399,9 +399,6 @@ footer{display:flex;align-items:center;justify-content:space-between;padding:0 1
     <button class="hbtn" onclick="document.getElementById('kbdOv').classList.toggle('show')" title="Atajos [?]">
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M8 12h.01M12 12h.01M16 12h.01M7 16h10"/></svg>
     </button>
-    <button class="hbtn" id="presBtn" onclick="togglePresMode()" title="Presentación [P]">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
-    </button>
     <button class="hbtn" onclick="openApi()" title="Configuración">
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>
     </button>
@@ -416,12 +413,8 @@ footer{display:flex;align-items:center;justify-content:space-between;padding:0 1
   1:1
 </button>
   <div style="display:flex;gap:2px">
-    <button class="hbtn acc launch-only" onclick="startDemoTour()" style="padding:4px 12px;display:flex;align-items:center;gap:5px">
-      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <polygon points="8 5 19 12 8 19 8 5"></polygon>
-      </svg>
-      Demo
-    </button>
+<!-- demo guiada removida -->
+
     <button class="hbtn" id="modeBtn" onclick="toggleUIMode()" title="Cambiar modo" style="padding:4px 10px;border-color:var(--acc2);color:var(--acc)">launch</button>
     <button class="hbtn" onclick="openTask()" style="padding:4px 14px;background:rgba(15,168,85,.06);border-color:var(--acc2);color:var(--acc);display:flex;align-items:center;gap:5px">
       <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
@@ -1353,8 +1346,6 @@ async function startDemoTour(){
   if(_demoTourOn)return;
   _demoTourOn=true;
   setUIMode('launch');
-
-  if(_presMode)togglePresMode();
 
   switchPanel('flujo');
   refreshOpsBar();
@@ -6913,89 +6904,7 @@ function _toggleCompactPanel(){
   return;
 }
 
-//  ONBOARDING 
-const _ONBOARD_STEPS=[
-  {title:'Command Center',desc:'Aqui ves el estado actual, el modo launch o sandbox y la linea operativa reciente.',el:'#opsBar',pos:'bottom-right'},
-  {title:'Escena operativa',desc:'Haz orbit, zoom y seleccion directa. El agente activo se vuelve el foco de la historia.',el:'#canvasWrap',pos:'center'},
-  {title:'Tres caminos para arrancar',desc:'1) Demo guiada para vender la idea. 2) Conectar Groq para IA real. 3) Asignar tarea para probar operacion.',el:'#opsBar',pos:'bottom-right'},
-  {title:'Listo para lanzar',desc:'Elige tu camino de inicio y entra directo a la experiencia.',el:'#opsBar',pos:'bottom-right',quick:true},
-];
-let _onboardIdx=0;
-
-function startOnboard(){
-  if(localStorage.getItem('onboard_done'))return;
-  document.getElementById('onboardSpotlight').style.cssText='position:absolute;border-radius:4px;box-shadow:0 0 0 9999px rgba(0,0,0,.82);pointer-events:none;transition:all .4s;border:2px solid var(--acc);width:0;height:0;top:50%;left:50%';
-  _onboardIdx=0;
-  document.getElementById('onboardOv').style.display='block';
-  showOnboardStep();
-}
-function showOnboardStep(){
-  const step=_ONBOARD_STEPS[_onboardIdx];
-  if(!step){skipOnboard();return;}
-
-  document.getElementById('onboardTitle').textContent=step.title;
-  document.getElementById('onboardDesc').textContent=step.desc;
-  document.getElementById('onboardStep').textContent=`${_onboardIdx+1} / ${_ONBOARD_STEPS.length}`;
-  document.getElementById('onboardNext').textContent=_onboardIdx===_ONBOARD_STEPS.length-1?'Entrar':'Siguiente';
-
-  const quick=document.getElementById('onboardQuickRow');
-  if(quick)quick.style.display=step.quick?'grid':'none';
-
-  const el=document.querySelector(step.el);
-  const spot=document.getElementById('onboardSpotlight');
-  const card=document.getElementById('onboardCard');
-
-  card.style.left='';
-  card.style.right='';
-  card.style.top='';
-  card.style.bottom='';
-  card.style.transform='';
-
-  if(el){
-    const r=el.getBoundingClientRect();
-    const pad=8;
-    spot.style.left=(r.left-pad)+'px';
-    spot.style.top=(r.top-pad)+'px';
-    spot.style.width=(r.width+pad*2)+'px';
-    spot.style.height=(r.height+pad*2)+'px';
-
-    if(step.pos==='bottom-right'){
-      card.style.left=(r.right+12)+'px';
-      card.style.top=r.top+'px';
-    }else if(step.pos==='left'){
-      card.style.right=(window.innerWidth-r.left+12)+'px';
-      card.style.top=r.top+'px';
-    }else if(step.pos==='top'){
-      card.style.left=r.left+'px';
-      card.style.bottom=(window.innerHeight-r.top+12)+'px';
-    }else{
-      card.style.left='50%';
-      card.style.top='50%';
-      card.style.transform='translate(-50%,-50%)';
-    }
-  }else{
-    spot.style.cssText='position:absolute;width:0;height:0;box-shadow:0 0 0 9999px rgba(0,0,0,.82);pointer-events:none;transition:all .4s;border:none;';
-    card.style.left='50%';
-    card.style.top='50%';
-    card.style.transform='translate(-50%,-50%)';
-  }
-}
-function nextOnboard(){
-  _onboardIdx++;
-  if(_onboardIdx>=_ONBOARD_STEPS.length)skipOnboard();
-  else showOnboardStep();
-}
-function onboardQuick(action){
-  skipOnboard();
-  if(action==='demo')startDemoTour();
-  else if(action==='api')openApi();
-  else if(action==='task')openTask();
-}
-function skipOnboard(){
-  document.getElementById('onboardOv').style.display='none';
-  localStorage.setItem('onboard_done','1');
-}
-
+/* onboarding guiado desactivado */
 
 /*  CONSOLE  */
 let chatAgent='ceo';
@@ -7568,104 +7477,6 @@ function updateRain(dt){
   _rainParticles.geometry.attributes.position.needsUpdate=true;
 }
 
-/*  #18 MODO PRESENTACIÓN  */
-let _presMode=false;
-function togglePresMode(){
-  _presMode=!_presMode;
-  const edu=document.querySelector('.edu');
-  const footer=document.querySelector('footer');
-  const header=document.querySelector('header');
-  const mainEl=document.querySelector('main');
-  const appEl=document.querySelector('.app');
-  const wrap=document.getElementById('canvasWrap');
-  const btn=document.getElementById('presBtn');
-
-  function resizeRenderer(){
-    if(!wrap||!renderer||!camera)return;
-    const w=wrap.clientWidth||window.innerWidth;
-    const h=wrap.clientHeight||(window.innerHeight-0);
-    if(w>0&&h>0){
-      renderer.setSize(w,h);
-      camera.aspect=w/h;
-      camera.updateProjectionMatrix();
-    }
-  }
-
-  if(_presMode){
-    window._presSave={
-      eduDisplay:edu.style.display,
-      footerDisplay:footer.style.display,
-      headerDisplay:header.style.display,
-      mainCols:mainEl.style.gridTemplateColumns,
-      appRows:appEl.style.gridTemplateRows,
-    };
-    // Ocultar elementos
-    header.style.display='none';
-    footer.style.display='none';
-    edu.style.display='none';
-    // Grid fullscreen
-    appEl.style.gridTemplateRows='1fr';
-    mainEl.style.gridTemplateColumns='1fr';
-    // Canvas ocupa todo
-    wrap.style.position='fixed';
-    wrap.style.inset='0';
-    wrap.style.zIndex='10';
-    btn?.classList.add('fps-on');
-    // Resize en cascada  esperar a que el DOM se asiente
-    requestAnimationFrame(()=>requestAnimationFrame(()=>{
-      resizeRenderer();
-      // Segundo intento por si acaso
-      setTimeout(resizeRenderer,150);
-    }));
-    try{document.documentElement.requestFullscreen();}catch(e){}
-    showToast('⛶ Modo presentación · [P] para salir','#0fa855');
-  }else{
-    const s=window._presSave||{};
-    header.style.display=s.headerDisplay||'';
-    footer.style.display=s.footerDisplay||'';
-    edu.style.display=s.eduDisplay||'';
-    appEl.style.gridTemplateRows=s.appRows||'52px 1fr 44px';
-    mainEl.style.gridTemplateColumns=s.mainCols||'1fr 380px';
-    // Quitar override del canvas
-    wrap.style.position='';
-    wrap.style.inset='';
-    wrap.style.zIndex='';
-    btn?.classList.remove('fps-on');
-    requestAnimationFrame(()=>requestAnimationFrame(()=>{
-      resizeRenderer();
-      setTimeout(resizeRenderer,150);
-    }));
-    try{document.exitFullscreen();}catch(e){}
-    showToast('Vista normal restaurada');
-  }
-}
-
-document.addEventListener('fullscreenchange',()=>{
-  if(!document.fullscreenElement&&_presMode){
-    _presMode=false;
-    const edu=document.querySelector('.edu');
-    const footer=document.querySelector('footer');
-    const header=document.querySelector('header');
-    const mainEl=document.querySelector('main');
-    const appEl=document.querySelector('.app');
-    const wrap=document.getElementById('canvasWrap');
-    const s=window._presSave||{};
-    header.style.display=s.headerDisplay||'';
-    footer.style.display=s.footerDisplay||'';
-    edu.style.display=s.eduDisplay||'';
-    appEl.style.gridTemplateRows='52px 1fr 44px';
-    mainEl.style.gridTemplateColumns=s.mainCols||'1fr 380px';
-    wrap.style.position='';wrap.style.inset='';wrap.style.zIndex='';
-    document.getElementById('presBtn')?.classList.remove('fps-on');
-    requestAnimationFrame(()=>requestAnimationFrame(()=>{
-      if(wrap&&renderer&&camera){
-        const w=wrap.clientWidth,h=wrap.clientHeight;
-        if(w>0&&h>0){renderer.setSize(w,h);camera.aspect=w/h;camera.updateProjectionMatrix();}
-      }
-    }));
-  }
-});
-
 /*  #19 EXPORT ESCENA  */
 function exportScene(){
   // Render one extra frame at higher res
@@ -7685,7 +7496,6 @@ document.addEventListener('keydown',e=>{
   if(e.code==='KeyM')runMeeting();
   if(e.code==='KeyC')resetCam();
   if(e.code==='KeyN')toggleDayNight();
-  if(e.code==='KeyP'&&!e.target.closest('input, textarea, select'))togglePresMode();
 if(e.key==='?')document.getElementById('kbdOv').classList.toggle('show');
   if(e.code==='KeyF'){e.preventDefault();toggleFPS();}  // â† #6 FPS key
   if(e.code==='Space'){e.preventDefault();if(!document.getElementById('btnNext').disabled)nextStep();}
@@ -7805,30 +7615,12 @@ setTimeout(()=>{
     logEvent('launch','Workspace listo','Dev Teams cargo y quedo listo para demo','#0fa855','ceo');
   }
 },300);
-setTimeout(startOnboard,1200);
+// onboarding automatico desactivado
 
 </script>
 
-<!-- onboard must be after </script> to exist in DOM when referenced -->
-<div id="onboardOv" style="display:none;position:fixed;inset:0;z-index:999;pointer-events:none">
-  <div id="onboardSpotlight" style="position:absolute;border-radius:4px;box-shadow:0 0 0 9999px rgba(0,0,0,.82);pointer-events:none;transition:all .4s;border:2px solid var(--acc)"></div>
-  <div id="onboardCard" style="position:absolute;background:var(--bg2);border:1px solid var(--acc2);border-left:3px solid var(--acc);padding:16px 18px;width:300px;font-family:var(--mono);pointer-events:all;z-index:1000">
-    <div id="onboardTitle" style="font-size:10px;font-weight:800;color:var(--t1);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px"></div>
-    <div id="onboardDesc" style="font-size:9px;color:var(--t2);line-height:1.7;margin-bottom:10px"></div>
-    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
-      <div id="onboardStep" style="font-size:8px;color:var(--t3)"></div>
-      <div style="display:flex;gap:6px">
-        <button onclick="skipOnboard()" style="font-family:var(--mono);font-size:8px;padding:4px 10px;background:var(--bg3);border:1px solid var(--b2);color:var(--t3);cursor:pointer">Saltar</button>
-        <button id="onboardNext" onclick="nextOnboard()" style="font-family:var(--mono);font-size:8px;font-weight:700;padding:4px 12px;background:var(--acc);color:#000;border:none;cursor:pointer">Siguiente</button>
-      </div>
-    </div>
-    <div id="onboardQuickRow" style="display:none;grid-template-columns:1fr;gap:6px;margin-top:10px">
-      <button onclick="onboardQuick('demo')" style="font-family:var(--mono);font-size:8px;font-weight:700;padding:7px 10px;background:rgba(15,168,85,.12);border:1px solid var(--acc);color:var(--acc);cursor:pointer">Ver demo guiada</button>
-      <button onclick="onboardQuick('api')" style="font-family:var(--mono);font-size:8px;padding:7px 10px;background:var(--bg3);border:1px solid var(--b2);color:var(--t1);cursor:pointer">Conectar Groq</button>
-      <button onclick="onboardQuick('task')" style="font-family:var(--mono);font-size:8px;padding:7px 10px;background:var(--bg3);border:1px solid var(--b2);color:var(--t1);cursor:pointer">Asignar tarea</button>
-    </div>
-  </div>
-</div>
+<!-- onboarding removido -->
+
 
 
 </body>
