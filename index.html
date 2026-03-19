@@ -253,7 +253,57 @@ body.clean-mode #cleanBtn{
   background:rgba(15,168,85,.1)!important;
 }
 
+.mobile-actions{display:none}
+
+@media (max-width: 900px){
+  .app{grid-template-rows:56px 1fr}
+  header{padding:0 10px;gap:8px}
+  .logo-sub,.h-badges,.h-right,.gtbar,footer,#mmWrap,.orbit-hint,#sceneQuickBtns{display:none!important}
+  .logo-main{font-size:12px}
+  .logo-mark{width:22px;height:22px}
+
+  .mobile-actions{
+    display:flex;
+    margin-left:auto;
+    gap:6px;
+    align-items:center;
+  }
+  .mobile-actions .hbtn{
+    padding:6px 8px;
+    font-size:8px;
+  }
+
+  main{grid-template-columns:1fr}
+  .game-panel{border-right:none}
+
+  .edu{
+    position:fixed;
+    left:0;
+    right:0;
+    bottom:0;
+    top:56px;
+    z-index:70;
+    background:rgba(8,10,12,.98);
+    border-top:1px solid var(--b2);
+    transform:translateY(100%);
+    transition:transform .22s ease;
+    pointer-events:none;
+  }
+  body.mobile-chat-open .edu{
+    transform:translateY(0);
+    pointer-events:auto;
+  }
+
+  .edu-hdr,#opsBar,#treePanel,#flujoPanel,#statusPanel,#dashPanel{display:none!important}
+  .console-wrap,#consolaPanel{display:flex!important;height:100%}
+  .cas-bar{padding:8px 10px;overflow-x:auto;flex-wrap:nowrap}
+  .cas-btn{flex:0 0 auto}
+  .cmsgs{padding:8px 10px}
+  .cinp-area{padding:8px 10px calc(8px + env(safe-area-inset-bottom))}
+  .cagbadge{display:none}
+}
 .ptbtn{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:0 9px;background:transparent;border:none;color:var(--t3);cursor:pointer;border-bottom:2px solid transparent;transition:all .12s;border-right:1px solid var(--b1);flex:1}
+
 .ptbtn.on{color:var(--t1);border-bottom-color:var(--acc)}.ptbtn:hover:not(.on){color:var(--t2)}
 .edu-scroll{flex:1;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--b2) transparent}
 .edu-scroll::-webkit-scrollbar{width:3px}.edu-scroll::-webkit-scrollbar-thumb{background:var(--b2)}
@@ -469,6 +519,12 @@ footer{display:flex;align-items:center;justify-content:space-between;padding:0 1
     </button>
   </div>
 
+  <div class="mobile-actions">
+    <button class="hbtn acc" onclick="runMeeting()">Reunión</button>
+    <button class="hbtn" onclick="toggleDayNight()">Día/Noche</button>
+    <button class="hbtn" onclick="openApi()">API</button>
+    <button class="hbtn" id="chatBtnMobile" onclick="toggleMobileChat()">Chat</button>
+  </div>
 </div>
 </header>
 <main>
@@ -515,7 +571,8 @@ footer{display:flex;align-items:center;justify-content:space-between;padding:0 1
         <div id="mmLbl">Dev Teams · click=zoom</div>
       </div>
       <div class="orbit-hint" id="orbitHint">🖱 drag=mover cámara · click derecho=orbitar · scroll=zoom · click=perfil · C=reset</div>
-      <div style="position:absolute;bottom:7px;right:10px;display:flex;gap:4px;z-index:5">
+      <div id="sceneQuickBtns" style="position:absolute;bottom:7px;right:10px;display:flex;gap:4px;z-index:5">
+
   <button style="font-family:var(--mono);font-size:8px;padding:3px 8px;background:rgba(15,168,85,.1);border:1px solid rgba(15,168,85,.28);color:var(--acc);cursor:pointer;letter-spacing:.06em;text-transform:uppercase" onclick="exportScene()" title="Captura">
     <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
   </button>
@@ -6912,7 +6969,6 @@ function setSpd(ms,btn){spd=ms;document.querySelectorAll('.spd').forEach(b=>b.cl
 /*  PANELS  */
 let currentPanel='tree';
 function switchPanel(p){
-  if(_cleanMode&&p!=='consola')p='consola';
   currentPanel=p;
   const btns={tree:'ptTree',flujo:'ptFlujo',consola:'ptConsola',status:'ptStatus',dash:'ptDash'};
   Object.entries(btns).forEach(([k,id])=>{
@@ -6935,8 +6991,34 @@ function switchPanel(p){
   refreshOpsBar();
 }
 
+function isMobileUI(){
+  return window.matchMedia('(max-width: 900px)').matches;
+}
+
+function syncMobileChatBtn(){
+  const btn=document.getElementById('chatBtnMobile');
+  if(!btn)return;
+  btn.textContent=document.body.classList.contains('mobile-chat-open')?'Cerrar':'Chat';
+}
+
+function toggleMobileChat(force){
+  if(!isMobileUI()){
+    switchPanel('consola');
+    return;
+  }
+  const next=typeof force==='boolean'?force:!document.body.classList.contains('mobile-chat-open');
+  document.body.classList.toggle('mobile-chat-open',next);
+  if(next)switchPanel('consola');
+  syncMobileChatBtn();
+}
+
+window.addEventListener('resize',()=>{
+  if(!isMobileUI())document.body.classList.remove('mobile-chat-open');
+  syncMobileChatBtn();
+});
 
 let _panelCompact=false;
+
 let _cleanMode=localStorage.getItem('cleanMode')==='1';
 
 function applyCleanMode(){
@@ -7659,6 +7741,7 @@ if(localStorage.getItem('theme')==='light'){
 }
 setTimeout(()=>{
   activeAg='ceo';
+    if(isMobileUI())syncMobileChatBtn();
   document.getElementById('tnode-ceo')?.classList.add('active');
   renderStages();
   document.getElementById('btnNext').disabled=false;
