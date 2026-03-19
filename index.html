@@ -220,6 +220,39 @@ main{display:grid;grid-template-columns:1fr 380px;overflow:hidden}
 .demo-outcome .row b{color:var(--t1)}
 body[data-ui-mode="launch"] .sandbox-only{display:none!important}
 body[data-ui-mode="sandbox"] .launch-only{display:none!important}
+
+body.clean-mode .app{grid-template-rows:52px 1fr}
+body.clean-mode main{grid-template-columns:1fr 430px}
+body.clean-mode footer,
+body.clean-mode .gtbar,
+body.clean-mode #mmWrap,
+body.clean-mode #orbitHint,
+body.clean-mode .edu-hdr,
+body.clean-mode #opsBar,
+body.clean-mode #treePanel,
+body.clean-mode #flujoPanel,
+body.clean-mode #statusPanel,
+body.clean-mode #dashPanel,
+body.clean-mode #sndBtn,
+body.clean-mode #musicBtn,
+body.clean-mode #fpsBtnHdr,
+body.clean-mode #autoDNBtn,
+body.clean-mode #sa3dBtn,
+body.clean-mode #kbdBtnHdr,
+body.clean-mode #meet1on1Btn,
+body.clean-mode #modeBtn,
+body.clean-mode #taskBtnHdr,
+body.clean-mode #historyBtnHdr,
+body.clean-mode #sandboxBtns,
+body.clean-mode #wkBadge{display:none!important}
+
+body.clean-mode #consolaPanel{display:flex!important}
+body.clean-mode #cleanBtn{
+  border-color:var(--acc2)!important;
+  color:var(--acc)!important;
+  background:rgba(15,168,85,.1)!important;
+}
+
 .ptbtn{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:0 9px;background:transparent;border:none;color:var(--t3);cursor:pointer;border-bottom:2px solid transparent;transition:all .12s;border-right:1px solid var(--b1);flex:1}
 .ptbtn.on{color:var(--t1);border-bottom-color:var(--acc)}.ptbtn:hover:not(.on){color:var(--t2)}
 .edu-scroll{flex:1;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--b2) transparent}
@@ -396,11 +429,14 @@ footer{display:flex;align-items:center;justify-content:space-between;padding:0 1
   </div>
   <div style="width:1px;height:18px;background:var(--b2)"></div>
   <div style="display:flex;gap:2px;border:1px solid var(--b2);padding:2px 4px;align-items:center">
-    <button class="hbtn" onclick="document.getElementById('kbdOv').classList.toggle('show')" title="Atajos [?]">
+    <button class="hbtn" id="kbdBtnHdr" onclick="document.getElementById('kbdOv').classList.toggle('show')" title="Atajos [?]">
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M8 12h.01M12 12h.01M16 12h.01M7 16h10"/></svg>
     </button>
-    <button class="hbtn" onclick="openApi()" title="Configuración">
+    <button class="hbtn" id="apiBtnHdr" onclick="openApi()" title="Configuración">
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>
+    </button>
+    <button class="hbtn" id="cleanBtn" onclick="toggleCleanMode()" title="Modo limpio">
+      LIMPIO
     </button>
   </div>
   <div style="width:1px;height:18px;background:var(--b2)"></div>
@@ -408,7 +444,7 @@ footer{display:flex;align-items:center;justify-content:space-between;padding:0 1
     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
     Reunión
   </button>
-  <button class="hbtn" onclick="open1on1Picker()" title="Reunión 1:1" style="padding:4px 10px;display:flex;align-items:center;gap:4px;background:rgba(15,168,85,.06);border-color:var(--acc2);color:var(--acc)">
+  <button class="hbtn" id="meet1on1Btn" onclick="open1on1Picker()" title="Reunión 1:1" style="padding:4px 10px;display:flex;align-items:center;gap:4px;background:rgba(15,168,85,.06);border-color:var(--acc2);color:var(--acc)">
   <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
   1:1
 </button>
@@ -6876,6 +6912,7 @@ function setSpd(ms,btn){spd=ms;document.querySelectorAll('.spd').forEach(b=>b.cl
 /*  PANELS  */
 let currentPanel='tree';
 function switchPanel(p){
+  if(_cleanMode&&p!=='consola')p='consola';
   currentPanel=p;
   const btns={tree:'ptTree',flujo:'ptFlujo',consola:'ptConsola',status:'ptStatus',dash:'ptDash'};
   Object.entries(btns).forEach(([k,id])=>{
@@ -6900,9 +6937,26 @@ function switchPanel(p){
 
 
 let _panelCompact=false;
-function _toggleCompactPanel(){
-  return;
+let _cleanMode=localStorage.getItem('cleanMode')==='1';
+
+function applyCleanMode(){
+  document.body.classList.toggle('clean-mode',_cleanMode);
+  const btn=document.getElementById('cleanBtn');
+  if(btn)btn.textContent=_cleanMode?'NORMAL':'LIMPIO';
+  if(_cleanMode&&currentPanel!=='consola')switchPanel('consola');
 }
+
+function toggleCleanMode(){
+  _cleanMode=!_cleanMode;
+  localStorage.setItem('cleanMode',_cleanMode?'1':'0');
+  applyCleanMode();
+  showToast(_cleanMode?'Modo limpio activado':'Modo limpio desactivado',_cleanMode?'#0fa855':'#c8a040');
+}
+
+function _toggleCompactPanel(){
+  toggleCleanMode();
+}
+
 
 /* onboarding guiado desactivado */
 
@@ -7611,6 +7665,7 @@ setTimeout(()=>{
   setUIMode(_uiMode);
   renderEventFeed();
   refreshOpsBar();
+  applyCleanMode();
   if(!_eventLog.length){
     logEvent('launch','Workspace listo','Dev Teams cargo y quedo listo para demo','#0fa855','ceo');
   }
