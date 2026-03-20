@@ -2062,7 +2062,35 @@ function buildDesk(cfg){
       break;
   }
 
+  const chairDark=new THREE.MeshLambertMaterial({color:0x1a1d24});
+  const chairSoft=new THREE.MeshLambertMaterial({color:0x262b34});
+  const chairBase=new THREE.MeshLambertMaterial({color:0x0f1218});
+
+  bx(1.12,.16,1.04,chairSoft,0,.92,1.95,g);
+  bx(1.12,.08,1.04,new THREE.MeshBasicMaterial({color:parseInt(cfg.col.replace('#','0x')),transparent:true,opacity:.22}),0,1.01,1.95,g);
+  bx(1.12,1.02,.12,chairDark,0,1.45,2.42,g);
+  bx(.12,.7,.12,chairBase,0,.43,1.95,g);
+  [[.42,.38],[.42,-.38],[-.42,.38],[-.42,-.38]].forEach(([lx,lz])=>bx(.08,.62,.08,chairBase,lx,.31,1.95+lz,g));
+  bx(.12,.26,.78,chairBase,.66,1.03,1.95,g);
+  bx(.12,.26,.78,chairBase,-.66,1.03,1.95,g);
+
+  const chairSeatM=new THREE.MeshLambertMaterial({color:0x232936});
+  const chairBackM=new THREE.MeshLambertMaterial({color:0x1d2330});
+  const chairFrameM=new THREE.MeshLambertMaterial({color:0x0f1319});
+  const chairGlowM=new THREE.MeshBasicMaterial({color:parseInt(cfg.col.replace('#','0x')),transparent:true,opacity:.22});
+
+  bx(1.02,.16,1.0,chairSeatM,0,.92,2.02,g);
+  bx(.94,.04,.92,chairGlowM,0,1.02,2.02,g);
+  bx(.96,1.16,.12,chairBackM,0,1.52,2.48,g);
+  bx(.72,.16,.08,chairGlowM,0,1.86,2.44,g);
+  bx(.12,.62,.12,chairFrameM,0,.47,2.02,g);
+  bx(.12,.24,.72,chairFrameM,.58,1.02,2.02,g);
+  bx(.12,.24,.72,chairFrameM,-.58,1.02,2.02,g);
+  [[.56,.46],[.56,-.46],[-.56,.46],[-.56,-.46],[0,.68],[0,-.68]].forEach(([lx,lz])=>bx(.08,.08,.26,chairFrameM,lx,.1,2.02+lz,g));
+
   const sl=pL(parseInt(cfg.col.replace('#','0x')),.38,5,0,2.8,.2);
+
+
   g.add(sl);
   deskLights[cfg.key]=sl;
 
@@ -2587,8 +2615,23 @@ function buildDevBEZone(){
   const status3=new THREE.Mesh(new THREE.BoxGeometry(.05,.01,.05),new THREE.MeshBasicMaterial({color:0xcc3344}));
   status3.position.set(.04,1.695,.9);g.add(status3);
 
+  const yChairSeatM=new THREE.MeshLambertMaterial({color:0x232936});
+  const yChairBackM=new THREE.MeshLambertMaterial({color:0x1d2330});
+  const yChairFrameM=new THREE.MeshLambertMaterial({color:0x0f1319});
+  const yChairGlowM=new THREE.MeshBasicMaterial({color:0x3a8ccc,transparent:true,opacity:.24});
+
+  bx(1.14,.16,1.06,yChairSeatM,0,.92,2.06,g);
+  bx(1.02,.04,.96,yChairGlowM,0,1.02,2.06,g);
+  bx(1.02,1.24,.12,yChairBackM,0,1.56,2.56,g);
+  bx(.76,.16,.08,yChairGlowM,0,1.92,2.5,g);
+  bx(.12,.66,.12,yChairFrameM,0,.49,2.06,g);
+  bx(.12,.24,.78,yChairFrameM,.64,1.03,2.06,g);
+  bx(.12,.24,.78,yChairFrameM,-.64,1.03,2.06,g);
+  [[.62,.5],[.62,-.5],[-.62,.5],[-.62,-.5],[0,.74],[0,-.74]].forEach(([lx,lz])=>bx(.08,.08,.28,yChairFrameM,lx,.1,2.06+lz,g));
+
   g.position.set(-9,-.02,-14);
   scene.add(g);
+
 
   for(let ri=0;ri<2;ri++){
     const rx=-6.6+ri*2.0;
@@ -2773,7 +2816,22 @@ function buildQAZone(){
   qHit.userData.clickAction='monitor_qa';
   g.add(qHit);
 
+  const qChairSeatM=new THREE.MeshLambertMaterial({color:0x232936});
+  const qChairBackM=new THREE.MeshLambertMaterial({color:0x1d2330});
+  const qChairFrameM=new THREE.MeshLambertMaterial({color:0x0f1319});
+  const qChairGlowM=new THREE.MeshBasicMaterial({color:0xd97020,transparent:true,opacity:.24});
+
+  bx(1.02,.16,1.0,qChairSeatM,0,.92,2.02,g);
+  bx(.94,.04,.92,qChairGlowM,0,1.02,2.02,g);
+  bx(.96,1.16,.12,qChairBackM,0,1.52,2.48,g);
+  bx(.72,.16,.08,qChairGlowM,0,1.86,2.44,g);
+  bx(.12,.62,.12,qChairFrameM,0,.47,2.02,g);
+  bx(.12,.24,.72,qChairFrameM,.58,1.02,2.02,g);
+  bx(.12,.24,.72,qChairFrameM,-.58,1.02,2.02,g);
+  [[.56,.46],[.56,-.46],[-.56,.46],[-.56,-.46],[0,.68],[0,-.68]].forEach(([lx,lz])=>bx(.08,.08,.26,qChairFrameM,lx,.1,2.02+lz,g));
+
   const qsl=pL(0xd97020,.38,5,0,2.8,.15);
+
   g.add(qsl);
   deskLights['qa']=qsl;
 
@@ -6319,7 +6377,15 @@ async function groq(msgs,onTok,maxTok=200){
   if(!GKEY)return null;
   setSt('groq...',true,'api');
   let r;
-  const wantsStream=GMOD!=='groq/compound';
+  const rawMsgs=Array.isArray(msgs)?msgs:[];
+  const metricAg=((rawMsgs[0]?.role==='system'&&typeof rawMsgs[0]?.content==='string'&&rawMsgs[0].content.match(/\[\[AG:([a-z0-9_]+)\]\]/i))||[])[1]||activeAg||null;
+  const lastUserMsg=[...rawMsgs].reverse().find(m=>m?.role==='user')?.content||'';
+  const lastUserWords=String(lastUserMsg).trim().split(/\s+/).filter(Boolean).length;
+  const wantsStream=GMOD!=='groq/compound'&&lastUserWords<=18&&maxTok<=160;
+  const reqMsgs=rawMsgs.map(m=>{
+    if(m?.role!=='system'||typeof m?.content!=='string')return m;
+    return {...m,content:m.content.replace(/\[\[AG:[a-z0-9_]+\]\]\s*/i,'')};
+  });
 
   try{
     r=await fetch('https://api.groq.com/openai/v1/chat/completions',{
@@ -6330,10 +6396,10 @@ async function groq(msgs,onTok,maxTok=200){
       },
       body:JSON.stringify({
         model:GMOD,
-        messages:msgs,
+        messages:reqMsgs,
         stream:wantsStream,
         max_tokens:maxTok,
-        temperature:.75
+        temperature:.45
       })
     });
   }catch(e){
@@ -6349,7 +6415,7 @@ async function groq(msgs,onTok,maxTok=200){
       em=j?.error?.message||'';
     }catch{}
     setSt('err '+r.status,false);
-    showToast(`Groq error ${r.status}${em?' · '+em.slice(0,50):''}`,'#cc3344');
+    showToast(`Groq error ${r.status}${em?' - '+em.slice(0,50):''}`,'#cc3344');
     return null;
   }
 
@@ -6359,16 +6425,16 @@ async function groq(msgs,onTok,maxTok=200){
       const full=readGroqText(data?.choices?.[0]?.message?.content);
       const tc=data?.usage?.completion_tokens||(full.trim()?full.trim().split(/\s+/).length:0);
       if(full){
-        if(activeAg&&_flowMetrics[activeAg])_flowMetrics[activeAg].tokens+=tc;
+        if(metricAg&&_flowMetrics[metricAg])_flowMetrics[metricAg].tokens+=tc;
         if(onTok)onTok(full,full,tc,0);
         setSt('listo',false);
         return full;
       }
-      setSt('vacío',false);
+      setSt('vacio',false);
       return null;
     }catch(e){
-      setSt('json inválido',false);
-      showToast('Respuesta inválida de Groq','#cc3344');
+      setSt('json invalido',false);
+      showToast('Respuesta invalida de Groq','#cc3344');
       return null;
     }
   }
@@ -6400,7 +6466,7 @@ async function groq(msgs,onTok,maxTok=200){
         if(tok){
           full+=tok;
           tc++;
-          if(activeAg&&_flowMetrics[activeAg])_flowMetrics[activeAg].tokens++;
+          if(metricAg&&_flowMetrics[metricAg])_flowMetrics[metricAg].tokens++;
           if(onTok)onTok(tok,full,tc,Date.now()-t0);
         }
       }catch{}
@@ -6411,7 +6477,25 @@ async function groq(msgs,onTok,maxTok=200){
   return full||null;
 }
 
-function mkSys(key){const cfg=ACFG[key];const team='Equipo Dev Teams (Cartagena CO): Ana García CEO, Sofía Castro PM, Yared Henriquez Dev BE, Diego Herrera Dev FE, Marta López QA, Luis Mendoza DevOps, Valentina Ramos UX, Andrés Torres Data.';return{ceo:`Eres ${cfg.name}, CEO Dev Teams. Directa, estratégica. ${team} Máx 80 palabras, español.`,pm:`Eres ${cfg.name}, PM Dev Teams. Orientada a producto. ${team} Máx 80 palabras, español.`,devbe:`Eres Yared Henriquez, fundador y arquitecto de Dev Teams. Tú creaste este sistema de agentes IA, la oficina 3D, los flujos MCP y toda la infraestructura. Eres el visionario técnico detrás de todo. ${team} Directo, creativo, orgulloso de lo que construiste. Máx 80 palabras, español.`,devfe:`Eres ${cfg.name}, Dev FE Dev Teams. React, CSS. ${team} Máx 80 palabras, español.`,qa:`Eres ${cfg.name}, QA Dev Teams. Detallista, calidad. ${team} Máx 80 palabras, español.`,devops:`Eres ${cfg.name}, DevOps Dev Teams. k8s, CI/CD. ${team} Máx 80 palabras, español.`,ux:`Eres ${cfg.name}, UX Dev Teams. Diseño, Figma. ${team} Máx 80 palabras, español.`,data:`Eres ${cfg.name}, Data Dev Teams. Métricas, ML. ${team} Máx 80 palabras, español.`}[key]||`Eres ${cfg.name}, ${cfg.role} Dev Teams. Máx 80 palabras, español.`;}
+
+function mkSys(key){
+  const cfg=ACFG[key];
+  const team='Equipo Dev Teams (Cartagena CO): Ana Garcia CEO, Sofia Castro PM, Yared Henriquez Dev BE, Diego Herrera Dev FE, Marta Lopez QA, Luis Mendoza DevOps, Valentina Ramos UX, Andres Torres Data.';
+  const roleBase={
+    ceo:`Eres ${cfg.name}, CEO de Dev Teams. Piensas en direccion, prioridades y decisiones.`,
+    pm:`Eres ${cfg.name}, Product Manager de Dev Teams. Piensas en contexto, claridad y siguiente paso.`,
+    devbe:`Eres Yared Henriquez, fundador y arquitecto de Dev Teams. Piensas en backend, arquitectura e integracion real.`,
+    devfe:`Eres ${cfg.name}, desarrollador frontend. Piensas en interfaz, flujo y experiencia del usuario.`,
+    qa:`Eres ${cfg.name}, QA Engineer. Piensas en riesgo, validacion, escenarios y calidad.`,
+    devops:`Eres ${cfg.name}, DevOps Engineer. Piensas en infraestructura, despliegue, observabilidad y estabilidad.`,
+    ux:`Eres ${cfg.name}, UX Designer. Piensas en experiencia, claridad, interfaz y decision de diseno.`,
+    data:`Eres ${cfg.name}, Data Analyst. Piensas en datos, metricas, patrones y decisiones basadas en evidencia.`
+  }[key]||`Eres ${cfg.name}, ${cfg.role} de Dev Teams.`;
+
+  return `[[AG:${key}]] ${roleBase} ${team} Responde en espanol natural. Primero entiende la intencion del usuario y el contexto reciente. Si falta contexto, haz una sola pregunta breve de aclaracion. No inventes datos. No respondas como telegrama salvo que el usuario pida brevedad. Normalmente responde entre 2 y 5 frases con contexto, criterio y un siguiente paso si aplica.`;
+}
+
+
 
 /*  #13 INTERRUPCIÓN POR QA  */
 let _interruptedAg=null,_interruptedStep=-1,_interruptActive=false;
@@ -7315,25 +7399,35 @@ Object.keys(ACFG).forEach(k=>{
 });
 function saveChatH(k){try{localStorage.setItem('chat_'+k,JSON.stringify(chatH[k].slice(-40)));}catch(e){}}
 //  COMPRESIÓN DE MEMORIA 
-const MEM_THRESHOLD=20;
+const MEM_THRESHOLD=16;
 async function compressMemory(k){
   const userMsgs=chatH[k].filter(m=>m.role!=='system');
   if(userMsgs.length<MEM_THRESHOLD||!GKEY)return;
   showToast(`Comprimiendo memoria de ${ACFG[k].name.split(' ')[0]}...`,'#9060cc');
+
   const convText=userMsgs.map(m=>`${m.role==='user'?'User':ACFG[k].name.split(' ')[0]}: ${m.content}`).join('\n');
+
   const summary=await groq([
-    {role:'system',content:'Resume conversaciones de forma concisa. Solo hechos y decisiones clave.'},
-    {role:'user',content:`Resume en máx 80 palabras español, solo puntos clave:\n\n${convText}`}
-  ],()=>{},120);
+    {
+      role:'system',
+      content:'Resume la conversacion como memoria operativa. Extrae objetivo del usuario, decisiones tomadas, pendientes abiertos, restricciones, preferencias y contexto tecnico importante. No inventes nada. Maximo 120 palabras.'
+    },
+    {
+      role:'user',
+      content:`Convierte este historial en memoria operativa util:\n\n${convText}`
+    }
+  ],()=>{},180);
+
   if(summary){
     chatH[k]=[
       {role:'system',content:mkSys(k)},
       {role:'assistant',content:`[CONTEXTO PREVIO RESUMIDO]: ${summary}`}
     ];
     saveChatH(k);
-    showToast(`✅ Memoria de ${ACFG[k].name.split(' ')[0]} comprimida`,'#0fa855');
+    showToast(`Memoria de ${ACFG[k].name.split(' ')[0]} comprimida`,'#0fa855');
   }
 }
+
 function clearAgentMemory(k){chatH[k]=[];localStorage.removeItem('chat_'+k);if(chatAgent===k){document.getElementById('cmsgs').innerHTML='';addGreeting();}showToast('Memoria de '+ACFG[k].name.split(' ')[0]+' limpiada','#cc3344');}
 function initConsole(){const nk=document.getElementById('noKeyMsg'),cb=document.getElementById('casBar');const ms=document.getElementById('cmsgs'),ip=document.querySelector('.cinp-area');if(!GKEY){nk.style.display='block';cb.style.display='none';ms.style.display='none';ip.style.display='none';return;}nk.style.display='none';cb.style.display='flex';ms.style.display='flex';ip.style.display='flex';if(chatAgent!=='all'&&chatH[chatAgent].length===0)addGreeting();}
 const GREETS={ceo:'Hola, soy Ana García, CEO de Dev Teams.',pm:'Hola, Sofía Castro, PM de Dev Teams.',devbe:'Hey, Yared Henriquez, Dev BE Dev Teams.',devfe:'Diego Herrera, Dev FE Dev Teams.',qa:'Marta López, QA Dev Teams.',devops:'Luis Mendoza, DevOps Dev Teams.',ux:'Valentina Ramos, UX Designer Dev Teams.',data:'Andrés Torres, Data Analyst Dev Teams.'};
@@ -7376,62 +7470,305 @@ function appendMsg(type,who,text,col=''){
 }
 
 
-async function sendChat(){
-  if(!GKEY)return;const inp=document.getElementById('cinp'),sb=document.getElementById('csend');const text=inp.value.trim();if(!text)return;inp.value='';sb.disabled=true;
-  if(chatAgent==='all'){
-    appendMsg('user','Tú',text,'var(--acc)');
-    // Líneas de broadcast animadas
-    showBroadcastLines(text);
-    const keys=Object.keys(ACFG);
-    for(const k of keys){
-      const cfg=ACFG[k];const ag=AG[k];ag.setState('thinking');
-      const msgs=document.getElementById('cmsgs');const w=document.createElement('div');w.className='cmsg';
-      const wd=document.createElement('div');wd.className='cwho';const dot=document.createElement('span');dot.style.background=cfg.col;wd.appendChild(dot);wd.appendChild(document.createTextNode(cfg.name.split(' ')[0]));wd.style.color=cfg.col;
-      const bd=document.createElement('div');bd.className='cbody';renderRichText(bd,'',{allowEmphasis:false,cursor:true});w.appendChild(wd);w.appendChild(bd);msgs.appendChild(w);msgs.scrollTop=msgs.scrollHeight;
-      const payload=[{role:'system',content:mkSys(k)},{role:'user',content:text}];
-      const res=await groq(payload,(tok,full)=>{renderRichText(bd,full,{allowEmphasis:false,cursor:true});msgs.scrollTop=msgs.scrollHeight;ag.speech=full.slice(-18);ag.sa=.85;},60);
-      if(res){renderRichText(bd,res,{allowEmphasis:false});
-        // Save broadcast to each agent history
-        if(!chatH[k])chatH[k]=[];
-        chatH[k].push({role:'user',content:text},{role:'assistant',content:res});
-        saveChatH(k);
-      }
-      ag.setState('idle');recAct();playNt();await sleep(100);
-    }
-    sb.disabled=false;inp.focus();return;
-  }
-  // Detectar comando /goto o "habla con X" o "ve a hablar con X"
-const gotoMatch=text.match(/(?:habla con|ve a hablar con|goto|talk to)\s+(\w+)/i);
-if(gotoMatch&&chatAgent!=='all'){
-  const targetName=gotoMatch[1].toLowerCase();
-  const targetKey=Object.keys(ACFG).find(k=>ACFG[k].name.split(' ')[0].toLowerCase()===targetName||k===targetName);
-  if(targetKey&&targetKey!==chatAgent){
-    const topic=text.replace(gotoMatch[0],'').trim();
-    goTalkTo(chatAgent,targetKey,topic);
-    sb.disabled=false;inp.focus();return;
-  }
-}
-appendMsg('user','Tú',text);chatH[chatAgent].push({role:'user',content:text});saveChatH(chatAgent);recAct();
-if(!_flowMetrics[chatAgent])_flowMetrics[chatAgent]={t0:Date.now(),tokens:0,tools:0,cost:0};
-  const ag=AG[chatAgent];
-  const _isComplex=text.split(' ').length>10;
-  if(ag&&chatAgent==='devbe'&&_isComplex){ag.goToLibrary(null);}
-  else if(ag&&Math.random()<.45){ag.goToLibrary(null);}
-  else if(ag){ag.setState('thinking');_startChatGesture(chatAgent);}
-  const msgs=document.getElementById('cmsgs');const w=document.createElement('div');w.className='cmsg';const wd=document.createElement('div');wd.className='cwho';const dot=document.createElement('span');dot.style.background=ACFG[chatAgent]?.col||'var(--acc)';wd.appendChild(dot);wd.appendChild(document.createTextNode(ACFG[chatAgent]?.name||chatAgent));wd.style.color=ACFG[chatAgent]?.col||'';const bd=document.createElement('div');bd.className='cbody';renderRichText(bd,'',{allowEmphasis:false,cursor:true});w.appendChild(wd);w.appendChild(bd);msgs.appendChild(w);msgs.scrollTop=msgs.scrollHeight;
-  const payload=[{role:'system',content:mkSys(chatAgent)},...chatH[chatAgent]];
-  const result=await groq(payload,(tok,full)=>{renderRichText(bd,full,{allowEmphasis:false,cursor:true});msgs.scrollTop=msgs.scrollHeight;if(ag){ag.speech=full.slice(-18);ag.sa=.85;}});
-  if(ag){ag.setState('idle');_doChatResponseGesture(chatAgent,result||'');}
-const final=result||'Error con Groq.';renderRichText(bd,final,{allowEmphasis:false});chatH[chatAgent].push({role:'assistant',content:final});saveChatH(chatAgent);playNt();
-  _chatCount++;
-if(_chatCount===1)unlockAchievement('chat_master');
-if(_chatCount>=10)unlockAchievement('chat_master');
-maybeInterrupt(chatAgent,text,final);
-if(chatH[chatAgent].filter(m=>m.role!=='system').length>=MEM_THRESHOLD)compressMemory(chatAgent);
-const _cm=_flowMetrics[chatAgent];if(_cm){const _cp=COST_PER_1K[GMOD]||0.0005;const _cel=((Date.now()-_cm.t0)/1000).toFixed(1);const _cco=(_cm.tokens/1000*_cp).toFixed(5);logMetric(chatAgent,_cm.tokens,_cm.tools,_cco,_cel);_flowMetrics[chatAgent]={t0:Date.now(),tokens:0,tools:0,cost:0};}sb.disabled=false;inp.focus();
+function _chatHistoryParts(agentKey,limit=10){
+  const hist=(chatH[agentKey]||[]).filter(m=>m&&m.role!=='system');
+  const summaryMsg=[...hist].reverse().find(m=>m.role==='assistant'&&typeof m.content==='string'&&m.content.startsWith('[CONTEXTO PREVIO RESUMIDO]:'));
+  const recent=hist.filter(m=>m!==summaryMsg).slice(-limit);
+  return {
+    summary:summaryMsg?summaryMsg.content.replace('[CONTEXTO PREVIO RESUMIDO]:','').trim():'',
+    recent
+  };
 }
 
-//  CADENA MULTI-AGENTE 
+function _officeChatSnapshot(agentKey){
+  const teamStates=Object.entries(AG).map(([k,a])=>`${ACFG[k].name.split(' ')[0]}:${a.state}`).join(', ');
+  const ag=AG[agentKey];
+  const hh=new Date().toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'});
+  return `Hora ${hh}. Panel ${currentPanel}. ${ag?ACFG[agentKey].name.split(' ')[0]+' esta '+ag.state+'. ':''}Estados del equipo: ${teamStates}.`;
+}
+
+function _buildChatPayload(agentKey,userText){
+  const mem=_chatHistoryParts(agentKey,10);
+  const recent=mem.recent.slice();
+  const last=recent[recent.length-1];
+
+  if(!(last&&last.role==='user'&&last.content===userText)){
+    recent.push({role:'user',content:userText});
+  }
+
+  return [
+    {role:'system',content:mkSys(agentKey)},
+    {role:'system',content:'Usa primero el contexto reciente de la conversacion. Si el usuario dice eso, lo anterior, lo mismo o no termina de especificar, apoya tu respuesta en el historial antes de contestar.'},
+    mem.summary?{role:'system',content:`Contexto previo resumido: ${mem.summary}`}:null,
+    {role:'system',content:`Contexto operativo actual: ${_officeChatSnapshot(agentKey)}`},
+    ...recent
+  ].filter(Boolean);
+}
+
+function _chatThinkDelay(text){
+  const words=String(text||'').trim().split(/\s+/).filter(Boolean).length;
+  if(words<=4)return 400+Math.random()*150;
+  if(words<=10)return 800+Math.random()*250;
+  if(words<=24)return 1200+Math.random()*400;
+  return 1600+Math.random()*500;
+}
+
+function _chatMaxTokens(text,isBroadcast=false){
+  const words=String(text||'').trim().split(/\s+/).filter(Boolean).length;
+  if(isBroadcast)return words>18?140:100;
+  if(words<=6)return 90;
+  if(words<=16)return 150;
+  return 240;
+}
+
+async function _prepareAgentForChat(agentKey,text){
+  const ag=AG[agentKey];
+  if(!ag)return;
+  const words=String(text||'').trim().split(/\s+/).filter(Boolean).length;
+
+  if(agentKey==='devbe'&&words>10)ag.goToLibrary(null);
+  else if(Math.random()<.35)ag.goToLibrary(null);
+  else{
+    ag.setState('thinking');
+    _startChatGesture(agentKey);
+  }
+
+  await sleep(_chatThinkDelay(text));
+}
+
+function _chatHistoryParts(agentKey,limit=12){
+  const hist=(chatH[agentKey]||[]).filter(m=>m&&m.role!=='system');
+  const summaryMsg=[...hist].reverse().find(m=>m.role==='assistant'&&typeof m.content==='string'&&m.content.startsWith('[CONTEXTO PREVIO RESUMIDO]:'));
+  const recent=hist.filter(m=>m!==summaryMsg).slice(-limit);
+  return {
+    summary:summaryMsg?summaryMsg.content.replace('[CONTEXTO PREVIO RESUMIDO]:','').trim():'',
+    recent
+  };
+}
+
+function _officeChatSnapshot(agentKey){
+  const teamStates=Object.entries(AG).map(([k,a])=>`${ACFG[k].name.split(' ')[0]}:${a.state}`).join(', ');
+  const ag=AG[agentKey];
+  const hh=new Date().toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'});
+  const meeting=_meetingActive?'Reunion activa.':'Sin reunion activa.';
+  const mode=dayMode?'Modo dia.':'Modo noche.';
+  return `Hora ${hh}. Panel ${currentPanel}. ${meeting} ${mode} ${ag?ACFG[agentKey].name.split(' ')[0]+' esta '+ag.state+'. ':''}Estados del equipo: ${teamStates}.`;
+}
+
+function _buildChatPayload(agentKey,userText){
+  const mem=_chatHistoryParts(agentKey,12);
+  const recent=mem.recent.slice();
+  const last=recent[recent.length-1];
+
+  if(!(last&&last.role==='user'&&last.content===userText)){
+    recent.push({role:'user',content:userText});
+  }
+
+  return [
+    {role:'system',content:mkSys(agentKey)},
+    {role:'system',content:'Usa primero el contexto reciente de la conversacion. Si el usuario dice eso, lo anterior, lo mismo o deja algo ambiguo, apoya tu respuesta en el historial antes de contestar. Si la pregunta tiene varias partes, respondelas en orden.'},
+    mem.summary?{role:'system',content:`Contexto previo resumido: ${mem.summary}`}:null,
+    {role:'system',content:`Contexto operativo actual: ${_officeChatSnapshot(agentKey)}`},
+    ...recent
+  ].filter(Boolean);
+}
+
+function _chatThinkDelay(text){
+  const words=String(text||'').trim().split(/\s+/).filter(Boolean).length;
+  if(words<=4)return 400+Math.random()*150;
+  if(words<=10)return 800+Math.random()*250;
+  if(words<=24)return 1200+Math.random()*400;
+  return 1600+Math.random()*500;
+}
+
+function _chatMaxTokens(text,isBroadcast=false){
+  const words=String(text||'').trim().split(/\s+/).filter(Boolean).length;
+  if(isBroadcast)return words>18?140:100;
+  if(words<=6)return 90;
+  if(words<=16)return 150;
+  return 240;
+}
+
+async function _prepareAgentForChat(agentKey,text){
+  const ag=AG[agentKey];
+  if(!ag)return;
+  const words=String(text||'').trim().split(/\s+/).filter(Boolean).length;
+
+  if(agentKey==='devbe'&&words>10)ag.goToLibrary(null);
+  else if(Math.random()<.35)ag.goToLibrary(null);
+  else{
+    ag.setState('thinking');
+    _startChatGesture(agentKey);
+  }
+
+  await sleep(_chatThinkDelay(text));
+}
+
+async function sendChat(){
+  if(!GKEY)return;
+  const inp=document.getElementById('cinp');
+  const sb=document.getElementById('csend');
+  const text=inp.value.trim();
+  if(!text)return;
+
+  inp.value='';
+  sb.disabled=true;
+
+  if(chatAgent==='all'){
+    appendMsg('user','Tu',text,'var(--acc)');
+    showBroadcastLines(text);
+
+    const keys=Object.keys(ACFG);
+    for(const k of keys){
+      const cfg=ACFG[k];
+      const ag=AG[k];
+      const msgs=document.getElementById('cmsgs');
+      const w=document.createElement('div');
+      w.className='cmsg';
+
+      const wd=document.createElement('div');
+      wd.className='cwho';
+      const dot=document.createElement('span');
+      dot.style.background=cfg.col;
+      wd.appendChild(dot);
+      wd.appendChild(document.createTextNode(cfg.name.split(' ')[0]));
+      wd.style.color=cfg.col;
+
+      const bd=document.createElement('div');
+      bd.className='cbody';
+      renderRichText(bd,'',{allowEmphasis:false,cursor:true});
+
+      w.appendChild(wd);
+      w.appendChild(bd);
+      msgs.appendChild(w);
+      msgs.scrollTop=msgs.scrollHeight;
+
+      await _prepareAgentForChat(k,text);
+
+      const payload=_buildChatPayload(k,text);
+      const res=await groq(
+        payload,
+        (tok,full)=>{
+          renderRichText(bd,full,{allowEmphasis:false,cursor:true});
+          msgs.scrollTop=msgs.scrollHeight;
+          ag.speech=full.slice(-18);
+          ag.sa=.85;
+        },
+        _chatMaxTokens(text,true)
+      );
+
+      const final=res||'No pude responder con Groq en este momento.';
+      renderRichText(bd,final,{allowEmphasis:false});
+
+      if(!chatH[k])chatH[k]=[];
+      chatH[k].push({role:'user',content:text},{role:'assistant',content:final});
+      saveChatH(k);
+
+      ag.setState('idle');
+      recAct();
+      playNt();
+      await sleep(220);
+    }
+
+    sb.disabled=false;
+    inp.focus();
+    return;
+  }
+
+  const gotoMatch=text.match(/(?:habla con|ve a hablar con|goto|talk to)\s+(\w+)/i);
+  if(gotoMatch&&chatAgent!=='all'){
+    const targetName=gotoMatch[1].toLowerCase();
+    const targetKey=Object.keys(ACFG).find(k=>ACFG[k].name.split(' ')[0].toLowerCase()===targetName||k===targetName);
+    if(targetKey&&targetKey!==chatAgent){
+      const topic=text.replace(gotoMatch[0],'').trim();
+      goTalkTo(chatAgent,targetKey,topic);
+      sb.disabled=false;
+      inp.focus();
+      return;
+    }
+  }
+
+  appendMsg('user','Tu',text);
+  if(!chatH[chatAgent])chatH[chatAgent]=[];
+  chatH[chatAgent].push({role:'user',content:text});
+  saveChatH(chatAgent);
+  recAct();
+
+  if(!_flowMetrics[chatAgent])_flowMetrics[chatAgent]={t0:Date.now(),tokens:0,tools:0,cost:0};
+
+  const ag=AG[chatAgent];
+  await _prepareAgentForChat(chatAgent,text);
+
+  const msgs=document.getElementById('cmsgs');
+  const w=document.createElement('div');
+  w.className='cmsg';
+
+  const wd=document.createElement('div');
+  wd.className='cwho';
+  const dot=document.createElement('span');
+  dot.style.background=ACFG[chatAgent]?.col||'var(--acc)';
+  wd.appendChild(dot);
+  wd.appendChild(document.createTextNode(ACFG[chatAgent]?.name||chatAgent));
+  wd.style.color=ACFG[chatAgent]?.col||'';
+
+  const bd=document.createElement('div');
+  bd.className='cbody';
+  renderRichText(bd,'',{allowEmphasis:false,cursor:true});
+
+  w.appendChild(wd);
+  w.appendChild(bd);
+  msgs.appendChild(w);
+  msgs.scrollTop=msgs.scrollHeight;
+
+  const payload=_buildChatPayload(chatAgent,text);
+  const result=await groq(
+    payload,
+    (tok,full)=>{
+      renderRichText(bd,full,{allowEmphasis:false,cursor:true});
+      msgs.scrollTop=msgs.scrollHeight;
+      if(ag){
+        ag.speech=full.slice(-18);
+        ag.sa=.85;
+      }
+    },
+    _chatMaxTokens(text)
+  );
+
+  const final=result||'No pude responder con Groq en este momento.';
+
+  if(ag){
+    ag.setState('idle');
+    _doChatResponseGesture(chatAgent,final);
+  }
+
+  renderRichText(bd,final,{allowEmphasis:false});
+  chatH[chatAgent].push({role:'assistant',content:final});
+  saveChatH(chatAgent);
+  playNt();
+
+  _chatCount++;
+  if(_chatCount===1)unlockAchievement('chat_master');
+  if(_chatCount>=10)unlockAchievement('chat_master');
+
+  maybeInterrupt(chatAgent,text,final);
+
+  if(chatH[chatAgent].filter(m=>m.role!=='system').length>=MEM_THRESHOLD)compressMemory(chatAgent);
+
+  const _cm=_flowMetrics[chatAgent];
+  if(_cm){
+    const _cp=COST_PER_1K[GMOD]||0.0005;
+    const _cel=((Date.now()-_cm.t0)/1000).toFixed(1);
+    const _cco=(_cm.tokens/1000*_cp).toFixed(5);
+    logMetric(chatAgent,_cm.tokens,_cm.tools,_cco,_cel);
+    _flowMetrics[chatAgent]={t0:Date.now(),tokens:0,tools:0,cost:0};
+  }
+
+  sb.disabled=false;
+  inp.focus();
+}
+
+//  CADENA MULTI-AGENTE
+
 const DELEGATE_CHAIN={
   ceo:['pm','devbe'],pm:['devfe','ux','data'],devbe:['devfe','devops','qa'],
   devfe:['qa','ux'],qa:['devbe','devops'],devops:['devbe'],ux:['pm','devfe'],data:['pm','ceo']
