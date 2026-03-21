@@ -4,40 +4,46 @@
 ![HTML5](https://img.shields.io/badge/HTML5-static_app-e34f26?style=for-the-badge&logo=html5&logoColor=white)
 ![Three.js](https://img.shields.io/badge/Three.js-3D_workspace-111111?style=for-the-badge&logo=threedotjs&logoColor=white)
 ![Chart.js](https://img.shields.io/badge/Chart.js-live_panels-ff6384?style=for-the-badge&logo=chartdotjs&logoColor=white)
-![Groq](https://img.shields.io/badge/Groq-real_time_ai-f55036?style=for-the-badge)
+![Groq](https://img.shields.io/badge/Groq-live_or_demo-f55036?style=for-the-badge)
 
-Dev Teams es una oficina 3D interactiva con agentes, paneles operativos, chat y acciones coordinadas para mostrar una experiencia de AI Operations en una sola interfaz.
+Dev Teams es una oficina 3D interactiva construida como una app estatica en una sola interfaz. Mezcla simulacion visual, chat multiagente, herramientas locales del navegador y respuestas reales con Groq cuando hay una API key valida.
 
-![Caratula del repositorio](docs/screenshots/portada-repo.png)
+![Portada](docs/screenshots/portada-repo.png)
 
-## Vista General
+## Que es esta app
 
-La app combina:
+La app funciona como una oficina virtual de Dev Teams:
 
-- escena 3D con agentes y movimientos
-- panel lateral con eventos, chat y actividad
-- reuniones y tareas coordinadas
-- integracion con Groq para respuestas reales
-- modo demo cuando no hay API key cargada
+- una escena 3D con agentes y eventos
+- un panel lateral con arbol, flujo, consola, estado y dashboard
+- un chat con agentes individuales o modo broadcast
+- tools del navegador para leer y buscar archivos locales
+- integracion opcional con Groq para respuestas reales
 
-## Capturas
-
-### Vision general
-
-![Vision general del sistema](docs/screenshots/vision-general.png)
+La mayor parte de la logica vive en [`index.html`](/C:/Users/POWER/Desktop/vscode/Devops/index.html).
 
 ## Funciones principales
 
-- Oficina 3D con equipo virtual y actividad en tiempo real
-- Chat con un agente o con todo el equipo
-- Reuniones en la mesa central
-- Asignacion de tareas a agentes
-- Paneles de estado, eventos y metricas
-- Integracion directa con Groq desde la interfaz
+- Oficina 3D con agentes, estados y movimientos en tiempo real
+- Chat con un agente o con el equipo en modo broadcast inteligente
+- Routing automatico del chat segun el tema
+- Planner interno para consultas complejas
+- Delegacion entre agentes por rol
+- Reuniones de equipo y reuniones 1:1
+- Asignacion de tareas con historial y resumen operativo
+- Tools locales del navegador para explorar archivos
+- Modo `demo` y modo `groq conectado`
+- Eventos ambientados como delivery, pausas y visitante psicologa
+
+## Captura
+
+![Vista general](docs/screenshots/vision-general.png)
 
 ## Como ejecutar
 
-Opcion recomendada:
+Usa cualquier servidor estatico local.
+
+Ejemplo:
 
 ```bash
 python -m http.server 5500
@@ -49,105 +55,147 @@ Luego abre:
 http://localhost:5500
 ```
 
-Tambien puedes usar Live Server o cualquier servidor estatico local.
+Tambien puedes usar Live Server o cualquier servidor estatico equivalente.
 
-## Configurar la llave de Groq
+## Como conectar Groq
 
-Si quieres usar respuestas reales en vez de `demo mode`, esta es la configuracion correcta.
+1. Abre la app en el navegador.
+2. Pulsa el boton `API`.
+3. Selecciona el modelo.
+4. Pega tu API key de Groq.
+5. Pulsa `Guardar`.
 
-### Paso 1. Crear la llave en Groq
+Si la key es valida:
 
-1. Entra a [console.groq.com](https://console.groq.com).
-2. Crea una API key nueva.
-3. Copia la llave. Normalmente empieza por `gsk_...`.
+- el badge deja de decir `demo mode`
+- pasa a `groq conectado`
+- el chat usa Groq
+- se activan comportamientos live del equipo
+- Paula puede intervenir ante prompts inadecuados
 
-### Paso 2. Abrir el modal dentro de la app
+Si la key no es valida:
 
-1. Ejecuta la app en tu navegador.
-2. En la barra superior, haz clic en el boton `API`.
-3. Se abrira el modal `Groq API Key`.
+- la app vuelve a `demo mode`
+- no mantiene un estado de conexion falso
 
-### Paso 3. Pegar la llave y guardar
+## Comandos del chat
 
-Dentro del modal vas a ver:
+Estos comandos funcionan desde la consola:
 
-- `Modelo`
-- `API Key`
-- botones `Guardar` y `Limpiar`
+```text
+/carpeta
+/indexar
+/archivos
+/leer ruta/del/archivo
+/buscar texto
+/analizar ruta/del/archivo
+/exportar
+```
 
-Haz esto:
+### Que hace cada comando
 
-1. Selecciona el modelo que quieres usar.
-2. Pega tu llave en el campo `API Key`.
-3. Pulsa `Guardar`.
+- `/carpeta`: abre el selector de carpeta local
+- `/indexar`: reconstruye el indice del workspace
+- `/archivos`: lista los archivos detectados
+- `/leer ruta`: lee un archivo local
+- `/buscar texto`: busca coincidencias dentro del workspace
+- `/analizar ruta`: analiza un archivo con Groq segun el rol activo
+- `/exportar`: descarga el chat actual en `.txt`
 
-### Paso 4. Confirmar que quedo conectada
+## Como funciona el chat
 
-Si todo salio bien, la interfaz cambia asi:
+### Chat individual
 
-1. el badge superior deja de decir `demo mode`
-2. aparece el estado de conexion de Groq
-3. el nombre del modelo queda visible en la barra
-4. el chat ya puede responder con IA real
+La app puede redirigir automaticamente la conversacion al agente mas adecuado segun el tema.
 
-### Paso 5. Hacer una prueba rapida
+### Broadcast
 
-1. Abre el panel de chat.
-2. Selecciona un agente, por ejemplo `Ana`, `Sofia` o `Yared`.
-3. Escribe un mensaje corto.
-4. Si la llave esta bien, el agente responde usando Groq.
+El modo `Todos` no dispara a los ocho agentes siempre. El sistema intenta escoger a los roles mas relevantes para cada pregunta.
 
-## Como guarda la app esta configuracion
+### Planner y delegacion
 
-Segun el comportamiento actual del codigo:
+En preguntas complejas la app puede:
 
-- La `API Key` se guarda en la sesion actual del navegador.
-- El modelo seleccionado se guarda localmente en el navegador.
-- Si cierras la sesion o abres una ventana nueva, puede que necesites pegar la llave otra vez.
+- generar un microplan interno
+- pedir aportes a otros roles
+- responder con una salida mas estructurada
 
-## Cambiar o borrar la llave
+## Eventos especiales
 
-1. Vuelve a abrir el boton `API`.
-2. Para cambiarla, pega una nueva y pulsa `Guardar`.
-3. Para borrarla, pulsa `Limpiar`.
+### Delivery
 
-## Solucion de problemas de Groq
+Un repartidor puede entrar a la oficina, cruzar la puerta, entregar un paquete y salir.
 
-### Sigue apareciendo `demo mode`
+### Psicologa Paula
 
-- Confirma que pulsaste `Guardar`.
-- Reabre `API` y revisa que el campo no este vacio.
-- Si hace falta, pulsa `Limpiar`, pega la llave otra vez y vuelve a guardar.
+Con Groq activo, Paula puede aparecer cuando detecta mensajes ofensivos, agresivos o inadecuados.
 
-### El chat no responde con IA real
+Comportamiento esperado:
 
-- Revisa que la llave de Groq sea valida.
-- Confirma que tengas conexion a internet.
-- Asegurate de abrir la app desde un servidor local y no solo como archivo suelto.
+- entra a la oficina
+- el equipo se gira para escucharla
+- da una intervencion breve
+- un miembro del equipo puede reaccionar
 
-### La llave desaparece al recargar
+Nota: el flujo de visitantes y puerta sigue en iteracion y puede requerir ajustes finos.
 
-Eso puede pasar porque la llave no se guarda como una credencial permanente del proyecto, sino en la sesion actual del navegador.
+## Estructura del proyecto
 
-## Nota de seguridad
-
-Esta version usa la API key desde el navegador. Eso es util para demo y pruebas, pero no es la arquitectura recomendada para produccion.
-
-Si vas a publicar una version mas seria:
-
-- mueve las llamadas a Groq a un backend
-- no expongas claves reales en el cliente
-- no subas llaves al repositorio
+```text
+.
+├─ index.html
+├─ README.md
+└─ docs/
+   └─ screenshots/
+```
 
 ## Stack
 
 - HTML
 - CSS
 - JavaScript
-- three.js
+- Three.js
 - Chart.js
 - Groq API
+- File System Access API
 
-## Estado actual
+## Persistencia actual
 
-Proyecto en fase `alpha`, orientado a demo visual, validacion de concepto y evolucion del flujo operativo.
+- La API key se guarda en la sesion del navegador
+- El modelo seleccionado se guarda localmente
+- Parte del historial y estado se guarda en `localStorage`
+- El acceso a carpetas depende del permiso del navegador
+
+## Requisitos practicos
+
+- Navegador moderno
+- Para `/carpeta` y tools locales, conviene usar Chromium o compatible con `showDirectoryPicker`
+- Servidor local o `localhost`
+- Conexion a internet si quieres usar Groq
+
+## Limitaciones actuales
+
+- Es una app cliente puro, sin backend
+- La API key vive en el navegador
+- La logica principal esta concentrada en un solo archivo
+- Algunos flujos visuales y eventos siguen en fase experimental
+
+## Seguridad
+
+Esta version esta pensada para demo y pruebas locales.
+
+Para una version mas seria o publica:
+
+- mueve las llamadas a Groq a un backend
+- protege credenciales fuera del cliente
+- no publiques llaves reales en el front
+
+## Estado del proyecto
+
+Proyecto en fase `alpha`, orientado a:
+
+- demo visual
+- simulacion multiagente
+- tools locales del navegador
+- integracion con Groq
+- exploracion de flujos operativos en una sola pagina
