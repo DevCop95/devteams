@@ -8440,6 +8440,20 @@ async function _handleBrowserToolCommand(rawText,agentKey){
     }
   }
 
+  if(/^\/leer\b$/i.test(text)){
+    try{
+      const files=await _indexWorkspace();
+      if(!files.length)return reply('No hay archivos indexados. Usa /carpeta y luego /indexar.');
+      if(files.length===1){
+        const fileData=await _readWorkspaceText(files[0].path,60000);
+        return reply(`Lectura de ${fileData.path}${fileData.truncated?' (vista parcial)':''}:\n\n${fileData.text}${fileData.truncated?'\n\n[archivo demasiado largo: se mostro una vista parcial mas amplia]':''}`);
+      }
+      return reply('Debes indicar la ruta. Usa /archivos para ver opciones o escribe /leer ruta/del/archivo.');
+    }catch(e){
+      return reply(`No pude leer el archivo: ${e?.message||'error'}`);
+    }
+  }
+
   const readMatch=text.match(/^\/leer\s+(.+)$/i)||text.match(/^lee(?:\s+el)?\s+archivo\s+(.+)$/i);
   if(readMatch){
     try{
@@ -8462,6 +8476,10 @@ async function _handleBrowserToolCommand(rawText,agentKey){
     }
   }
 
+  if(/^\/buscar\b$/i.test(text)){
+    return reply('Debes indicar que texto buscar. Ejemplo: /buscar sendChat');
+  }
+
   const analyzeMatch=text.match(/^\/analizar\s+(.+)$/i)||text.match(/^analiza(?:\s+el)?\s+archivo\s+(.+)$/i);
   if(analyzeMatch){
     try{
@@ -8470,6 +8488,10 @@ async function _handleBrowserToolCommand(rawText,agentKey){
     }catch(e){
       return reply(`No pude analizar el archivo: ${e?.message||'error'}`);
     }
+  }
+
+  if(/^\/analizar\b$/i.test(text)){
+    return reply('Debes indicar la ruta del archivo. Ejemplo: /analizar index.html');
   }
 
   if(/^\/exportar\b/i.test(text)||/^exporta chat\b/i.test(lower)){
