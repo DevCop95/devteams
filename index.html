@@ -266,52 +266,58 @@ header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;ba
 .ap-act:last-child{border-right:none}.ap-act:hover{color:var(--t1);background:var(--bg3)}
 .ap-act:active{transform:scale(.97)}
 .ap-act.hi{color:#000;font-weight:700}
-/*  #6 FPS OVERLAY  */
+/* ==================== FPS MODE MEJORADO ==================== */
 #fpsOverlay{
   position:absolute;inset:0;z-index:20;pointer-events:none;
   display:none;transition:opacity .25s;
+  background:rgba(0,0,0,0.03);
 }
-#fpsOverlay.show{display:block}
-/* vignette */
-#fpsOverlay::before{
-  content:'';position:absolute;inset:0;
-  background:radial-gradient(ellipse at center,transparent 52%,rgba(0,0,0,.72) 100%);
-  pointer-events:none;
-}
-/* top border flash */
+#fpsOverlay.show{display:block;pointer-events:all}
+
 .fps-topbar{
-  position:absolute;top:0;left:0;right:0;height:1px;
+  position:absolute;top:0;left:0;right:0;height:2px;
   background:linear-gradient(90deg,transparent,var(--acc),transparent);
-  opacity:.35;
+  opacity:0.6;
+  box-shadow:0 0 12px var(--acc);
 }
-/* crosshair */
+
 .fps-xhair{
   position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-  width:18px;height:18px;
+  width:22px;height:22px;
+  pointer-events:none;
 }
 .fps-xhair::before,.fps-xhair::after{
-  content:'';position:absolute;background:var(--acc);opacity:.7;border-radius:1px;
+  content:'';position:absolute;background:var(--acc);opacity:0.85;
 }
-.fps-xhair::before{width:1px;height:12px;left:50%;top:3px;transform:translateX(-50%)}
-.fps-xhair::after{height:1px;width:12px;top:50%;left:3px;transform:translateY(-50%)}
+.fps-xhair::before{width:2px;height:18px;left:50%;top:2px;transform:translateX(-50%)}
+.fps-xhair::after{height:2px;width:18px;top:50%;left:2px;transform:translateY(-50%)}
+
 .fps-dot{
   position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-  width:2px;height:2px;border-radius:50%;background:var(--acc);opacity:.85;
+  width:4px;height:4px;border-radius:50%;background:var(--acc);
+  box-shadow:0 0 8px var(--acc);
 }
-/* bottom HUD strip */
+
 .fps-hud{
-  position:absolute;bottom:0;left:0;right:0;height:26px;
-  display:flex;align-items:center;justify-content:center;gap:24px;
-  background:linear-gradient(0deg,rgba(0,0,0,.55) 0%,transparent 100%);
+  position:absolute;bottom:0;left:0;right:0;height:32px;
+  display:flex;align-items:center;justify-content:center;gap:28px;
+  background:linear-gradient(0deg,rgba(0,0,0,0.75),transparent);
+  font-family:var(--mono);font-size:9px;color:var(--acc);letter-spacing:1px;
 }
+
 .fps-stat{
-  font-family:var(--mono);font-size:8px;color:var(--acc);opacity:.6;
-  letter-spacing:.1em;text-transform:uppercase;display:flex;align-items:center;gap:5px;
+  display:flex;align-items:center;gap:6px;
+  text-transform:uppercase;
 }
-.fps-stat::before{content:'';width:3px;height:3px;border-radius:50%;background:var(--acc);flex-shrink:0}
-/* agent name top-center */
-.fps-title,
-.fps-hint{display:none}
+.fps-stat::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--acc);flex-shrink:0}
+
+/* Información adicional en FPS */
+.fps-info{
+  position:absolute;top:12px;right:12px;
+  background:rgba(0,0,0,0.6);padding:6px 10px;border-radius:8px;
+  font-family:var(--mono);font-size:8px;color:var(--t2);text-align:right;
+  border:1px solid rgba(15,168,85,0.3);
+}
 
 /* MAIN */
 main{display:grid;grid-template-columns:1fr 380px;overflow:hidden}
@@ -1106,9 +1112,10 @@ footer{display:flex;align-items:center;justify-content:space-between;padding:0 1
       </div>
       <div class="cmsgs" id="cmsgs"></div>
       <div style="padding:3px 12px 0;border-top:1px solid var(--b1);display:flex;gap:4px;background:var(--bg)">
-  <button onclick="exportChatMD()" style="font-family:var(--mono);font-size:8px;padding:3px 8px;background:var(--bg3);border:1px solid var(--b2);color:var(--t2);cursor:pointer;flex:1" title="Exportar como Markdown">⬇ MD</button>
-  <button onclick="exportChatTXT()" style="font-family:var(--mono);font-size:8px;padding:3px 8px;background:var(--bg3);border:1px solid var(--b2);color:var(--t2);cursor:pointer;flex:1" title="Exportar como texto">⬇ TXT</button>
-</div>
+        <button onclick="exportChatMD()" style="font-family:var(--mono);font-size:8px;padding:3px 8px;background:var(--bg3);border:1px solid var(--b2);color:var(--t2);cursor:pointer;flex:1" title="Exportar como Markdown">⬇ MD</button>
+        <button onclick="exportChatTXT()" style="font-family:var(--mono);font-size:8px;padding:3px 8px;background:var(--bg3);border:1px solid var(--b2);color:var(--t2);cursor:pointer;flex:1" title="Exportar como texto">⬇ TXT</button>
+        <button onclick="clearCurrentChat()" style="font-family:var(--mono);font-size:8px;padding:3px 8px;background:var(--bg3);border:1px solid var(--red);color:var(--red);cursor:pointer;flex:1" title="Limpiar chat actual">🗑 Limpiar</button>
+      </div>
 <div class="cinp-area">
         <div class="cagbadge" id="cagbadge">CEO</div>
         <input class="cinp" id="cinp" placeholder="Pregunta al agente..." maxlength="400" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat()}">
@@ -1140,6 +1147,7 @@ footer{display:flex;align-items:center;justify-content:space-between;padding:0 1
     <div class="dash-section-title">Salud operativa</div>
     <div id="dashHealth" class="dash-list"></div>
     <button onclick="renderDashboard()" class="dash-refresh">↻ Actualizar</button>
+    <button onclick="clearSharedMemory()" class="dash-refresh" style="background:var(--red);color:#fff;border-color:var(--red)">🗑 Limpiar Memoria</button>
   </div>
 </div>
   </div>
@@ -1850,6 +1858,7 @@ async function _celebrateGroqConnection(){
     _lastApiPresenceAgent=k;
 
     ag.setState('thinking');
+    enhanceThinkingVisual(agentKey);
     ag.say(msg.slice(0,48));
     showToast(`${cfg.name.split(' ')[0]}: ${msg.slice(0,68)}`,cfg.col,k);
     try{logEvent('api','Groq online',msg,cfg.col,k);}catch(e){}
@@ -7965,103 +7974,62 @@ function _buildChart(canvas,labels,tokData,cols,byAgent){
 
 //  DASHBOARD EJECUTIVO 
 const _dashKPIs={velocity:94,coverage:87,bugRate:2.1,deploys:14,nps:72,morale:88,uptime:99.8,sprint:62};
-function renderDashboard(){
-  const startOfDay=new Date();
-  startOfDay.setHours(0,0,0,0);
-  const t0=startOfDay.getTime();
-  const nowTs=Date.now();
+function renderDashboard() {
+  const kpis = document.getElementById('dashKpis');
+  const activity = document.getElementById('dashActivity');
+  const health = document.getElementById('dashHealth');
 
-  const agents=typeof AG!=='undefined'&&AG?Object.entries(AG):[];
-  const totalAgents=Math.max(1,agents.length);
-
-  const eventsToday=_eventLog.filter(e=>e.ts>=t0);
-  const meetsToday=_meetHistory.filter(m=>(m.id||m.ts||0)>=t0);
-
-  const busyNow=agents.filter(([,ag])=>ag.state!=='idle').length;
-  const walkingNow=agents.filter(([,ag])=>ag.state==='walking').length;
-  const focusNow=agents.filter(([,ag])=>['thinking','working','reading','speaking','fps'].includes(ag.state)).length;
-  const lockedNow=agents.filter(([,ag])=>!!(ag._activityLock||ag._lockPos)).length;
-
-  const apiState=GKEY?'Groq activa':'Demo mode';
-  const envState=dayMode?'Dia':'Noche';
-
-  const kpis=[
-    ['Agentes ocupados',`${busyNow}/${totalAgents}`,'#0fa855',busyNow/totalAgents],
-    ['Caminando ahora',walkingNow,'#3a8ccc',Math.min(1,walkingNow/totalAgents)],
-    ['En foco',focusNow,'#c8a040',Math.min(1,focusNow/totalAgents)],
-    ['Bloqueados',lockedNow,'#9060cc',Math.min(1,lockedNow/totalAgents)],
-    ['Eventos hoy',eventsToday.length,'#00bcd4',Math.min(1,eventsToday.length/12)],
-    ['Reuniones hoy',meetsToday.length,'#d97020',Math.min(1,meetsToday.length/6)],
-    ['API',apiState,GKEY?'#0fa855':'#cc3344',GKEY?1:.35],
-    ['Ambiente',envState,dayMode?'#c8a040':'#5b9bd5',1]
-  ];
-
-  const el=document.getElementById('dashKpis');
-  if(!el)return;
-  el.innerHTML=kpis.map(([l,v,c,t])=>`
+  kpis.innerHTML = `
     <div class="dash-kpi">
-      <div class="dash-kpi-lbl">${escapeHtml(String(l||''))}</div>
-      <div class="dash-kpi-val" style="color:${c}">${escapeHtml(String(v??''))}</div>
-      <div class="dash-kpi-bar"><div class="dash-kpi-fill" style="width:${Math.max(0,Math.min(100,t*100)).toFixed(0)}%;background:${c}"></div></div>
+      <div class="dash-kpi-lbl">Agentes Activos</div>
+      <div class="dash-kpi-val">${Object.keys(AG).length}</div>
+      <div class="dash-kpi-bar"><div class="dash-kpi-fill" style="width:85%;background:var(--acc)"></div></div>
     </div>
-  `).join('');
+    <div class="dash-kpi">
+      <div class="dash-kpi-lbl">Decisiones Tomadas</div>
+      <div class="dash-kpi-val">${SHARED_MEMORY.decisions.length}</div>
+      <div class="dash-kpi-bar"><div class="dash-kpi-fill" style="width:65%;background:#c8a040"></div></div>
+    </div>
+  `;
 
-  const liveActs=agents
-    .filter(([,ag])=>ag.state!=='idle'||ag._activityLock||ag._lockPos)
-    .sort((a,b)=>b[1].stateTime-a[1].stateTime)
-    .map(([k,ag])=>({
-      title:`${ACFG[k].name.split(' ')[0]} · ${ag.state}`,
-      detail:ag._activityLock
-        ?`Actividad bloqueada: ${ag._activityLock}`
-        :ag._lockPos
-          ?`Fijado en ${ag._lockPos.x.toFixed(1)}, ${ag._lockPos.z.toFixed(1)}`
-          :ag.path.length
-            ?`Ruta activa · ${ag.path.length} nodos`
-            :`Tiempo en estado · ${Math.round(ag.stateTime)}s`,
-      ts:nowTs,
-      col:ACFG[k].col
-    }));
-
-  const feed=[...liveActs.slice(0,3),...eventsToday.slice(0,3)].slice(0,6);
-
-  document.getElementById('dashActivity').innerHTML=feed.length
-    ? feed.map(ev=>`
-      <div class="dash-row">
-        <div class="dash-dot" style="background:${ev.col||'#0fa855'}"></div>
-        <div class="dash-main">
-          <div class="dash-strong">${escapeHtml(ev.title||'Evento')}</div>
-          <div class="dash-sub">${escapeHtml(ev.detail||'')}</div>
-        </div>
-        <div class="dash-time">${fmtEventTime(ev.ts)}</div>
-      </div>
-    `).join('')
-    : '<div class="dash-empty">Sin actividad aun.</div>';
-
-  const taskCounts=_taskHistory.reduce((acc,t)=>{
-    const k=t.status||'done';
-    acc[k]=(acc[k]||0)+1;
-    return acc;
-  },{});
-  const healthRows=[
-    {label:'Workspace',value:_workspaceDirHandle?`${_workspaceDirHandle.name} · ${_workspaceIndex.length} archivos`:'sin carpeta',color:_workspaceDirHandle?'#0fa855':'#cc3344'},
-    {label:'Archivo activo',value:_sharedProjectMemory.activeFile||_workspaceLastFilePath||'ninguno',color:(_sharedProjectMemory.activeFile||_workspaceLastFilePath)?'#5b9bd5':'#6c7974'},
-    {label:'Ultima intencion',value:_lastIntentResolution?`${_lastIntentResolution.type}${_lastIntentResolution.routeKind?`/${_lastIntentResolution.routeKind}`:''}`:'sin datos',color:_lastIntentResolution?'#c8a040':'#6c7974'},
-    {label:'Tareas',value:`Q:${taskCounts.queued||0} · Run:${taskCounts.running||0} · Block:${taskCounts.blocked||0}`,color:(taskCounts.blocked||0)?'#cc3344':'#0fa855'},
-    {label:'Memoria compartida',value:_sharedProjectMemory.goal||_sharedProjectMemory.nextStep||'sin contexto global',color:(_sharedProjectMemory.goal||_sharedProjectMemory.nextStep)?'#9060cc':'#6c7974'},
-    {label:'Visitantes',value:`Paula:${_psychVisitor?'activa':'off'} · Delivery:${_deliveryMesh?'activo':'off'} · Puerta:${_doorLocked?'ocupada':'libre'}`,color:(_psychVisitor||_deliveryMesh)?'#d97020':'#0fa855'}
-  ];
-  const healthEl=document.getElementById('dashHealth');
-  if(healthEl){
-    healthEl.innerHTML=healthRows.map(item=>`
-      <div class="dash-row">
-        <div class="dash-dot" style="background:${item.color}"></div>
-        <div class="dash-main">
-          <div class="dash-strong">${escapeHtml(item.label)}</div>
-          <div class="dash-sub">${escapeHtml(item.value)}</div>
-        </div>
-      </div>
-    `).join('');
+  // Actividad reciente (decisiones)
+  activity.innerHTML = `<div class="dash-section-title">Decisiones Recientes del Equipo</div>`;
+  
+  if (SHARED_MEMORY.decisions.length === 0) {
+    activity.innerHTML += `<div class="dash-empty">Aún no hay decisiones registradas</div>`;
+  } else {
+    SHARED_MEMORY.decisions.slice(0, 6).forEach(d => {
+      const time = new Date(d.timestamp).toLocaleTimeString('es-CO', {hour:'2-digit', minute:'2-digit'});
+      activity.innerHTML += `
+        <div class="dash-row">
+          <div class="dash-dot" style="background:#c8a040"></div>
+          <div class="dash-main">
+            <div class="dash-strong">${d.agent}</div>
+            <div class="dash-sub">${d.decision}</div>
+          </div>
+          <div class="dash-time">${time}</div>
+        </div>`;
+    });
   }
+
+  // Salud operativa
+  health.innerHTML = `
+    <div class="dash-section-title">Salud Operativa</div>
+    <div class="dash-row">
+      <div class="dash-dot" style="background:var(--acc)"></div>
+      <div class="dash-main">
+        <div class="dash-strong">Workspace</div>
+        <div class="dash-sub">${_workspaceDirHandle ? 'Conectado ✓' : 'Sin conectar'}</div>
+      </div>
+    </div>
+    <div class="dash-row">
+      <div class="dash-dot" style="background:var(--cyan)"></div>
+      <div class="dash-main">
+        <div class="dash-strong">Groq</div>
+        <div class="dash-sub">${GKEY ? 'Conectado' : 'Demo mode'}</div>
+      </div>
+    </div>
+  `;
 }
 
 
@@ -9503,7 +9471,43 @@ const _defaultSharedProjectMemory=()=>({
   lastAgent:'',
   updatedAt:0
 });
-let _sharedProjectMemory=_defaultSharedProjectMemory();
+// ==================== MEMORIA COMPARTIDA DEL EQUIPO ====================
+let SHARED_MEMORY = {
+  decisions: [],
+  filesAnalyzed: [],
+  openQuestions: [],
+  roadmap: [],
+  lastUpdate: Date.now()
+};
+
+function saveSharedMemory() {
+  localStorage.setItem('devteams_shared_memory', JSON.stringify(SHARED_MEMORY));
+}
+
+function loadSharedMemory() {
+  const saved = localStorage.getItem('devteams_shared_memory');
+  if (saved) SHARED_MEMORY = JSON.parse(saved);
+}
+
+function updateSharedDecision(agentKey, decision) {
+  const cfg = ACFG[agentKey] || { name: 'Equipo' };
+  SHARED_MEMORY.decisions.unshift({
+    agent: cfg.name.split(' ')[0],
+    decision: decision,
+    timestamp: Date.now()
+  });
+  if (SHARED_MEMORY.decisions.length > 30) SHARED_MEMORY.decisions.pop();
+  saveSharedMemory();
+}
+
+function getSharedContext() {
+  if (SHARED_MEMORY.decisions.length === 0) return "Sin decisiones recientes.";
+  return SHARED_MEMORY.decisions.slice(0, 8)
+    .map(d => `• ${d.agent}: ${d.decision}`).join('\n');
+}
+
+// Cargar al inicio
+loadSharedMemory();
 try{
   const saved=JSON.parse(localStorage.getItem('sharedProjectMemory')||'null');
   if(saved&&typeof saved==='object')_sharedProjectMemory={..._defaultSharedProjectMemory(),...saved};
@@ -10309,180 +10313,80 @@ function _workspaceReadMessage(fileData){
   return `Abri ${fileData.path} en el visor [${meta.join(' · ')}].`;
 }
 
-async function _handleBrowserToolCommand(rawText,agentKey,userLabel=''){
-  const text=String(rawText||'').trim();
-  const lower=text.toLowerCase();
-  const who=ACFG[agentKey]?.name||'Agente';
-  const col=ACFG[agentKey]?.col||'var(--acc)';
-  _recordIntentResolution({type:'tool',routeKind:'workspace',activeKey:agentKey,text});
+// ==================== NUEVO SISTEMA DE TOOLS ====================
+async function _handleBrowserToolCommand(rawText, agentKey, userLabel = '') {
+  const text = String(rawText || '').trim();
+  // Mostrar contexto de memoria compartida cuando se habla de mejoras
+  if (text.toLowerCase().includes('mejorar') || text.toLowerCase().includes('cambiar')) {
+    const sharedHint = document.createElement('div');
+    sharedHint.style.cssText = 'font-size:8px;color:var(--t3);padding:4px 10px;background:rgba(200,160,64,0.1);border-left:3px solid #c8a040;margin:6px 0';
+    sharedHint.textContent = 'Memoria compartida activa: ' + (SHARED_MEMORY.decisions.length || 0) + ' decisiones';
+    document.getElementById('cmsgs').appendChild(sharedHint);
+  }
+  const lower = text.toLowerCase();
+  const who = ACFG[agentKey]?.name || 'Agente';
+  const col = ACFG[agentKey]?.col || 'var(--acc)';
 
-  const reply=msg=>{
-    const shown=userLabel||text;
-    appendMsg('user','Tu',shown);
-    appendMsg('agent',who,msg,col);
-    if(!chatH[agentKey])chatH[agentKey]=[];
-    chatH[agentKey].push({role:'user',content:shown},{role:'assistant',content:msg});
+  const reply = (msg) => {
+    appendMsg('user', 'Tu', userLabel || text);
+    appendMsg('agent', who, msg, col);
+    if (!chatH[agentKey]) chatH[agentKey] = [];
+    chatH[agentKey].push({ role: 'user', content: text }, { role: 'assistant', content: msg });
     saveChatH(agentKey);
-    _refreshWorkspaceQuickUI();
     return true;
   };
 
-  if(/^\/tools\b/i.test(text)||/^\/ayuda\b/i.test(text)||/^herramientas\b/i.test(lower)){
+  // Comandos básicos
+  if (/^\/(tools|ayuda|herramientas)/i.test(text)) {
     return reply(_workspaceToolHelp());
   }
 
-  if(/^\/carpeta\b/i.test(text)||/^conecta carpeta\b/i.test(lower)||/^abrir carpeta\b/i.test(lower)){
-    try{
-      const msg=await _pickWorkspaceFolder();
-      showToast('Carpeta conectada','#0fa855',agentKey);
+  if (/^\/carpeta/i.test(text)) {
+    try {
+      const msg = await _pickWorkspaceFolder();
+      updateSharedDecision(agentKey, `Conectó carpeta: ${_workspaceDirHandle?.name}`);
+      showToast('Carpeta conectada', '#0fa855', agentKey);
       return reply(msg);
-    }catch(e){
-      const msg=String(e?.message||'');
-      if(/aborted|aborterror|cancel/i.test(msg)){
-        return reply('No se conecto la carpeta porque cerraste el selector sin elegir una.');
-      }
-      return reply(`No pude conectar la carpeta: ${msg||'error'}`);
-    }
-
-  }
-
-  if(/^\/indexar\b/i.test(text)||/^reindexa\b/i.test(lower)){
-    try{
-      const files=await _indexWorkspace(true);
-      _setSharedProjectMemory({lastWorkspaceAction:'indice actualizado'});
-      return reply(`Index actualizado. ${files.length} archivos disponibles.`);
-    }catch(e){
-      return reply(`No pude indexar la carpeta: ${e?.message||'error'}`);
+    } catch (e) {
+      return reply(`Error al conectar carpeta: ${e.message}`);
     }
   }
 
-  if(/^\/archivos\b/i.test(text)||/^lista archivos\b/i.test(lower)){
-    try{
-      const files=await _indexWorkspace();
-      if(!files.length)return reply('No hay archivos indexados. Usa /carpeta para conectar uno.');
-      _setSharedProjectMemory({lastWorkspaceAction:'lista de archivos'});
-      return _appendWorkspaceInteractiveList(
-        agentKey,
-        userLabel||text,
-        `Archivos disponibles (${files.length})`,
-        'Haz clic en Abrir para verlo en el visor o en Analizar para revisarlo con el agente actual.',
-        files.slice(0,40).map(f=>({path:f.path,meta:_workspacePickerTag(f.path)}))
-      );
-    }catch(e){
-      return reply(`No pude listar archivos: ${e?.message||'error'}`);
-    }
-  }
-
-  if(/^\/leer\b$/i.test(text)){
-    try{
-      const files=await _indexWorkspace();
-      if(!files.length)return reply('No hay archivos indexados. Usa /carpeta y luego /indexar.');
-      if(files.length===1){
-        const fileData=await _readWorkspaceText(files[0].path,60000);
-        openWorkspaceViewer(fileData,agentKey);
-        return reply(_workspaceReadMessage(fileData));
-      }
-      return openWorkspaceFilePicker('read');
-    }catch(e){
-      return reply(`No pude leer el archivo: ${e?.message||'error'}`);
-    }
-  }
-
-  if(/^lee(?:\s+el)?\s+archivo\b$/i.test(text)){
-    try{
-      const files=await _indexWorkspace();
-      if(!files.length)return reply('No hay archivos indexados. Usa /carpeta y luego /indexar.');
-      if(files.length===1){
-        const fileData=await _readWorkspaceText(files[0].path,60000);
-        openWorkspaceViewer(fileData,agentKey);
-        return reply(_workspaceReadMessage(fileData));
-      }
-      return openWorkspaceFilePicker('read');
-    }catch(e){
-      return reply(`No pude leer el archivo: ${e?.message||'error'}`);
-    }
-  }
-
-  const readMatch=text.match(/^\/leer\s+(.+)$/i)||text.match(/^lee(?:\s+el)?\s+archivo\s+(.+)$/i);
-  if(readMatch){
-    try{
-      const fileData=await _readWorkspaceText(readMatch[1],60000);
-      openWorkspaceViewer(fileData,agentKey);
+  if (/^\/leer\s+(.+)/i.test(text)) {
+    const match = text.match(/^\/leer\s+(.+)/i);
+    try {
+      const fileData = await _readWorkspaceText(match[1]);
+      openWorkspaceViewer(fileData, agentKey);
+      updateSharedDecision(agentKey, `Leyó archivo: ${fileData.path}`);
       return reply(_workspaceReadMessage(fileData));
-    }catch(e){
-      return reply(`No pude leer el archivo: ${e?.message||'error'}`);
+    } catch (e) {
+      return reply(`No se pudo leer el archivo: ${e.message}`);
     }
   }
 
-  const searchMatch=text.match(/^\/buscar\s+(.+)$/i)||text.match(/^busca(?:\s+en\s+el\s+proyecto)?\s+(.+)$/i);
-  if(searchMatch){
-    try{
-      const hits=await _searchWorkspaceText(searchMatch[1],30);
-      if(!hits.length)return reply(`No encontre coincidencias para "${searchMatch[1]}".`);
-      _setSharedProjectMemory({lastWorkspaceAction:`busqueda: ${String(searchMatch[1]).slice(0,60)}`});
-      return _appendWorkspaceInteractiveList(
-        agentKey,
-        userLabel||text,
-        `Resultados para "${searchMatch[1]}"`,
-        'Cada resultado es clickeable. Abre el archivo o analizalo desde el agente actual.',
-        hits.map(h=>({path:h.path,meta:`Linea ${h.line} · ${h.text}`}))
-      );
-    }catch(e){
-      return reply(`No pude buscar ese texto: ${e?.message||'error'}`);
+  if (/^\/buscar\s+(.+)/i.test(text)) {
+    const match = text.match(/^\/buscar\s+(.+)/i);
+    try {
+      const hits = await _searchWorkspaceText(match[1]);
+      updateSharedDecision(agentKey, `Buscó: "${match[1]}"`);
+      return _appendWorkspaceInteractiveList(agentKey, userLabel || text, `Resultados para "${match[1]}"`, '', hits.map(h => ({ path: h.path, meta: `Línea ${h.line}` })));
+    } catch (e) {
+      return reply(`Error en búsqueda: ${e.message}`);
     }
   }
 
-  if(/^\/buscar\b$/i.test(text)){
-    return reply('Debes indicar que texto buscar. Ejemplo: /buscar sendChat');
-  }
-
-  if(/^busca(?:\s+en\s+el\s+proyecto)?\b$/i.test(lower)){
-    return reply('Debes indicar que texto buscar. Ejemplo: /buscar sendChat');
-  }
-
-  const analyzeMatch=text.match(/^\/analizar\s+(.+)$/i)||text.match(/^analiza(?:\s+el)?\s+archivo\s+(.+)$/i);
-  if(analyzeMatch){
-    try{
-      const data=await _analyzeWorkspaceFile(analyzeMatch[1],agentKey);
-      _setSharedProjectMemory({lastWorkspaceAction:`analisis: ${data.path}`,activeFile:data.path,lastFiles:_pushSharedUnique(_sharedProjectMemory.lastFiles,data.path,6)});
-      return reply(`Analisis de ${data.path}:\n\n${data.analysis}`);
-    }catch(e){
-      return reply(`No pude analizar el archivo: ${e?.message||'error'}`);
+  if (/^\/analizar\s+(.+)/i.test(text)) {
+    const match = text.match(/^\/analizar\s+(.+)/i);
+    try {
+      const data = await _analyzeWorkspaceFile(match[1], agentKey);
+      updateSharedDecision(agentKey, `Analizó: ${data.path}`);
+      return reply(`Análisis completado:\n\n${data.analysis}`);
+    } catch (e) {
+      return reply(`Error al analizar: ${e.message}`);
     }
   }
 
-  if(/^\/analizar\b$/i.test(text)){
-    try{
-      const files=await _indexWorkspace();
-      if(!files.length)return reply('No hay archivos indexados. Usa /carpeta para conectar uno.');
-      if(files.length===1)return _handleBrowserToolCommand(`/analizar ${files[0].path}`,agentKey,userLabel||`Tools > Analizar ${files[0].path}`);
-      return openWorkspaceFilePicker('analyze');
-    }catch(e){
-      return reply(`No pude abrir el selector para analizar: ${e?.message||'error'}`);
-    }
-  }
-
-  if(/^analiza(?:\s+el)?\s+archivo\b$/i.test(lower)){
-    try{
-      const files=await _indexWorkspace();
-      if(!files.length)return reply('No hay archivos indexados. Usa /carpeta para conectar uno.');
-      if(files.length===1)return _handleBrowserToolCommand(`/analizar ${files[0].path}`,agentKey,userLabel||`Tools > Analizar ${files[0].path}`);
-      return openWorkspaceFilePicker('analyze');
-    }catch(e){
-      return reply(`No pude abrir el selector para analizar: ${e?.message||'error'}`);
-    }
-  }
-
-  if(/^\/exportar\b/i.test(text)||/^exporta chat\b/i.test(lower)){
-    const hist=(chatH[agentKey]||[]).filter(m=>m.role!=='system');
-    const out=hist.map(m=>`${m.role==='user'?'Tu':ACFG[agentKey].name}: ${m.content}`).join('\n\n');
-    const name=`chat-${agentKey}-${Date.now()}.txt`;
-    _downloadTextFile(name,out||'Sin contenido');
-    _setSharedProjectMemory({lastWorkspaceAction:`export chat ${agentKey}`});
-    return reply(`Exporte el chat actual en ${name}`);
-  }
-
-  return false;
+  return false; // No se manejó como tool → sigue con chat normal
 }
 
 function _workspacePickerTag(path){
@@ -10714,35 +10618,23 @@ function _shouldIsolateChatTurn(text,agentKey){
   return _isProjectAppPrompt(lastUser)&&!_isProjectAppPrompt(current)&&_classifyChatComplexity(current)!=='complex';
 }
 
-function _buildChatPayload(agentKey,userText,opts={}){
-  const isolated=!!opts.isolated;
-  const mem=isolated?{summary:'',recent:[]}:_chatHistoryParts(agentKey,12);
-  const recent=mem.recent.slice();
-  const last=recent[recent.length-1];
-  const mode=_classifyChatComplexity(userText);
-  const workspaceState=_workspaceDirHandle?'carpeta conectada':'carpeta no conectada';
-  const appMode=_isProjectAppPrompt(userText);
-  const workspaceMode=/\b(archivo|workspace|carpeta|leer|buscar|analizar|pdf|excel|word|docx|xlsx)\b/i.test(String(userText||''));
-  const summaryForPrompt=(isolated||appMode)?'':mem.summary;
-  const sharedBlock=(appMode||workspaceMode)?_sharedMemoryPromptBlock():'';
+function _buildChatPayload(agentKey, userText, opts = {}) {
+  const isolated = !!opts.isolated;
+  const mem = isolated ? { summary: '', recent: [] } : _chatHistoryParts(agentKey, 12);
+  const recent = mem.recent.slice();
+  const mode = _classifyChatComplexity(userText);
+  const workspaceState = _workspaceDirHandle ? 'carpeta conectada' : 'carpeta no conectada';
 
-  if(!(last&&last.role==='user'&&last.content===userText)){
-    recent.push({role:'user',content:userText});
+  if (!(recent[recent.length - 1] && recent[recent.length - 1].role === 'user' && recent[recent.length - 1].content === userText)) {
+    recent.push({ role: 'user', content: userText });
   }
 
   return [
-    {role:'system',content:mkSys(agentKey)},
-    {role:'system',content:'Usa primero el contexto reciente de la conversacion. Si el usuario dice eso, lo anterior, lo mismo o deja algo ambiguo, apoyate en el historial antes de contestar. Si la pregunta tiene varias partes, respondelas en orden.'},
-    appMode
-      ? {role:'system',content:'Contexto base de esta app: oficina 3D de Dev Teams, chat multiagente, Groq opcional, memoria por agente, modal de tareas, tools del navegador (/carpeta, /indexar, /archivos, /leer, /buscar, /analizar, /exportar), planner interno y delegacion entre agentes.'}
-      : {role:'system',content:'La pregunta actual no trata sobre la app ni el proyecto. Respondela como conocimiento general. No la relaciones con Dev Teams, esta oficina, procesos internos, roles del equipo ni funciones de la app.'},
-    appMode?{role:'system',content:`Estado local del workspace: ${workspaceState}. Si el usuario pide mejoras del proyecto, aterriza la respuesta a estas piezas reales de la app.`}:null,
-    {role:'system',content:`Modo de respuesta: ${mode}. ${_responseGuide(userText)}`},
-    appMode?{role:'system',content:'Si el usuario pide mejorar esta app, no propongas ideas abstractas. Debes mencionar al menos 3 piezas reales de esta app, por ejemplo: mkSys, _buildChatPayload, compressMemory, _handleBrowserToolCommand, _readWorkspaceText, _routeChatAgent, runAgentChain, modal de tareas, renderTaskHistory o saveKey. Si no puedes aterrizarlo a piezas reales, di que falta inspeccion puntual.'}:null,
-    !appMode?{role:'system',content:'Si la pregunta es general, responde directo al tema. No conviertas la respuesta en un proceso del equipo ni en un analisis del proyecto.'}:null,
-    sharedBlock?{role:'system',content:`Memoria compartida del proyecto: ${sharedBlock}`}:null,
-    summaryForPrompt?{role:'system',content:`Contexto previo resumido: ${summaryForPrompt}`}:null,
-    isolated?null:{role:'system',content:`Contexto operativo actual: ${_officeChatSnapshot(agentKey)}`},
+    { role: 'system', content: mkSys(agentKey) },
+    { role: 'system', content: 'Usa primero el contexto reciente de la conversación.' },
+    { role: 'system', content: `Memoria compartida del equipo:\n${getSharedContext()}` },   // ← NUEVO
+    { role: 'system', content: `Estado del workspace: ${workspaceState}` },
+    { role: 'system', content: `Modo de respuesta: ${mode}. ${_responseGuide(userText)}` },
     ...recent
   ].filter(Boolean);
 }
@@ -11176,7 +11068,6 @@ async function _handleDirectChatIntent(intent){
 
 async function sendChat(){
   if(!GKEY)return;
-
   const inp=document.getElementById('cinp');
   const sb=document.getElementById('csend');
   const text=inp.value.trim();
@@ -11187,13 +11078,11 @@ async function sendChat(){
 
   try{
     const intent=_resolveChatIntent(text,chatAgent);
+
     _recordIntentResolution(intent);
     _applyResolvedIntentRouting(intent);
 
-    if(intent.type==='tool'){
-      const toolHandled=await _handleBrowserToolCommand(intent.text,intent.activeKey);
-      if(toolHandled)return;
-    }
+    // ← borraste el segundo bloque duplicado de aquí
 
     if(intent.type==='broadcast'){
       await _handleBroadcastIntent(intent);
@@ -11216,7 +11105,6 @@ async function sendChat(){
     inp.focus();
   }
 }
-
 
 //  CADENA MULTI-AGENTE
 
@@ -11809,6 +11697,7 @@ function _boot(){
 initPathWorker();
 updateClock();
 setTimeout(fetchWeather,2000); // fetch after scene loads
+setTimeout(renderDashboard, 1200);
 }
 if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',_boot);}else{_boot();}
 
@@ -11899,6 +11788,52 @@ setTimeout(()=>{
   }
 },300);
 // onboarding automatico desactivado
+
+// Cargar memoria compartida al iniciar
+setTimeout(() => {
+  loadSharedMemory();
+}, 800);
+
+function clearSharedMemory() {
+  if (!confirm('¿Estás seguro de borrar toda la memoria compartida del equipo?')) return;
+  
+  SHARED_MEMORY = {
+    decisions: [],
+    filesAnalyzed: [],
+    openQuestions: [],
+    roadmap: [],
+    lastUpdate: Date.now()
+  };
+  saveSharedMemory();
+  renderDashboard();
+  showToast('Memoria compartida borrada', '#cc3344');
+}
+
+// Mejora visual de "pensando"
+function enhanceThinkingVisual(agentKey) {
+  const ag = AG[agentKey];
+  if (!ag) return;
+  
+  // Partícula extra cuando está pensando
+  if (ag.state === 'thinking') {
+    spawnStateParticle(agentKey);
+    // Efecto de pulso en el label
+    const label = document.querySelector(`.agent-label[data-key="${agentKey}"]`);
+    if (label) label.classList.add('thinking');
+  }
+}
+
+// Llama a esta función dentro de _prepareAgentForChat, justo después de ag.setState('thinking')
+
+function clearCurrentChat() {
+  if (!confirm('¿Limpiar todo el historial de este chat?')) return;
+  
+  const key = chatAgent === 'all' ? 'ceo' : chatAgent;
+  if (chatH[key]) chatH[key] = [];
+  document.getElementById('cmsgs').innerHTML = '';
+  
+  showToast('Chat limpiado', '#cc3344', key);
+}
 
 </script>
 
