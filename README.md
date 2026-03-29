@@ -1,201 +1,191 @@
-# Dev Teams
+# Dev Teams · AI Operations Hub
 
-![Status](https://img.shields.io/badge/status-alpha-0fa855?style=for-the-badge)
-![HTML5](https://img.shields.io/badge/HTML5-static_app-e34f26?style=for-the-badge&logo=html5&logoColor=white)
-![Three.js](https://img.shields.io/badge/Three.js-3D_workspace-111111?style=for-the-badge&logo=threedotjs&logoColor=white)
-![Chart.js](https://img.shields.io/badge/Chart.js-live_panels-ff6384?style=for-the-badge&logo=chartdotjs&logoColor=white)
-![Groq](https://img.shields.io/badge/Groq-live_or_demo-f55036?style=for-the-badge)
+![Status](https://img.shields.io/badge/estado-alpha-0fa855?style=for-the-badge)
+![Build](https://img.shields.io/badge/build-static_app-111111?style=for-the-badge)
+![Three.js](https://img.shields.io/badge/Three.js-r128-black?style=for-the-badge&logo=threedotjs&logoColor=white)
+![Groq](https://img.shields.io/badge/Groq-llama_4_%2F_kimi_k2-f55036?style=for-the-badge)
+![License](https://img.shields.io/badge/licencia-MIT-blue?style=for-the-badge)
 
-Dev Teams es una oficina 3D interactiva construida como una app estatica en una sola interfaz. Mezcla simulacion visual, chat multiagente, herramientas locales del navegador y respuestas reales con Groq cuando hay una API key valida.
+Una oficina 3D interactiva con ocho agentes de IA. Todo vive en un solo archivo HTML estático. Funciona en modo demo sin credenciales y escala a respuestas reales en cuanto conectas una API key de Groq.
+
+---
+
+## Vista general
 
 ![Portada](docs/screenshots/portada-repo.png)
 
-## Que es esta app
+---
 
-La app funciona como una oficina virtual de Dev Teams:
+## Qué incluye
 
-- una escena 3D con agentes y eventos
-- un panel lateral con arbol, flujo, consola, estado y dashboard
-- un chat con agentes individuales o modo broadcast
-- tools del navegador para leer y buscar archivos locales
-- integracion opcional con Groq para respuestas reales
+### Escena 3D
+- Ocho agentes con personalidad, rol y área de trabajo propia: Ana (CEO), Sofía (PM), Yared (Founder & Architect), Diego (FE), Marta (QA), Luis (DevOps), Valentina (UX) y Andrés (Data)
+- Pathfinding A* con Web Worker
+- Sombras dinámicas, ciclo día/noche, modo FPS, clima real de Cartagena vía Open-Meteo
+- Eventos ambientales: delivery, pausas, ping pong, visitante Paula
 
-La mayor parte de la logica vive en [`index.html`](/C:/Users/POWER/Desktop/vscode/Devops/index.html).
+### Panel lateral
+- **Árbol** — jerarquía del equipo con estado en tiempo real
+- **Flujo** — pasos MCP por agente con métricas de tokens y costo
+- **Consola** — chat individual o broadcast inteligente
+- **Estado** — actividad global con gráfica de 60 segundos
+- **Dashboard** — KPIs ejecutivos, decisiones compartidas y salud operativa
 
-## Funciones principales
-
-- Oficina 3D con agentes, estados y movimientos en tiempo real
-- Chat con un agente o con el equipo en modo broadcast inteligente
-- Routing automatico del chat segun el tema
+### Chat y multiagente
+- Routing automático al agente más relevante por tema
 - Planner interno para consultas complejas
-- Delegacion entre agentes por rol
-- Reuniones de equipo y reuniones 1:1
-- Asignacion de tareas con historial y resumen operativo
-- Tools locales del navegador para explorar archivos
-- Modo `demo` y modo `groq conectado`
-- Eventos ambientados como delivery, pausas y visitante psicologa
+- Delegación entre roles con flechas de flujo
+- Compresión automática de memoria cuando el historial crece
+- Modo broadcast: selecciona los roles adecuados en lugar de disparar a todos
 
-## Captura
+### Workspace (File System Access API)
+- Conexión a carpeta local sin subir nada a ningún servidor
+- Lectura de `.txt`, `.md`, `.json`, `.js`, `.ts`, PDF, Excel y Word
+- Búsqueda en texto plano a través del proyecto
+- Análisis de archivos por rol activo usando Groq
 
-![Vista general](docs/screenshots/vision-general.png)
+---
 
-## Como ejecutar
+## Cómo ejecutar
 
-Usa cualquier servidor estatico local.
-
-Ejemplo:
+Cualquier servidor estático local funciona. La forma más rápida:
 
 ```bash
 python -m http.server 5500
 ```
 
-Luego abre:
+Luego abre `http://localhost:5500` en el navegador.
 
-```text
-http://localhost:5500
-```
+También puedes usar Live Server, Vite, npx serve o cualquier equivalente.
 
-Tambien puedes usar Live Server o cualquier servidor estatico equivalente.
+> **Nota:** para los comandos de workspace (`/carpeta`, `/leer`, etc.) necesitas un navegador basado en Chromium. Firefox no soporta `showDirectoryPicker` todavía.
 
-## Como conectar Groq
+---
 
-1. Abre la app en el navegador.
-2. Pulsa el boton `API`.
-3. Selecciona el modelo.
-4. Pega tu API key de Groq.
-5. Pulsa `Guardar`.
+## Conectar Groq
 
-Si la key es valida:
+1. Abre la app y pulsa el botón **API** en la cabecera.
+2. Elige el modelo desde el selector.
+3. Pega tu API key (la consigues gratis en [console.groq.com](https://console.groq.com)).
+4. Pulsa **Guardar**.
 
-- el badge deja de decir `demo mode`
-- pasa a `groq conectado`
-- el chat usa Groq
-- se activan comportamientos live del equipo
-- Paula puede intervenir ante prompts inadecuados
+La app valida la key con una llamada real antes de confirmar la conexión. Si falla, vuelve a modo demo automáticamente. La key se guarda en `sessionStorage` y nunca toca ningún backend propio.
 
-Si la key no es valida:
+### Modelos disponibles
 
-- la app vuelve a `demo mode`
-- no mantiene un estado de conexion falso
+| Identificador | Descripción |
+|---|---|
+| `llama-3.3-70b-versatile` | Default equilibrado |
+| `llama-3.1-8b-instant` | Respuestas más rápidas |
+| `meta-llama/llama-4-maverick-17b-128e-instruct` | Mayor razonamiento |
+| `moonshotai/kimi-k2-instruct-0905` | Contexto de 256K |
+| `groq/compound` | Búsqueda en tiempo real |
+
+---
 
 ## Comandos del chat
 
-Estos comandos funcionan desde la consola:
+Escribe cualquiera de estos directamente en el input de la consola:
 
-```text
-/carpeta
-/indexar
-/archivos
-/leer ruta/del/archivo
-/buscar texto
-/analizar ruta/del/archivo
-/exportar
+```
+/carpeta          Conecta una carpeta local
+/indexar          Reconstruye el índice de archivos
+/archivos         Lista los archivos detectados
+/leer ruta        Lee un archivo y lo abre en el visor
+/buscar texto     Busca coincidencias en el workspace
+/analizar ruta    Analiza un archivo con Groq desde el rol activo
+/exportar         Descarga el chat actual como .txt
 ```
 
-### Que hace cada comando
+El mini menú de herramientas en la consola expone las mismas acciones sin tener que escribir comandos.
 
-- `/carpeta`: abre el selector de carpeta local
-- `/indexar`: reconstruye el indice del workspace
-- `/archivos`: lista los archivos detectados
-- `/leer ruta`: lee un archivo local
-- `/buscar texto`: busca coincidencias dentro del workspace
-- `/analizar ruta`: analiza un archivo con Groq segun el rol activo
-- `/exportar`: descarga el chat actual en `.txt`
+---
 
-## Como funciona el chat
+## Atajos de teclado
 
-### Chat individual
+| Tecla | Acción |
+|---|---|
+| `Space` | Siguiente paso del flujo |
+| `R` | Reset de la simulación |
+| `M` | Iniciar reunión de equipo |
+| `F` | Activar / salir de modo FPS |
+| `N` | Alternar día / noche |
+| `A` | Auto play del flujo activo |
+| `C` | Resetear cámara |
+| `?` | Mostrar atajos |
+| `Esc` | Cerrar modales / salir de FPS |
 
-La app puede redirigir automaticamente la conversacion al agente mas adecuado segun el tema.
-
-### Broadcast
-
-El modo `Todos` no dispara a los ocho agentes siempre. El sistema intenta escoger a los roles mas relevantes para cada pregunta.
-
-### Planner y delegacion
-
-En preguntas complejas la app puede:
-
-- generar un microplan interno
-- pedir aportes a otros roles
-- responder con una salida mas estructurada
-
-## Eventos especiales
-
-### Delivery
-
-Un repartidor puede entrar a la oficina, cruzar la puerta, entregar un paquete y salir.
-
-### Psicologa Paula
-
-Con Groq activo, Paula puede aparecer cuando detecta mensajes ofensivos, agresivos o inadecuados.
-
-Comportamiento esperado:
-
-- entra a la oficina
-- el equipo se gira para escucharla
-- da una intervencion breve
-- un miembro del equipo puede reaccionar
-
-Nota: el flujo de visitantes y puerta sigue en iteracion y puede requerir ajustes finos.
+---
 
 ## Estructura del proyecto
 
-```text
+```
 .
-├─ index.html
+├─ index.html          Toda la lógica de la app
 ├─ README.md
 └─ docs/
    └─ screenshots/
 ```
 
+La app es intencionalmente un monolito de una página. No hay build step, no hay dependencias npm, no hay backend. Todo lo que necesitas está en `index.html` y en las CDN declaradas en el `<head>`.
+
+---
+
 ## Stack
 
-- HTML
-- CSS
-- JavaScript
-- Three.js
-- Chart.js
-- Groq API
-- File System Access API
+- **Three.js r128** — escena 3D, materiales, luces y sombras
+- **Chart.js 4** — métricas en el panel de estado
+- **PDF.js** — lectura de archivos PDF locales
+- **SheetJS (xlsx)** — lectura de hojas de cálculo
+- **Mammoth.js** — extracción de texto de archivos Word
+- **Groq API** — inferencia LLM (llama 4, kimi k2 y otros)
+- **File System Access API** — acceso a carpetas locales sin subir archivos
+- **Web Workers** — pathfinding A* fuera del hilo principal
+- **Web Speech API** — entrada de voz en la consola
 
-## Persistencia actual
+---
 
-- La API key se guarda en la sesion del navegador
-- El modelo seleccionado se guarda localmente
-- Parte del historial y estado se guarda en `localStorage`
-- El acceso a carpetas depende del permiso del navegador
+## Persistencia
 
-## Requisitos practicos
+| Dato | Dónde se guarda |
+|---|---|
+| API key | `sessionStorage` (no persiste entre sesiones) |
+| Modelo seleccionado | `localStorage` |
+| Historial de chat por agente | `localStorage` |
+| Historial de reuniones | `localStorage` |
+| Historial de tareas | `localStorage` |
+| XP y niveles | `localStorage` |
+| Logros | `localStorage` |
+| Notas del pizarrón | `localStorage` |
+| Decisiones compartidas | `localStorage` |
 
-- Navegador moderno
-- Para `/carpeta` y tools locales, conviene usar Chromium o compatible con `showDirectoryPicker`
-- Servidor local o `localhost`
-- Conexion a internet si quieres usar Groq
+---
 
-## Limitaciones actuales
+## Seguridad y privacidad
 
-- Es una app cliente puro, sin backend
-- La API key vive en el navegador
-- La logica principal esta concentrada en un solo archivo
-- Algunos flujos visuales y eventos siguen en fase experimental
+Esta versión está pensada para uso local y demos. Algunas consideraciones para uso en producción o en red:
 
-## Seguridad
+- Las llamadas a Groq se hacen directamente desde el navegador. En un entorno público, mueve esas llamadas a un backend para no exponer la key.
+- Los archivos del workspace nunca salen del navegador. La lectura es enteramente local.
+- No se envía telemetría ni datos a ningún servicio propio.
 
-Esta version esta pensada para demo y pruebas locales.
+---
 
-Para una version mas seria o publica:
+## Limitaciones conocidas
 
-- mueve las llamadas a Groq a un backend
-- protege credenciales fuera del cliente
-- no publiques llaves reales en el front
+- La lógica está concentrada en un solo archivo HTML. Facilita el despliegue pero dificulta la organización a largo plazo.
+- El modo FPS con pointer lock puede comportarse diferente según el navegador.
+- Algunos flujos de visitantes (delivery, Paula) están en iteración y pueden requerir ajustes finos.
+- La compresión de memoria del chat es automática pero no es perfecta para conversaciones muy largas.
 
-## Estado del proyecto
+---
 
-Proyecto en fase `alpha`, orientado a:
+## Créditos
 
-- demo visual
-- simulacion multiagente
-- tools locales del navegador
-- integracion con Groq
-- exploracion de flujos operativos en una sola pagina
+Construido desde cero en Cartagena de Indias 🇨🇴 por **Yared Henriquez**, Founder & Architect de Dev Teams.
+
+---
+
+## Licencia
+
+MIT

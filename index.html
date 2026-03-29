@@ -57,6 +57,20 @@ body.light-mode .tnode{
 body.light-mode .cblk{
   background:var(--bg3);
 }
+
+#micBtn.active {
+color: var(--red) !important;
+filter: drop-shadow(0 0 5px var(--red));
+animation: mic-pulse 1.5s infinite;
+}
+
+@keyframes mic-pulse {
+0% { opacity: 1; }
+50% { opacity: 0.4; }
+100% { opacity: 1; }
+ }
+
+
 .hbtn.sa-on{border-color:var(--cyan)!important;color:var(--cyan)!important;background:rgba(0,188,212,.08)!important}
 #dnBtn.night{color:var(--gold)}
 html,body{height:100%;background:var(--bg);color:var(--t1);font-family:var(--ui);overflow:hidden}
@@ -1116,12 +1130,26 @@ footer{display:flex;align-items:center;justify-content:space-between;padding:0 1
         <button onclick="exportChatTXT()" style="font-family:var(--mono);font-size:8px;padding:3px 8px;background:var(--bg3);border:1px solid var(--b2);color:var(--t2);cursor:pointer;flex:1" title="Exportar como texto">⬇ TXT</button>
         <button onclick="clearCurrentChat()" style="font-family:var(--mono);font-size:8px;padding:3px 8px;background:var(--bg3);border:1px solid var(--red);color:var(--red);cursor:pointer;flex:1" title="Limpiar chat actual">🗑 Limpiar</button>
       </div>
-<div class="cinp-area">
-        <div class="cagbadge" id="cagbadge">CEO</div>
-        <input class="cinp" id="cinp" placeholder="Pregunta al agente..." maxlength="400" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat()}">
-        <button class="csend" id="csend" onclick="sendChat()">→</button>
-<button onclick="runAgentChain(chatAgent,document.getElementById('cinp').value.trim())" style="font-family:var(--mono);font-size:9px;font-weight:700;padding:0 10px;background:rgba(144,96,204,.15);border:1px solid #9060cc;color:#9060cc;cursor:pointer;letter-spacing:.04em;white-space:nowrap" title="Cadena multi-agente ⛓">⛓</button>
-      </div>
+    <div class="cinp-area">
+    <div class="cagbadge" id="cagbadge">CEO</div>
+    <div style="position:relative; flex:1; display:flex;">
+    <input class="cinp" id="cinp" placeholder="Pregunta al agente..."
+      maxlength="400"
+      onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendCha
+      t()}">
+    <button id="micBtn" onclick="toggleMic()" title="Hablar (Voz a texto)"
+      style="position:absolute; right:10px; top:50%; transform:translateY(-50%);
+      background:transparent; border:none; color:var(--t3); cursor:pointer; padding:5px;
+      transition:color .2s;">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" stroke-width="2" stroke-linecap="round"
+      stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0
+      0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12"
+      y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+    </button>
+    </div>
+    <button class="csend" id="csend" onclick="sendChat()">→</button>
+
     </div>
     <div class="status-wrap" id="statusPanel">
       <div class="status-scroll" id="statusScroll"></div>
@@ -4198,6 +4226,20 @@ class Agent3D{
     const cfg=ACFG[key];this.key=key;this.path=[];
     const S=1.35;
 this.hx=cfg.homeX;this.hz=cfg.homeZ;
+this.homePos = { x: cfg.homeX, z: cfg.homeZ }; // <--- CLAW3D HOME MEMORY
+this.isCollaborating = false;
+    
+    // --- HUD HOLOGRÁFICO (CLAW3D PHASE 1) ---
+    this.hudCanvas = document.createElement('canvas');
+    this.hudCanvas.width = 512; this.hudCanvas.height = 128;
+    this.hudCtx = this.hudCanvas.getContext('2d');
+    this.hudTex = new THREE.CanvasTexture(this.hudCanvas);
+    this.hudMat = new THREE.SpriteMaterial({ map: this.hudTex, transparent: true, opacity: 0 });
+    this.hudSprite = new THREE.Sprite(this.hudMat);
+    this.hudSprite.position.set(0, 3.2, 0); 
+    this.hudSprite.scale.set(3.5, 0.85, 1);
+    this.hudT = 0; // Temporizador de visibilidad
+    
     this.state='idle';this.speech='';this.sa=0;this.time=Math.random()*6.28;this.walkPhase=0;
     this.idleTimer=50+Math.random()*180;this.idleIdx=0;this.stuckT=0;this.lastPos={x:cfg.homeX,z:cfg.homeZ};
     this.stateTime=0;this.lastMsg='';
@@ -4599,6 +4641,7 @@ this.labelEl.style.cssText+=`background:#000000ee;border:1px solid #ffffff18;col
   }
   say(t){
     this.speech=t;this.sa=1.;this.lastMsg=t;playAgentSpatialSound(this.key,'voice');
+    this.drawHUD(t); // <--- HOOKED UP CLAW3D HUD
     if(AG)Object.values(AG).forEach(o=>{if(o===this)return;const d=this.group.position.distanceTo(o.group.position);if(d<6&&o.path.length===0&&o.state==='idle'){const dx=this.group.position.x-o.group.position.x,dz=this.group.position.z-o.group.position.z;o.group.rotation.y+=(Math.atan2(dx,dz)-o.group.rotation.y)*.3;}});
     const col=parseInt(ACFG[this.key].col.replace('#','0x'));
   for(let i=0;i<1;i++){
@@ -4630,7 +4673,51 @@ this.labelEl.style.cssText+=`background:#000000ee;border:1px solid #ffffff18;col
     this.shadowMesh.material.opacity = Math.max(0,(.55-h*0.08)*nightFade);
   }
 
+  updateHUD(dt) {
+    if (this.hudT > 0) {
+      this.hudT -= dt;
+      this.hudMat.opacity = Math.min(1, this.hudT * 1.5);
+      this.hudSprite.position.y = 3.2 + (1 - Math.min(1, this.hudT)) * 0.2; // Suave flotación
+    } else {
+      this.hudMat.opacity = 0;
+    }
+  }
+
+  drawHUD(text) {
+    if (!text) return;
+    const ctx = this.hudCtx;
+    ctx.clearRect(0, 0, 512, 128);
+    
+    // Fondo estilo Claw3D (Holograma semi-transparente)
+    ctx.fillStyle = 'rgba(0, 20, 40, 0.7)';
+    ctx.roundRect(10, 10, 492, 108, 20);
+    ctx.fill();
+    ctx.strokeStyle = this.col;
+    ctx.lineWidth = 4;
+    ctx.stroke();
+
+    // Texto
+    ctx.font = 'bold 24px "Courier New", monospace';
+    ctx.fillStyle = '#ffffff';
+    ctx.textAlign = 'center';
+    
+    // Ajustar texto largo
+    const words = text.split(' ');
+    let line = '';
+    let y = 65;
+    if (text.length > 40) {
+        ctx.font = 'bold 18px "Courier New", monospace';
+        y = 55;
+    }
+
+    ctx.fillText(text.length > 80 ? text.slice(0, 77) + '...' : text, 256, y);
+    
+    this.hudTex.needsUpdate = true;
+    this.hudT = 5.0; // Mostrar durante 5 segundos
+  }
+
   update(dt,gNeighbors){
+    this.updateHUD(dt); // <--- HUD UPDATE
     this.time+=dt*2.5;this.stateTime+=dt;
     if(this.path.length>0){
       const nxt=this.path[0];const dx=nxt.x-this.group.position.x,dz=nxt.z-this.group.position.z;const dist=Math.sqrt(dx*dx+dz*dz);
@@ -4944,6 +5031,7 @@ async function goTalkTo(fromKey,toKey,topic=''){
 let _delegArrows=[];
 function showDelegationArrow(fromKey,toKey){
   const ag1=AG[fromKey],ag2=AG[toKey];if(!ag1||!ag2)return;
+  createNeonFlow(fromKey, toKey); // <--- HOOKED UP CLAW3D FLOW
   const col=parseInt(ACFG[fromKey].col.replace('#','0x'));
   // Curva de Bezier entre los dos agentes
   const p1=ag1.group.position.clone().add(new THREE.Vector3(0,3.5,0));
@@ -6842,6 +6930,10 @@ if(ag.state!=='working')ag._subSpawned=false;
     updateHelpRequests(dt);
     updateSubAgents(dt);
     updateTalkLines(dt);
+    updateNeonPaths(dt); // <--- HOOKED UP
+    updateDataStreams(dt); // <--- CLAW3D PHASE 2
+    updateEnvironmentSentiment(dt); // <--- CLAW3D PHASE 3
+    updateCollaboration(dt); // <--- WAR ROOM ROTATION
     updateYaredIdle(dt);
     updateStretches(dt);
     if(_interruptCooldown>0)_interruptCooldown-=dt;
@@ -7326,6 +7418,7 @@ function clearAllAgentMemory(){
   refreshOpsBar();
   renderDashboard();
   refreshSceneCinemaHud();
+  visualCleanupEffect(); // <--- HOOKED UP
   showToast('Memoria del equipo limpiada','#cc3344');
 }
 
@@ -11159,6 +11252,44 @@ async function _runPlanner(agentKey,userMsg){
   return res?res.trim():'';
 }
 
+const WAR_ROOM_CENTER = { x: 0, z: 2 }; // Centro de la oficina
+
+function sendToWarRoom(agentKey, index) {
+  const ag = AG[agentKey];
+  if (!ag) return;
+  
+  ag.isCollaborating = true;
+  // Calculamos una posición en círculo alrededor del centro para que no choquen
+  const angle = (index / 5) * Math.PI * 2; 
+  const targetX = WAR_ROOM_CENTER.x + Math.cos(angle) * 2.5;
+  const targetZ = WAR_ROOM_CENTER.z + Math.sin(angle) * 2.5;
+  
+  ag.moveTo(targetX, targetZ);
+  ag.say("Yendo a la War Room...");
+}
+
+function returnToDesk(agentKey) {
+  const ag = AG[agentKey];
+  if (!ag || !ag.isCollaborating) return;
+  
+  ag.isCollaborating = false;
+  ag.moveTo(ag.homePos.x, ag.homePos.z);
+  setTimeout(() => ag.say("De vuelta al puesto"), 1500);
+}
+
+function updateCollaboration(dt) {
+  Object.keys(AG).forEach(k => {
+    const ag = AG[k];
+    if (ag.isCollaborating) {
+      // Hacemos que el grupo del agente rote suavemente hacia el centro (0, 2)
+      const dx = 0 - ag.group.position.x;
+      const dz = 2 - ag.group.position.z;
+      const targetRot = Math.atan2(dx, dz);
+      ag.group.rotation.y += (targetRot - ag.group.rotation.y) * 0.05;
+    }
+  });
+}
+
 async function runAgentChain(startKey,userMsg){
   if(!GKEY||!userMsg){
     showToast('Escribe un mensaje primero','#cc3344');
@@ -11167,6 +11298,11 @@ async function runAgentChain(startKey,userMsg){
 
   const delegates=_detectDelegationNeed(userMsg,startKey);
   if(!delegates.length)return '';
+
+  const chain = [startKey, ...delegates];
+  chain.forEach((k, i) => {
+    setTimeout(() => sendToWarRoom(k, i), i * 300);
+  });
 
   const msgs=document.getElementById('cmsgs');
   const owner=ACFG[startKey];
@@ -11214,7 +11350,7 @@ async function runAgentChain(startKey,userMsg){
 
     const payload=[
       {role:'system',content:mkSys(k)},
-      {role:'system',content:'No repitas el problema completo. Aporta analisis util, riesgo si aplica y un siguiente paso breve.'},
+      {role:'system',content:'No repitas el problem completo. Aporta analisis util, riesgo si aplica y un siguiente paso breve.'},
       {role:'user',content:prompt}
     ];
 
@@ -11236,6 +11372,11 @@ async function runAgentChain(startKey,userMsg){
     ag.setState('idle');
     await sleep(260);
   }
+
+  setTimeout(() => {
+    chain.forEach(k => returnToDesk(k));
+    showToast("🤝 Colaboración finalizada", "var(--acc)");
+  }, 2000);
 
   return combined.length?`Aportes del equipo:\n${combined.join('\n')}`:'';
 }
@@ -11833,6 +11974,173 @@ function clearCurrentChat() {
   document.getElementById('cmsgs').innerHTML = '';
   
   showToast('Chat limpiado', '#cc3344', key);
+}
+
+
+let recognition = null;
+let isListening = false;
+
+function initSpeechRecognition() {
+    const SpeechRecognition = window.SpeechRecognition ||
+      window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+        showToast("Tu navegador no soporta reconocimiento de voz", "var(--red)");
+        return null;
+    }
+    const rec = new SpeechRecognition();
+    rec.lang = 'es-ES';
+    rec.continuous = false;
+    rec.interimResults = false;
+
+    rec.onstart = () => {
+        isListening = true;
+        document.getElementById('micBtn').classList.add('active');
+        showToast("Escuchando...", "var(--acc)");
+    };
+
+    rec.onresult = (event) => {
+        const text = event.results[0][0].transcript;
+        document.getElementById('cinp').value = text;
+        // Opcional: enviar automáticamente al terminar de hablar
+        // sendChat();
+    };
+
+    rec.onerror = (e) => {
+        console.error("Speech error", e);
+        stopMic();
+    };
+
+    rec.onend = () => {
+        stopMic();
+    };
+
+    return rec;
+}
+
+function toggleMic() {
+    if (isListening) {
+        stopMic();
+    } else {
+        if (!recognition) recognition = initSpeechRecognition();
+        if (recognition) recognition.start();
+    }
+}
+
+function stopMic() {
+    isListening = false;
+    if (recognition) recognition.stop();
+    document.getElementById('micBtn').classList.remove('active');
+}
+
+// --- NEON FLOW PATHS (ESTILO CLAW3D) ---
+let _neonPaths = [];
+let _dataStreams = []; 
+let _targetEnvColor = new THREE.Color(0xe7e1d7); // Default
+let _currentEnvColor = new THREE.Color(0xe7e1d7);
+
+function updateEnvironmentSentiment(dt) {
+  let workingCount = 0;
+  let errorState = false;
+
+  Object.values(AG).forEach(ag => {
+    if (ag.state === 'thinking') workingCount++;
+    if (ag.speech && (ag.speech.toLowerCase().includes('error') || ag.speech.toLowerCase().includes('falló'))) errorState = true;
+  });
+
+  // Elegir color objetivo
+  if (errorState) {
+    _targetEnvColor.set(0xff3333); // Alerta Roja
+  } else if (workingCount > 0) {
+    _targetEnvColor.set(0xffaa00); // Intensivo (Oro)
+  } else {
+    _targetEnvColor.set(dayMode ? 0xe7e1d7 : 0x223344); // Normal
+  }
+
+  // Lerp suave
+  _currentEnvColor.lerp(_targetEnvColor, dt * 0.5);
+  
+  if (_ambLight) _ambLight.color.copy(_currentEnvColor);
+  if (scene.fog) scene.fog.color.copy(_currentEnvColor);
+}
+
+function createNeonFlow(fromKey, toKey) {
+  const ag1 = AG[fromKey], ag2 = AG[toKey];
+  if (!ag1 || !ag2) return;
+  
+  const points = [
+    new THREE.Vector3(ag1.group.position.x, 0.05, ag1.group.position.z),
+    new THREE.Vector3(ag1.group.position.x, 0.05, ag2.group.position.z),
+    new THREE.Vector3(ag2.group.position.x, 0.05, ag2.group.position.z)
+  ];
+  
+  const curve = new THREE.CatmullRomCurve3(points);
+  const geo = new THREE.TubeGeometry(curve, 20, 0.04, 8, false);
+  const mat = new THREE.MeshBasicMaterial({ color: ACFG[fromKey].col, transparent: true, opacity: 0.7 });
+  const mesh = new THREE.Mesh(geo, mat);
+  mesh.userData.isNeonPath = true;
+  scene.add(mesh);
+  
+  _neonPaths.push({ mesh, life: 3.0 });
+
+  // 2. Las partículas de "datos" fluyendo (Phase 2)
+  const pCount = 6;
+  const particles = [];
+  for(let i=0; i<pCount; i++) {
+    const pMesh = new THREE.Mesh(
+        new THREE.SphereGeometry(0.06, 8, 8),
+        new THREE.MeshBasicMaterial({ color: '#ffffff', transparent: true, opacity: 0.9 })
+    );
+    scene.add(pMesh);
+    particles.push({ mesh: pMesh, offset: i / pCount });
+  }
+  _dataStreams.push({ curve, particles, life: 3.0, color: ACFG[fromKey].col });
+}
+
+function updateDataStreams(dt) {
+  for (let i = _dataStreams.length - 1; i >= 0; i--) {
+    const ds = _dataStreams[i];
+    ds.life -= dt;
+    ds.particles.forEach(p => {
+      p.offset += dt * 1.2; 
+      if (p.offset > 1) p.offset -= 1;
+      const pos = ds.curve.getPoint(p.offset);
+      p.mesh.position.copy(pos);
+      p.mesh.material.opacity = (ds.life / 3.0);
+      p.mesh.material.color.set(Math.random() > 0.4 ? ds.color : '#ffffff');
+    });
+    if (ds.life <= 0) {
+      ds.particles.forEach(p => { scene.remove(p.mesh); p.mesh.geometry.dispose(); p.mesh.material.dispose(); });
+      _dataStreams.splice(i, 1);
+    }
+  }
+}
+
+function updateNeonPaths(dt) {
+  for (let i = _neonPaths.length - 1; i >= 0; i--) {
+    const p = _neonPaths[i];
+    p.life -= dt;
+    p.mesh.material.opacity = (p.life / 3.0) * 0.7;
+    if (p.life <= 0) {
+      scene.remove(p.mesh);
+      p.mesh.geometry.dispose();
+      p.mesh.material.dispose();
+      _neonPaths.splice(i, 1);
+    }
+  }
+}
+
+function visualCleanupEffect() {
+  Object.keys(AG).forEach((k, i) => {
+    setTimeout(() => {
+      const ag = AG[k];
+      if (ag) {
+        const color = ACFG[k].col;
+        showToast(`🧹 Memoria liberada: ${ACFG[k].name.split(' ')[0]}`, color);
+        ag.group.position.y += 0.5;
+        setTimeout(() => ag.group.position.y -= 0.5, 200);
+      }
+    }, i * 150);
+  });
 }
 
 </script>
