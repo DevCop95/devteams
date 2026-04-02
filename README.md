@@ -119,19 +119,7 @@ The small tools menu in the console exposes the same actions without having to t
 
 ```text
 .
-├── index.html          # HTML structure and UI containers
-├── css/
-│   └── styles.css      # All visual styles (layout, animations)
-├── js/
-│   ├── main.js         # Entry point and initialization
-│   └── modules/
-│       ├── api.js         # Groq logic, prompts, and planner
-│       ├── audio.js       # Sound effects and generative music
-│       ├── scene.js       # Three.js engine, lights, and weather
-│       ├── navigation.js  # A* pathfinding system
-│       ├── workspace.js   # Local file access (PDF, Office, TXT)
-│       ├── agents.js      # Agents, sub-agents, and visitors logic
-│       └── ui.js          # Dashboard, modals, console, and status
+├── index.html
 └── README.md
 ```
 
