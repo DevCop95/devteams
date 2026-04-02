@@ -183,4 +183,4 @@ Built from scratch in Cartagena de Indias 🇨🇴 by **Yared Henriquez**, Found
 
 ## License
 
-MIT.[web:96]
+MIT.
