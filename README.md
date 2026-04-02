@@ -1,200 +1,198 @@
 # Dev Teams · AI Operations Hub
 
-![Status](https://img.shields.io/badge/estado-alpha-0fa855?style=for-the-badge)
+![Status](https://img.shields.io/badge/status-alpha-0fa855?style=for-the-badge)
 ![Build](https://img.shields.io/badge/build-static_app-111111?style=for-the-badge)
 ![Three.js](https://img.shields.io/badge/Three.js-r128-black?style=for-the-badge&logo=threedotjs&logoColor=white)
 ![Groq](https://img.shields.io/badge/Groq-llama_4_%2F_kimi_k2-f55036?style=for-the-badge)
-![License](https://img.shields.io/badge/licencia-MIT-blue?style=for-the-badge)
+![License](https://img.shields.io/badge/license-MIT-blue?style=for-the-badge)
 
-Una oficina 3D interactiva con ocho agentes de IA. Con una arquitectura modular y limpia, funciona en modo demo sin credenciales y escala a respuestas reales en cuanto conectas una API key de Groq.
-
----
-
-## Vista general
-
-![Portada](docs/screenshots/portada-repo.png)
+An interactive 3D office with eight AI agents. With a modular, clean architecture, it runs in demo mode with no credentials and scales to real responses as soon as you connect a Groq API key.
 
 ---
 
-## Qué incluye
+## Overview
 
-### Escena 3D
-- Ocho agentes con personalidad, rol y área de trabajo propia: Ana (CEO), Sofía (PM), Yared (Founder & Architect), Diego (FE), Marta (QA), Luis (DevOps), Valentina (UX) y Andrés (Data)
-- Pathfinding A* con Web Worker
-- Sombras dinámicas, ciclo día/noche, modo FPS, clima real de Cartagena vía Open-Meteo
-- Eventos ambientales: delivery, pausas, ping pong, visitante Paula
+![Cover](docs/screenshots/portada-repo.png)
 
-### Panel lateral
-- **Árbol** — jerarquía del equipo con estado en tiempo real
-- **Flujo** — pasos MCP por agente con métricas de tokens y costo
-- **Consola** — chat individual o broadcast inteligente
-- **Estado** — actividad global con gráfica de 60 segundos
-- **Dashboard** — KPIs ejecutivos, decisiones compartidas y salud operativa
+---
 
-### Chat y multiagente
-- Routing automático al agente más relevante por tema
-- Planner interno para consultas complejas
-- Delegación entre roles con flechas de flujo
-- Compresión automática de memoria cuando el historial crece
-- Modo broadcast: selecciona los roles adecuados en lugar de disparar a todos
+## What’s included
+
+### 3D Scene
+- Eight agents with their own personality, role, and work area: Ana (CEO), Sofía (PM), Yared (Founder & Architect), Diego (FE), Marta (QA), Luis (DevOps), Valentina (UX), and Andrés (Data)
+- A* pathfinding with Web Worker
+- Dynamic shadows, day/night cycle, FPS mode, real Cartagena weather via Open-Meteo
+- Environmental events: delivery, breaks, ping pong, visitor Paula
+
+### Side panel
+- **Tree** — team hierarchy with real-time status
+- **Flow** — MCP steps per agent with token and cost metrics
+- **Console** — individual chat or smart broadcast
+- **Status** — global activity with 60-second chart
+- **Dashboard** — executive KPIs, shared decisions, and operational health
+
+### Chat and multi-agent behavior
+- Automatic routing to the most relevant agent per topic
+- Internal planner for complex queries
+- Delegation between roles with flow arrows
+- Automatic memory compression as history grows
+- Broadcast mode: selects the right roles instead of blasting everyone
 
 ### Workspace (File System Access API)
-- Conexión a carpeta local sin subir nada a ningún servidor
-- Lectura de `.txt`, `.md`, `.json`, `.js`, `.ts`, PDF, Excel y Word
-- Búsqueda en texto plano a través del proyecto
-- Análisis de archivos por rol activo usando Groq
+- Connect to a local folder without uploading anything to any server
+- Read `.txt`, `.md`, `.json`, `.js`, `.ts`, PDF, Excel, and Word
+- Plain-text search across the project
+- File analysis by active role using Groq
 
 ---
 
-## Cómo ejecutar
+## How to run
 
-Cualquier servidor estático local funciona. La forma más rápida:
+Any local static server works. The quickest option:
 
 ```bash
 python -m http.server 5500
 ```
 
-Luego abre `http://localhost:5500` en el navegador.
+Then open `http://localhost:5500` in your browser.
 
-También puedes usar Live Server, Vite, npx serve o cualquier equivalente.
+You can also use Live Server, Vite, `npx serve`, or any equivalent.
 
-> **Nota:** para los comandos de workspace (`/carpeta`, `/leer`, etc.) necesitas un navegador basado en Chromium. Firefox no soporta `showDirectoryPicker` todavía.
+> **Note:** for workspace commands (`/carpeta`, `/leer`, etc.) you need a Chromium-based browser. Firefox does not support `showDirectoryPicker` yet.
 
 ---
 
-## Conectar Groq
+## Connect Groq
 
-1. Abre la app y pulsa el botón **API** en la cabecera.
-2. Elige el modelo desde el selector.
-3. Pega tu API key (la consigues gratis en [console.groq.com](https://console.groq.com)).
-4. Pulsa **Guardar**.
+1. Open the app and click the **API** button in the header.
+2. Choose the model from the selector.
+3. Paste your API key (you can get one for free at [console.groq.com](https://console.groq.com)).
+4. Click **Save**.
 
-La app valida la key con una llamada real antes de confirmar la conexión. Si falla, vuelve a modo demo automáticamente. La key se guarda en `sessionStorage` y nunca toca ningún backend propio.
+The app validates the key with a real call before confirming the connection. If it fails, it automatically falls back to demo mode. The key is stored in `sessionStorage` and never touches any custom backend.
 
-### Modelos disponibles
+### Available models
 
-| Identificador | Descripción |
+| Identifier | Description |
 |---|---|
-| `llama-3.3-70b-versatile` | Default equilibrado |
-| `llama-3.1-8b-instant` | Respuestas más rápidas |
-| `meta-llama/llama-4-maverick-17b-128e-instruct` | Mayor razonamiento |
-| `moonshotai/kimi-k2-instruct-0905` | Contexto de 256K |
-| `groq/compound` | Búsqueda en tiempo real |
+| `llama-3.3-70b-versatile` | Balanced default |
+| `llama-3.1-8b-instant` | Faster responses |
+| `meta-llama/llama-4-maverick-17b-128e-instruct` | Stronger reasoning |
+| `moonshotai/kimi-k2-instruct-0905` | 256K context |
+| `groq/compound` | Real-time search |
 
 ---
 
-## Comandos del chat
+## Chat commands
 
-Escribe cualquiera de estos directamente en el input de la consola:
+Type any of these directly into the console input:
+/carpeta Connect a local folder
+/indexar Rebuild the file index
+/archivos List detected files
+/leer path Read a file and open it in the viewer
+/buscar text Search for matches in the workspace
+/analizar path Analyze a file with Groq using the active role
+/exportar Download the current chat as .txt
 
-```
-/carpeta          Conecta una carpeta local
-/indexar          Reconstruye el índice de archivos
-/archivos         Lista los archivos detectados
-/leer ruta        Lee un archivo y lo abre en el visor
-/buscar texto     Busca coincidencias en el workspace
-/analizar ruta    Analiza un archivo con Groq desde el rol activo
-/exportar         Descarga el chat actual como .txt
-```
 
-El mini menú de herramientas en la consola expone las mismas acciones sin tener que escribir comandos.
+The small tools menu in the console exposes the same actions without having to type commands.
 
 ---
 
-## Atajos de teclado
+## Keyboard shortcuts
 
-| Tecla | Acción |
+| Key | Action |
 |---|---|
-| `Space` | Siguiente paso del flujo |
-| `R` | Reset de la simulación |
-| `M` | Iniciar reunión de equipo |
-| `F` | Activar / salir de modo FPS |
-| `N` | Alternar día / noche |
-| `A` | Auto play del flujo activo |
-| `C` | Resetear cámara |
-| `?` | Mostrar atajos |
-| `Esc` | Cerrar modales / salir de FPS |
+| `Space` | Next step in the flow |
+| `R` | Reset simulation |
+| `M` | Start team meeting |
+| `F` | Enter / exit FPS mode |
+| `N` | Toggle day / night |
+| `A` | Auto-play active flow |
+| `C` | Reset camera |
+| `?` | Show shortcuts |
+| `Esc` | Close modals / exit FPS |
 
 ---
 
-## Estructura del proyecto
+## Project structure
 
-```
+```text
 .
-├── index.html          # Estructura HTML y contenedores de UI
+├── index.html          # HTML structure and UI containers
 ├── css/
-│   └── styles.css      # Todos los estilos visuales (Layout, Animaciones)
+│   └── styles.css      # All visual styles (layout, animations)
 ├── js/
-│   ├── main.js         # Punto de entrada e inicialización
+│   ├── main.js         # Entry point and initialization
 │   └── modules/
-│       ├── api.js      # Lógica de Groq, Prompts y Planificador
-│       ├── audio.js    # Efectos de sonido y música generativa
-│       ├── scene.js    # Motor Three.js, Luces y Clima
-│       ├── navigation.js # Sistema de Pathfinding A*
-│       ├── workspace.js # Acceso a archivos locales (PDF, Office, TXT)
-│       ├── agents.js   # Lógica de Agentes, Sub-agentes y Visitantes
-│       └── ui.js       # Dashboard, Modales, Consola y Estado
+│       ├── api.js         # Groq logic, prompts, and planner
+│       ├── audio.js       # Sound effects and generative music
+│       ├── scene.js       # Three.js engine, lights, and weather
+│       ├── navigation.js  # A* pathfinding system
+│       ├── workspace.js   # Local file access (PDF, Office, TXT)
+│       ├── agents.js      # Agents, sub-agents, and visitors logic
+│       └── ui.js          # Dashboard, modals, console, and status
 └── README.md
 ```
 
-La app ha sido refactorizada para ser modular y mantenible. No hay build step, no hay dependencias npm, no hay backend. Todo lo que necesitas está en los módulos y en las CDN declaradas en el `index.html`.
+The app has been refactored to be modular and maintainable. There is no build step, no npm dependencies, and no backend. Everything you need lives in the modules and the CDNs declared in `index.html`.
 
 ---
 
 ## Stack
 
-- **Three.js r128** — escena 3D, materiales, luces y sombras
-- **Chart.js 4** — métricas en el panel de estado
-- **PDF.js** — lectura de archivos PDF locales
-- **SheetJS (xlsx)** — lectura de hojas de cálculo
-- **Mammoth.js** — extracción de texto de archivos Word
-- **Groq API** — inferencia LLM (llama 4, kimi k2 y otros)
-- **File System Access API** — acceso a carpetas locales sin subir archivos
-- **Web Workers** — pathfinding A* fuera del hilo principal
-- **Web Speech API** — entrada de voz en la consola
+- **Three.js r128** — 3D scene, materials, lights, and shadows
+- **Chart.js 4** — metrics in the status panel
+- **PDF.js** — local PDF file reading
+- **SheetJS (xlsx)** — spreadsheet reading
+- **Mammoth.js** — text extraction from Word files
+- **Groq API** — LLM inference (llama 4, kimi k2, and others)
+- **File System Access API** — local folder access without uploading files
+- **Web Workers** — A* pathfinding off the main thread
+- **Web Speech API** — voice input in the console
 
 ---
 
-## Persistencia
+## Persistence
 
-| Dato | Dónde se guarda |
+| Data | Where it’s stored |
 |---|---|
-| API key | `sessionStorage` (no persiste entre sesiones) |
-| Modelo seleccionado | `localStorage` |
-| Historial de chat por agente | `localStorage` |
-| Historial de reuniones | `localStorage` |
-| Historial de tareas | `localStorage` |
-| XP y niveles | `localStorage` |
-| Logros | `localStorage` |
-| Notas del pizarrón | `localStorage` |
-| Decisiones compartidas | `localStorage` |
+| API key | `sessionStorage` (does not persist between sessions) |
+| Selected model | `localStorage` |
+| Per-agent chat history | `localStorage` |
+| Meeting history | `localStorage` |
+| Task history | `localStorage` |
+| XP and levels | `localStorage` |
+| Achievements | `localStorage` |
+| Whiteboard notes | `localStorage` |
+| Shared decisions | `localStorage` |
 
 ---
 
-## Seguridad y privacidad
+## Security & privacy
 
-Esta versión está pensada para uso local y demos. Algunas consideraciones para uso en producción o en red:
+This version is designed for local use and demos. For production or networked environments:
 
-- Las llamadas a Groq se hacen directamente desde el navegador. En un entorno público, mueve esas llamadas a un backend para no exponer la key.
-- Los archivos del workspace nunca salen del navegador. La lectura es enteramente local.
-- No se envía telemetría ni datos a ningún servicio propio.
-
----
-
-## Limitaciones conocidas
-
-- El modo FPS con pointer lock puede comportarse diferente según el navegador.
-- Algunos flujos de visitantes (delivery, Paula) están en iteración y pueden requerir ajustes finos.
-- La compresión de memoria del chat es automática pero no es perfecta para conversaciones muy largas.
+- Calls to Groq are made directly from the browser. In a public setting, move those calls to a backend so you don’t expose your key.
+- Workspace files never leave the browser. Reading is fully local.
+- No telemetry or data is sent to any custom service.
 
 ---
 
-## Créditos
+## Known limitations
 
-Construido desde cero en Cartagena de Indias 🇨🇴 por **Yared Henriquez**, Founder & Architect de Dev Teams.
+- FPS mode with pointer lock can behave differently depending on the browser.
+- Some visitor flows (delivery, Paula) are still under iteration and may need fine-tuning.
+- Chat memory compression is automatic but not perfect for very long conversations.
 
 ---
 
-## Licencia
+## Credits
 
-MIT
+Built from scratch in Cartagena de Indias 🇨🇴 by **Yared Henriquez**, Founder & Architect at Dev Teams.
+
+---
+
+## License
+
+MIT.[web:96]
