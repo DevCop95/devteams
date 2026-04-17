@@ -397,6 +397,20 @@ main{display:grid;grid-template-columns:1fr 380px;overflow:hidden}
 .ops-item strong{font-family:var(--mono);font-size:8px;color:var(--t1);font-weight:700}
 .ops-item span{font-family:var(--mono);font-size:8px;color:var(--t2);line-height:1.5}
 .ops-item small{font-family:var(--mono);font-size:7px;color:var(--t3)}
+.improve-panel{margin-top:12px;padding:12px;background:linear-gradient(180deg,var(--bg2),rgba(18,23,26,.95));border:1px solid var(--b1);border-radius:14px;position:relative;overflow:hidden}
+.improve-head{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:10px}
+.improve-title{font-family:var(--mono);font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.1em}
+.improve-pill{font-family:var(--mono);font-size:7px;padding:4px 7px;border-radius:999px;border:1px solid var(--b2);color:var(--t2);text-transform:uppercase;letter-spacing:.08em}
+.improve-list{display:flex;flex-direction:column;gap:6px;max-height:140px;overflow-y:auto;padding-right:2px;margin-bottom:8px}
+.improve-item{font-family:var(--mono);font-size:8px;color:var(--t1);background:rgba(255,255,255,.02);border:1px solid var(--b1);border-left:3px solid var(--acc);padding:6px 8px;border-radius:10px}
+.improve-item span{font-family:var(--mono);font-size:7px;color:var(--t3);display:block;margin-top:4px}
+.improve-repos{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.improve-repo{font-family:var(--mono);font-size:7px;letter-spacing:.08em;text-transform:uppercase;padding:3px 7px;border-radius:999px;border:1px solid var(--b2);color:var(--t3)}
+.improve-repo strong{color:var(--t1)}
+.improve-action{display:flex;gap:6px;flex-wrap:wrap}
+.api-provider-toggle{display:flex;gap:6px;margin-bottom:8px;border:1px solid var(--b1);border-radius:12px;padding:4px;background:var(--bg3)}
+.api-provider-btn{flex:1;font-family:var(--mono);font-size:8px;padding:5px 0;background:transparent;border:none;border-radius:8px;color:var(--t2);cursor:pointer;letter-spacing:.08em;text-transform:uppercase;transition:background .18s,var(--ease-out)}
+.api-provider-btn.active{background:rgba(255,255,255,.08);color:var(--t1)}
 .demo-outcome{margin-top:8px;padding:10px 12px;background:var(--bg2);border:1px solid var(--b1);border-left:3px solid var(--acc)}
 .demo-outcome .ttl{font-family:var(--mono);font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--acc);margin-bottom:6px}
 .demo-outcome .row{font-family:var(--mono);font-size:9px;color:var(--t2);line-height:1.7}
@@ -1050,6 +1064,18 @@ footer{display:flex;align-items:center;justify-content:space-between;padding:0 1
       <div class="ops-summary" id="opsSummary"></div>
       <div class="ops-timeline" id="opsTimeline"></div>
       <div class="ops-feed" id="eventFeed"></div>
+      <div class="improve-panel" id="improvePanel">
+        <div class="improve-head">
+          <div class="improve-title">Mejora continua</div>
+          <div class="improve-pill" id="improveStatus">Analizando</div>
+        </div>
+        <div class="improve-list" id="improveList"></div>
+        <div class="improve-repos" id="improveRepos"></div>
+        <div class="improve-action">
+          <button class="cas-btn" onclick="updateImprovementPanel()">Actualizar</button>
+          <button class="cas-btn sec" onclick="openApi()">Configurar API</button>
+        </div>
+      </div>
     </div>
     <div class="edu-scroll" id="treePanel">
 
@@ -1077,7 +1103,7 @@ footer{display:flex;align-items:center;justify-content:space-between;padding:0 1
       <div class="swrap" id="swrap"><div style="padding:16px;font-family:var(--mono);font-size:10px;color:var(--t2);line-height:1.7">Haz clic en un agente del arbol o en la escena 3D.</div></div>
     </div>
     <div class="console-wrap" id="consolaPanel">
-      <div id="noKeyMsg" class="nokey" style="display:none">Sin API key Groq.<br><a onclick="openApi()">⚙ Configurar →</a></div>
+      <div id="noKeyMsg" class="nokey" style="display:none">Sin API key <span id="noKeyProvider"></span>.<br><a onclick="openApi()">⚙ Configurar →</a></div>
       <div id="memBar" style="display:none;padding:4px 10px;border-bottom:1px solid var(--b1);display:flex;align-items:center;justify-content:space-between">
         <span id="memInfo" style="font-family:var(--mono);font-size:8px;color:var(--t3)"></span>
         <button onclick="clearAllAgentMemory()" style="font-family:var(--mono);font-size:8px;padding:2px 8px;background:var(--bg3);border:1px solid var(--red);color:var(--red);cursor:pointer">Limpiar memoria</button>
@@ -1123,6 +1149,7 @@ footer{display:flex;align-items:center;justify-content:space-between;padding:0 1
           <button class="tool-mini-btn" onclick="workspaceQuickAction('search')">Buscar</button>
           <button class="tool-mini-btn" onclick="workspaceQuickAction('analyze')">Analizar</button>
           <button class="tool-mini-btn" onclick="workspaceQuickAction('export')">Exportar</button>
+          <button class="tool-mini-btn alt" onclick="workspaceQuickAction('upload')">Subir</button>
         </div>
       </div>
       <div class="cmsgs" id="cmsgs"></div>
@@ -1133,9 +1160,12 @@ footer{display:flex;align-items:center;justify-content:space-between;padding:0 1
       </div>
     <div class="cinp-area">
     <div class="cagbadge" id="cagbadge">CEO</div>
+    <button onclick="workspaceQuickAction('upload')" title="Adjuntar documento al Workspace" style="background:var(--bg2); border:1px solid var(--b2); border-right:1px solid var(--b1); color:var(--t3); cursor:pointer; padding:0 12px; display:flex; align-items:center; transition:all .2s; outline:none;" onmouseover="this.style.color='var(--acc)';this.style.background='var(--bg3)'" onmouseout="this.style.color='var(--t3)';this.style.background='var(--bg2)'">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+    </button>
     <div style="position:relative; flex:1; display:flex;">
     <input class="cinp" id="cinp" placeholder="Pregunta al agente..."
-      maxlength="400"
+      maxlength="400" style="border-left:none;"
       onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat()}">
     <button id="micBtn" onclick="toggleMic()" title="Hablar (Voz a texto)"
       style="position:absolute; right:10px; top:50%; transform:translateY(-50%);
@@ -1207,14 +1237,20 @@ footer{display:flex;align-items:center;justify-content:space-between;padding:0 1
 </div>
 
 <!-- API MODAL -->
-<div class="overlay" id="apiOv" role="dialog" aria-modal="true" aria-label="Configurar Groq API" onclick="closeApi(event)">
-  <div class="mbox premium" style="width:400px" onclick="event.stopPropagation()">
+<div class="overlay" id="apiOv" role="dialog" aria-modal="true" aria-label="Configurar API" onclick="closeApi(event)">
+  <div class="mbox premium" style="width:420px" onclick="event.stopPropagation()">
     <button class="mx" aria-label="Cerrar" onclick="closeApi()">&times;</button>
-<div class="mttl">Groq API Key</div>
-    <div class="mdsc">Gratis en <a href="https://console.groq.com" target="_blank">console.groq.com</a> | se guarda solo en esta sesion</div>
-    <div><div class="mlbl">Modelo</div><select class="msel" id="msel"><option value="llama-3.3-70b-versatile">llama-3.3-70b-versatile - default</option><option value="llama-3.1-8b-instant">llama-3.1-8b-instant - rapido</option><option value="meta-llama/llama-4-maverick-17b-128e-instruct">llama-4-maverick - inteligente</option><option value="moonshotai/kimi-k2-instruct-0905">kimi-k2 - 256K ctx</option><option value="groq/compound">groq/compound - tiempo real</option></select></div>
-    <div><div class="mlbl">API Key</div><input class="minp" type="password" id="keyinp" placeholder="gsk_..." autocomplete="off"></div>
+    <div class="mttl" id="apiTitle">API Key</div>
+    <div class="mdsc" id="apiInstruction"></div>
+    <div class="mlbl">Proveedor</div>
+    <div class="api-provider-toggle" id="apiProviderToggle">
+      <button class="api-provider-btn" data-provider="groq" onclick="setApiProvider('groq')">Groq</button>
+      <button class="api-provider-btn" data-provider="openrouter" onclick="setApiProvider('openrouter')" style="display:none;">OpenRouter</button>
+    </div>
+    <div><div class="mlbl">Modelo</div><select class="msel" id="msel"></select></div>
+    <div><div class="mlbl">API Key</div><input class="minp" type="password" id="keyinp" placeholder="clave..." autocomplete="off"></div>
     <div class="mrow"><button class="mbtn" onclick="saveKey()">Guardar</button><button class="mbtn sec" onclick="clearKey()">Limpiar</button></div>
+    <div class="mdsc" style="margin-top:6px"><small id="apiProviderNote"></small></div>
   </div>
 </div>
 <!-- TASK MODAL -->
@@ -1278,16 +1314,65 @@ window.addEventListener('beforeunload',()=>teardownPathWorker(false));
   if(localStorage.getItem('theme')==='light')document.body.classList.add('light-mode');
 'use strict';
 /*  STATE  */
+const API_PROVIDERS={
+  groq:{
+    label:'Groq',
+    keyStorage:'gk',
+    instruction:'Gratis en console.groq.com | se guarda solo en esta sesión',
+    docsUrl:'https://console.groq.com',
+    defaultModel:'llama-3.3-70b-versatile',
+    models:[
+      'llama-3.3-70b-versatile',
+      'llama-3.1-8b-instant',
+      'deepseek-r1-distill-llama-70b',
+      'qwen-2.5-coder-32b',
+      'gemma2-9b-it',
+      'mixtral-8x7b-32768'
+    ],
+    endpoint:'https://api.groq.com/openai/v1/chat/completions',
+    accent:'#0fa855'
+  },
+  openrouter:{
+    label:'OpenRouter',
+    keyStorage:'ork',
+    instruction:'Solicita tu clave en openrouter.ai/docs/api-reference/chat-completion',
+    docsUrl:'https://openrouter.ai/docs/api-reference/chat-completion',
+    defaultModel:'google/gemma-3-27b-it:free',
+    models:[
+      'google/gemma-3-27b-it:free',
+      'google/gemma-4-31b-it:free',
+      'qwen/qwen3-coder:free',
+      'nvidia/nemotron-3-nano-30b-a3b:free',
+      'liquid/lfm-2.5-1.2b-instruct:free',
+      'meta-llama/llama-3.3-70b-instruct:free'
+    ],
+    endpoint:'https://openrouter.ai/api/v1/chat/completions',
+    accent:'#3f8fff'
+  }
+};
+const MODEL_STORAGE_KEYS={groq:'gm_groq',openrouter:'gm_openrouter'};
+const PROVIDER_KEY_NAMES={groq:'gk',openrouter:'ork'};
+let API_PROVIDER=localStorage.getItem('apiProvider');
+if(!API_PROVIDERS[API_PROVIDER])API_PROVIDER='groq';
+let _sessionProviderKeys={groq:'',openrouter:''};
+try{_sessionProviderKeys.groq=sessionStorage.getItem('gk')||'';}catch(e){}
+try{_sessionProviderKeys.openrouter=sessionStorage.getItem('ork')||'';}catch(e){}
 let activeAg='ceo',simOn=false,step=-1,autoM=false,spd=1400,typing=false;
-let _sessionGKey='';
-try{_sessionGKey=sessionStorage.getItem('gk')||'';}catch(e){}
-let GKEY=_sessionGKey||(localStorage.getItem('gk')||''),GMOD=localStorage.getItem('gm')||'llama-3.3-70b-versatile';
+let GKEY=_sessionProviderKeys[API_PROVIDER]||(localStorage.getItem(PROVIDER_KEY_NAMES[API_PROVIDER])||'');
+let GMOD=localStorage.getItem(MODEL_STORAGE_KEYS[API_PROVIDER])||API_PROVIDERS[API_PROVIDER].defaultModel;
+
+// Limpiar GMOD si es un modelo obsoleto de OpenRouter para evitar crash/400 (ej: gemini-2.0-pro-exp-02-05:free)
+if(API_PROVIDER==='openrouter' && !API_PROVIDERS.openrouter.models.includes(GMOD)){
+  GMOD=API_PROVIDERS.openrouter.defaultModel;
+  localStorage.setItem(MODEL_STORAGE_KEYS.openrouter, GMOD);
+}
 if(GKEY){
-  try{sessionStorage.setItem('gk',GKEY);}catch(e){}
-  localStorage.removeItem('gk');
+  try{sessionStorage.setItem(PROVIDER_KEY_NAMES[API_PROVIDER],GKEY);}catch(e){}
+  localStorage.removeItem(PROVIDER_KEY_NAMES[API_PROVIDER]);
 }
 const DEAD=['llama3-8b-8192','llama3-70b-8192','mixtral-8x7b-32768','gemma2-9b-it','llama-3.1-70b-versatile'];
 if(DEAD.includes(GMOD)){GMOD='llama-3.3-70b-versatile';localStorage.setItem('gm',GMOD);}
+renderApiModelOptions();
 if(GKEY){
   document.getElementById('keyinp').value=GKEY;
   document.getElementById('msel').value=GMOD;
@@ -1815,41 +1900,148 @@ function showToast(msg,col='#0fa855',agentKey=null){
   });
 }
 
-function openApi(){document.getElementById('apiOv').classList.add('show');}
+function openApi(){setApiProvider(API_PROVIDER,{quiet:true});updateApiModalUI();document.getElementById('apiOv').classList.add('show');}
 function closeApi(e){if(!e||e.target===document.getElementById('apiOv'))document.getElementById('apiOv').classList.remove('show');}
 
-let _apiPresenceTimer=GKEY?(110+Math.random()*70):(35+Math.random()*45);
-let _apiPresenceMode=GKEY?'live':'demo';
+function providerConfig(provider=API_PROVIDER){return API_PROVIDERS[provider]||API_PROVIDERS.groq;}
+function providerLabel(provider=API_PROVIDER){return providerConfig(provider).label;}
+function providerInstruction(provider=API_PROVIDER){return providerConfig(provider).instruction;}
+function providerDocs(provider=API_PROVIDER){return providerConfig(provider).docsUrl;}
+function hasActiveKey(){return !!GKEY;}
+function loadProviderKey(provider){try{return sessionStorage.getItem(PROVIDER_KEY_NAMES[provider])||localStorage.getItem(PROVIDER_KEY_NAMES[provider])||'';}catch(e){return '';}}
+function persistProviderKey(provider,key){try{if(key)sessionStorage.setItem(PROVIDER_KEY_NAMES[provider],key);}catch(e){};localStorage.removeItem(PROVIDER_KEY_NAMES[provider]);}
+function clearStoredProviderKey(provider){try{sessionStorage.removeItem(PROVIDER_KEY_NAMES[provider]);}catch(e){};localStorage.removeItem(PROVIDER_KEY_NAMES[provider]);}
+function renderApiModelOptions(provider=API_PROVIDER){
+  const sel=document.getElementById('msel');
+  if(!sel)return;
+  sel.innerHTML='';
+  const models=providerConfig(provider).models;
+  models.forEach(m=>{
+    const opt=document.createElement('option');
+    opt.value=m;
+    opt.textContent=m.replace(provider+'/',provider==='openrouter'?'OR/':'');
+    sel.appendChild(opt);
+  });
+  if(models.includes(GMOD)){
+    sel.value=GMOD;
+  }else{
+    GMOD=models[0]||providerConfig(provider).defaultModel;
+    sel.value=GMOD;
+  }
+  document.getElementById('modelBadge')?.setAttribute('data-provider',provider);
+}
+
+function updateApiModalUI(){
+  const title=document.getElementById('apiTitle');
+  if(title)title.textContent=`${providerLabel()} API Key`;
+  const instr=document.getElementById('apiInstruction');
+  if(instr)instr.innerHTML=`${providerInstruction()} <a href="${providerDocs()}" target="_blank" style="color:var(--acc)">docs</a>`;
+  const note=document.getElementById('apiProviderNote');
+  if(note)note.textContent=`Modelos sugeridos: ${providerConfig().models.join(', ')}`;
+  document.querySelectorAll('#apiProviderToggle .api-provider-btn')
+    .forEach(btn=>btn.classList.toggle('active',btn.dataset.provider===API_PROVIDER));
+}
+
+function setApiProvider(provider,{quiet=false}={}){
+  if(!API_PROVIDERS[provider])return;
+  API_PROVIDER=provider;
+  localStorage.setItem('apiProvider',provider);
+  GKEY=loadProviderKey(provider);
+  GMOD=localStorage.getItem(MODEL_STORAGE_KEYS[provider])||providerConfig(provider).defaultModel;
+  renderApiModelOptions(provider);
+  document.getElementById('msel').value=GMOD;
+  const keyinp = document.getElementById('keyinp');
+  if (keyinp) keyinp.value = GKEY;
+  updApiUI();
+  updateApiModalUI();
+  if(!quiet){
+    showToast(`${providerLabel()} activo. Antes de aplicar la nueva ruta, confirmemos.`,providerConfig(provider).accent);
+  }
+};
+(function(){setApiProvider(API_PROVIDER,{quiet:true});})();
+
+let _apiPresenceTimer=hasActiveKey()?(110+Math.random()*70):(35+Math.random()*45);
+let _apiPresenceMode=hasActiveKey()?'live':'demo';
 let _apiCelebrateBusy=false;
 let _lastApiPresenceMsg='';
 let _lastApiPresenceAgent='';
 let _apiDemoPool=[];
 let _apiLivePool=[];
+const IMPROVEMENT_REPOS=['AutoGPT visualizers','Three.js multi-agent dashboards','AgentSim orchestration','Open-source AI worker agencies','Multi-agent operations playbooks'];
+function inspectImprovementHeuristics(){
+  if(typeof AG==='undefined')return[];
+  const suggestions=[];
+  if(!hasActiveKey()){
+    suggestions.push({title:`Sin conexión ${providerLabel()}`,detail:`Conecta ${providerLabel()} y verifica la API antes de ejecutar flujos.`});
+  }
+  const stuck=Object.entries(AG).find(([k,ag])=>ag&&ag.state==='thinking'&&ag.stateTime>22);
+  if(stuck){
+    const name=ACFG[stuck[0]]?.name.split(' ')[0]||stuck[0];
+    suggestions.push({title:`${name} atascado`,detail:`Lleva ${Math.floor(stuck[1].stateTime)}s pensando. Facilita asistencia.`});
+  }
+  if(_eventLog.length>30){
+    suggestions.push({title:'Command Center saturado',detail:'Revisa el volumen de eventos y considera resumir o capsular mensajes.'});
+  }
+  return suggestions;
+}
+function renderImprovementRepos(){
+  const repoEl=document.getElementById('improveRepos');
+  if(!repoEl)return;
+  repoEl.innerHTML=IMPROVEMENT_REPOS.map(repo=>`<div class="improve-repo"><strong>${repo}</strong></div>`).join('');
+}
+function updateImprovementPanel(){
+  const statusEl=document.getElementById('improveStatus');
+  const listEl=document.getElementById('improveList');
+  const guardNote={title:'Confirma antes de alternar la API',detail:`Antes de aplicar cambios entre ${providerLabel()} y otras APIs, dime para revisar riesgos.`};
+  const suggestions=inspectImprovementHeuristics();
+  const items=[guardNote,...suggestions].slice(0,3);
+  if(listEl)listEl.innerHTML=items.map(entry=>`<div class="improve-item"><strong>${entry.title}</strong><span>${entry.detail}</span></div>`).join('');
+  if(statusEl)statusEl.textContent=suggestions.length?'Hallazgos':'Sin hallazgos';
+  renderImprovementRepos();
+}
 
-async function _probeGroqKey(){
+async function _probeApiKey(){
   if(!GKEY)return false;
+  const provider=providerConfig();
   try{
-    const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{
+    const r=await fetch(provider.endpoint,{
       method:'POST',
       headers:{
         'Authorization':`Bearer ${GKEY}`,
-        'Content-Type':'application/json'
+        'Content-Type':'application/json',
+        'HTTP-Referer': window.location.href.startsWith('file:') ? 'https://dev-teams-local.app' : window.location.href,
+        'X-Title': 'Dev Teams AI'
       },
       body:JSON.stringify({
-        model:GMOD,
+        model: GMOD || provider.defaultModel || 'openrouter/auto',
         messages:[
-          {role:'system',content:'Responde solo OK.'},
-          {role:'user',content:'OK'}
-        ],
-        stream:false,
-        max_tokens:4,
-        temperature:0
+          {role:'user',content:'Hi'}
+        ]
       })
     });
-    if(!r.ok)return false;
-    const data=await r.json();
-    const txt=readGroqText(data?.choices?.[0]?.message?.content||'');
-    return /ok/i.test(txt||'');
+    if(!r.ok){
+      if(r.status===401 || r.status===403){
+        return false; // Authentication failed
+      }
+      if(r.status===402){
+        showToast(`${providerLabel()}: Fondos insuficientes (402). Verifique su cuenta.`,'#cc3344');
+        return true; // Key is technically valid, just out of money for this model
+      }
+      if(r.status===429){
+        showToast(`${providerLabel()}: Demasiadas peticiones (429). Reintente más tarde.`,'#cc3344');
+        return true; // Rate limited, key is valid
+      }
+      if(r.status===404){
+        showToast(`${providerLabel()}: Modelo '${GMOD}' no encontrado (404).`,`#cc3344`);
+        return true; // Key is valid, wrong model
+      }
+      if(r.status===400){
+        showToast(`${providerLabel()}: Petición rechazada (400). Posible modelo incompatible.`,`#cc3344`);
+        return true; // Bad request, but key is likely fine
+      }
+      return true; // Assume key is valid for other transient errors
+    }
+    return true;
   }catch(e){
     return false;
   }
@@ -1863,7 +2055,7 @@ function _pickPresenceAgents(count=3){
   return (pool.length?pool:Object.keys(ACFG)).sort(()=>Math.random()-.5).slice(0,count);
 }
 
-async function _celebrateGroqConnection(){
+async function _celebrateApiConnection(){
   if(_apiCelebrateBusy)return;
   _apiCelebrateBusy=true;
 
@@ -1883,12 +2075,12 @@ async function _celebrateGroqConnection(){
     const cfg=ACFG[k];
     if(!ag||!cfg)continue;
 
-    let msg=fallbackByRole[k]||'Creador, ya tenemos Groq conectado.';
+    let msg=fallbackByRole[k]||`Creador, ya tenemos ${providerLabel()} conectado.`;
 
     if(GKEY){
       const res=await groq([
         {role:'system',content:mkSys(k)},
-        {role:'user',content:`Tu creador acaba de conectar una API key valida de Groq. Responde con una sola frase breve, natural y distinta al ultimo mensaje. Debes decir que ya no estan en demo mode y que ahora si tienen conexion real. Ultimo mensaje: "${_lastApiPresenceMsg}". Maximo 16 palabras.`}
+        {role:'user',content:`Tu creador acaba de conectar una API key valida de ${providerLabel()}. Responde con una sola frase breve, natural y distinta al ultimo mensaje. Debes decir que ya no estan en demo mode y que ahora si tienen conexion real. Ultimo mensaje: "${_lastApiPresenceMsg}". Maximo 16 palabras.`}
       ],()=>{},32);
       if(res)msg=res.trim();
     }
@@ -1904,7 +2096,7 @@ async function _celebrateGroqConnection(){
     if (typeof enhanceThinkingVisual === 'function') enhanceThinkingVisual(k);
     ag.say(msg.slice(0,48));
     showToast(`${cfg.name.split(' ')[0]}: ${msg.slice(0,68)}`,cfg.col,k);
-    try{logEvent('api','Groq online',msg,cfg.col,k);}catch(e){}
+    try{logEvent('api',`${providerLabel()} online`,msg,cfg.col,k);}catch(e){}
     await new Promise(r=>setTimeout(r,550));
     if(ag.state==='thinking')ag.setState('idle');
   }
@@ -1915,10 +2107,10 @@ async function _celebrateGroqConnection(){
 function _emitDemoPresenceLine(){
   const base=[
     'Creador, seguimos en demo mode.',
-    'Aun estamos desconectados de Groq, creador.',
+    `Aun estamos desconectados de ${providerLabel()}, creador.`,
     'Seguimos en modo demo. Cuando quieras nos conectas.',
     'Creador, aun no tenemos conexion real para pensar mejor.',
-    'Seguimos simulando. Falta la API key real.'
+    `Seguimos simulando. Falta la API key real de ${providerLabel()}.`
   ];
 
   if(!_apiDemoPool.length){
@@ -1951,9 +2143,9 @@ async function _emitLivePresenceLine(){
   if(!ag||!cfg||!GKEY)return;
 
   const fallback=[
-    'Creador, seguimos conectados a Groq y listos para trabajar.',
-    'Seguimos online con Groq. Ya no estamos en demo mode.',
-    'Conexion estable con Groq, creador. Todo listo.'
+    `Creador, seguimos conectados a ${providerLabel()} y listos para trabajar.`,
+    `Seguimos online con ${providerLabel()}. Ya no estamos en demo mode.`,
+    `Conexion estable con ${providerLabel()}, creador. Todo listo.`
   ];
 
   let msg='';
@@ -1989,7 +2181,7 @@ async function updateApiPresenceChatter(dt){
   if(_meetingActive)return;
   if(_apiCelebrateBusy)return;
 
-  if(GKEY){
+  if(hasActiveKey()){
     _apiPresenceMode='live';
     _apiPresenceTimer=120+Math.random()*110;
     await _emitLivePresenceLine();
@@ -2006,54 +2198,51 @@ async function saveKey(){
 
   GMOD=nextModel;
   localStorage.setItem('gm',GMOD);
+  localStorage.setItem(MODEL_STORAGE_KEYS[API_PROVIDER],GMOD);
 
   if(!nextKey){
     GKEY='';
-    try{sessionStorage.removeItem('gk');}catch(e){}
-    localStorage.removeItem('gk');
+    clearStoredProviderKey(API_PROVIDER);
     updApiUI();
     closeApi();
     _apiPresenceMode='demo';
     _apiPresenceTimer=12;
-    showToast('Seguimos en demo mode','#c8a040');
+    showToast(`Seguimos en demo mode para ${providerLabel()}`,'#c8a040');
     return;
   }
 
   GKEY=nextKey;
-  try{sessionStorage.setItem('gk',GKEY);}catch(e){}
-  localStorage.removeItem('gk');
+  persistProviderKey(API_PROVIDER,GKEY);
   updApiUI();
   closeApi();
-  showToast('Validando API key...','#3a8ccc');
+  showToast(`Validando API key ${providerLabel()}...`,'#3a8ccc');
 
-  const ok=await _probeGroqKey();
+  const ok=await _probeApiKey();
 
   if(!ok){
     GKEY='';
-    try{sessionStorage.removeItem('gk');}catch(e){}
-    localStorage.removeItem('gk');
+    clearStoredProviderKey(API_PROVIDER);
     updApiUI();
     _apiPresenceMode='demo';
     _apiPresenceTimer=10;
-    showToast('API key invalida o sin acceso a Groq','#cc3344');
+    showToast(`API key invalida o sin acceso a ${providerLabel()}`,'#cc3344');
     return;
   }
 
   _apiPresenceMode='live';
   _apiPresenceTimer=140+Math.random()*80;
-  showToast('API key valida. Groq conectado.','#0fa855');
-  await _celebrateGroqConnection();
+  showToast(`${providerLabel()} conectado.` ,providerConfig().accent);
+  await _celebrateApiConnection();
 }
 
 function clearKey(){
   GKEY='';
-  try{sessionStorage.removeItem('gk');}catch(e){}
-  localStorage.removeItem('gk');
+  clearStoredProviderKey(API_PROVIDER);
   document.getElementById('keyinp').value='';
   updApiUI();
   _apiPresenceMode='demo';
   _apiPresenceTimer=10;
-  showToast('Groq desconectado. Volvimos a demo mode.','#c8a040');
+  showToast(`${providerLabel()} desconectado. Volvimos a demo mode.`,'#c8a040');
 }
 
 function updApiUI(){
@@ -2061,7 +2250,7 @@ function updApiUI(){
   const m=document.getElementById('modelBadge');
   if(GKEY){
     b.className='badge conn';
-    b.textContent='groq conectado';
+    b.textContent=`${providerLabel()} online`;
     m.style.display='';
     m.textContent=GMOD;
   }else{
@@ -2156,7 +2345,7 @@ function refreshOpsBar(){
 
   const panelMap={tree:'equipo',flujo:'flujo',consola:'chat',status:'estado',dash:'dashboard'};
   metaEl.textContent=[
-    GKEY?'Groq online':'modo demo',
+    hasActiveKey()?`${providerLabel()} online`:'modo demo',
     `panel ${panelMap[currentPanel]||currentPanel}`,
     `${_activeAgentsCount()} activos`
   ].join(' - ');
@@ -2494,6 +2683,7 @@ let interactiveObjects=[];
 let _hoverRayPending=false;
 let _lastHoverRayTs=0;
 let _lastViewportW=0,_lastViewportH=0,_wrapResizeObs=null;
+let _deliveryLight=null,_psychLight=null,_centerFlashLight=null,_deployFxLight=null;
 
 function rebuildInteractives(){
   interactiveObjects=[];
@@ -2606,9 +2796,12 @@ function updateFPSCamera(){
 }
 
 function resetCam(){
+  if(fpsMode) _leaveFPSCleanup();
   Object.assign(orb,ORB0);
   orb.tgt.set(ORB0.tgtX,ORB0.tgtY,ORB0.tgtZ);
   orb.lastUI=0;
+  followAg=null;
+  camZTgt=null;
   refreshCam();
   showToast('📷 Vista general','#0fa855');
 }
@@ -4543,6 +4736,14 @@ this.labelEl.style.cssText+=`background:#000000ee;border:1px solid #ffffff18;col
     this.agentLight=new THREE.PointLight(parseInt(cfg.col.replace('#','0x')),0,5);this.agentLight.position.y=1.7;this.group.add(this.agentLight);
     this.thinkRing=new THREE.Mesh(new THREE.TorusGeometry(.4,.02,8,24),new THREE.MeshBasicMaterial({color:parseInt(cfg.col.replace('#','0x')),transparent:true,opacity:0}));this.thinkRing.position.y=2.9;this.thinkRing.rotation.x=Math.PI/2;this.group.add(this.thinkRing);
     this.halo=new THREE.Mesh(new THREE.TorusGeometry(.7,.03,6,32),new THREE.MeshBasicMaterial({color:parseInt(cfg.col.replace('#','0x')),transparent:true,opacity:0}));this.halo.rotation.x=Math.PI/2;this.halo.position.y=.05;this.group.add(this.halo);
+    // Ring de audio espacial (Holograma de voz)
+    this.audioRing=new THREE.Mesh(
+      new THREE.TorusGeometry(.65,.04,6,32),
+      new THREE.MeshBasicMaterial({color:parseInt(cfg.col.replace('#','0x')),transparent:true,opacity:0,blending:THREE.AdditiveBlending})
+    );
+    this.audioRing.rotation.x=Math.PI/2;
+    this.audioRing.position.y=.08;
+    this.group.add(this.audioRing);
     // Ring de productividad
     this._prodRing=new THREE.Mesh(
       new THREE.TorusGeometry(.55,.03,6,32,0),
@@ -4739,10 +4940,38 @@ this.labelEl.style.cssText+=`background:#000000ee;border:1px solid #ffffff18;col
       if(dist<.18){this.path.shift();}
       else{
         const slowdown=this._weatherSlowdown||1;
-const sp=4.8*dt*slowdown;this.group.position.x+=dx/dist*sp;this.group.position.z+=dz/dist*sp;
+        const sp=4.8*dt*slowdown;
+        let vx=(dx/dist)*sp, vz=(dz/dist)*sp;
+        // Organic Steering & Collisions
+        if(typeof Object !== 'undefined' && AG) {
+          Object.values(AG).forEach(o => {
+            if(o !== this && o.group) {
+              const ox = this.group.position.x - o.group.position.x;
+              const oz = this.group.position.z - o.group.position.z;
+              const odist = Math.sqrt(ox*ox + oz*oz);
+              if (odist > 0.01 && odist < 1.8) {
+                const force = (1.8 - odist) * sp * 1.5;
+                vx += (ox / odist) * force;
+                vz += (oz / odist) * force;
+              }
+            }
+          });
+        }
+        const vdist = Math.sqrt(vx*vx + vz*vz);
+        if (vdist > sp * 1.3) { vx = (vx / vdist) * sp * 1.3; vz = (vz / vdist) * sp * 1.3; }
+        
+        this.group.position.x += vx; 
+        this.group.position.z += vz;
+
         this.setState('walking');const _pw=this.walkPhase;this.walkPhase+=dt*9;
         if(Math.floor(_pw/Math.PI)!==Math.floor(this.walkPhase/Math.PI))playAgentSpatialSound(this.key,'step');
-        const ang=Math.atan2(dx,dz);this.group.rotation.y+=(ang-this.group.rotation.y)*.22;
+        
+        const ang=Math.atan2(vx, vz);
+        let diff=ang-this.group.rotation.y;
+        while(diff>Math.PI) diff-=Math.PI*2;
+        while(diff<-Math.PI) diff+=Math.PI*2;
+        this.group.rotation.y+=diff*0.15;
+        
         const sw=Math.sin(this.walkPhase)*.28;this.lLeg.rotation.x=sw;this.rLeg.rotation.x=-sw;this.lArm.rotation.x=-sw*.55;this.rArm.rotation.x=sw*.55;
         this.group.position.y=Math.abs(Math.sin(this.walkPhase))*.09;
         const mv=(this.group.position.x-this.lastPos.x)**2+(this.group.position.z-this.lastPos.z)**2;
@@ -4843,7 +5072,16 @@ if(this.state==='thinking'&&this.path.length===0){
     this._prodRing.scale.set(pct<.01?.01:1,pct<.01?.01:1,1);
     this._prodRing.material.opacity=.2+pct*.5;
     this._prodRing.rotation.z=this.time*.4;
-    if(this.sa>0){this.sa-=dt*.28;if(this.sa<0)this.sa=0;}
+    if(this.sa>0){
+      this.sa-=dt*.28;
+      if(this.sa<0)this.sa=0;
+      // Holograma de voz (Audio Wave)
+      const wave = Math.max(0, Math.sin(this.time * 12) * this.sa);
+      this.audioRing.scale.set(1 + wave * 0.8, 1 + wave * 0.8, 1);
+      this.audioRing.material.opacity = wave * 0.6;
+    } else {
+      this.audioRing.material.opacity = 0;
+    }
     //  #8 update shadow 
     if(frameCt%2===0)this._updateShadow();
 
@@ -5152,7 +5390,7 @@ async function updateHelpRequests(dt){
 
 //  REUNIÓN 1:1 
 async function runMeeting1on1(k1,k2){
-  if(!GKEY){showToast('Necesitas API key Groq','#cc3344');return;}
+  if(!GKEY){showToast(`Necesitas API key ${providerLabel()}`,'#cc3344');return;}
   const ag1=AG[k1],ag2=AG[k2];
   const cfg1=ACFG[k1],cfg2=ACFG[k2];
   if(!ag1||!ag2)return;
@@ -5711,8 +5949,11 @@ function showBroadcastLines(msg){
     setTimeout(()=>{AG[k].setState('idle');AG[k].agentLight.intensity=0;},2000+Math.random()*1000);
   });
   // Particula central
-  const centerFlash=pL(0x0fa855,3,12,cx,2.5,cz);
-  setTimeout(()=>scene.remove(centerFlash),400);
+  if(window._centerFlashLight){
+    window._centerFlashLight.position.set(cx,2.5,cz);
+    window._centerFlashLight.intensity=3;
+    setTimeout(()=>{window._centerFlashLight.intensity=0;},400);
+  }
   // Fade out lineas
   let _opacity=.8;
   const _fadeInt=setInterval(()=>{
@@ -5951,8 +6192,10 @@ tape.position.set(.42*DS,1.62*DS,.1*DS);g.add(tape);
     new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(lblC)}));
   lblM.position.set(.62,1.55,.1);lblM.rotation.y=Math.PI/2;g.add(lblM);
   // Luz propia potente
-  const sl=new THREE.PointLight(0xd45000,0.4,5);
-  sl.position.set(0,2.5,0);g.add(sl);
+  if(window._deliveryLight){
+    window._deliveryLight.intensity=0.4;
+    g.userData.light=window._deliveryLight;
+  }
 
 // Llega desde afuera en moto
   g.position.set(0,0,26);
@@ -6291,8 +6534,10 @@ function spawnPsychologistVisit(triggerText,agentKey){
   pad.rotation.z=-.2;
   g.add(pad);
 
-  const light=new THREE.PointLight(0xff8ab3,.34,5);
-  light.position.set(0,2.8*DS,.3);g.add(light);
+  if(window._psychLight){
+    window._psychLight.intensity=.34;
+    g.userData.light=window._psychLight;
+  }
 
   g.position.set(0,0,26);
   g.traverse(c=>{
@@ -6568,20 +6813,25 @@ function setRelEvent(k1,k2,type){
   setTimeout(()=>{delete _relEvents[k1+'_'+k2];delete _relEvents[k2+'_'+k1];},300000);
 }
 /*  initThree  */
-function initThree(){
+async function initThree(){
   const wrap=document.getElementById('canvasWrap');
   const W=wrap.clientWidth||900,H=wrap.clientHeight||500;
   scene=new THREE.Scene();
   scene.background=new THREE.Color(0x0a0a0a);
   scene.fog=new THREE.Fog(0x0a0a0a,120,200);
+
+  _deliveryLight=new THREE.PointLight(0xd45000,0,5);scene.add(_deliveryLight);
+  _psychLight=new THREE.PointLight(0xff8ab3,0,5);scene.add(_psychLight);
+  _centerFlashLight=new THREE.PointLight(0x0fa855,0,12);scene.add(_centerFlashLight);
+  _deployFxLight=new THREE.PointLight(0x000000,0,18);scene.add(_deployFxLight);
 renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});
 renderer.setSize(W,H);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.25));
 renderer.shadowMap.enabled=true;
 renderer.shadowMap.type=THREE.PCFShadowMap;
-renderer.toneMapping=THREE.NoToneMapping;
-renderer.toneMappingExposure=1;
-renderer.physicallyCorrectLights=false;
+renderer.toneMapping=THREE.LinearToneMapping;
+renderer.toneMappingExposure=1.1;
+renderer.useLegacyLights=false;
 if('outputColorSpace' in renderer&&THREE.SRGBColorSpace)renderer.outputColorSpace=THREE.SRGBColorSpace;
 else if('outputEncoding' in renderer&&THREE.sRGBEncoding)renderer.outputEncoding=THREE.sRGBEncoding;
 renderer.setClearColor(0x1a1208);
@@ -6850,9 +7100,14 @@ window.addEventListener('mousemove',e=>{
   });
 
   buildLighting();buildFloor();buildWalls();
-  buildCEOZone();buildDevBEZone();buildDevFEZone();buildQAZone();buildDevOpsZone();
-  buildPMZone();buildUXZone();buildDataZone();buildHubZone();
-  buildAllPlants();buildAgents();initClock(scene);drawMMStatic();
+  await new Promise(r=>setTimeout(r,50));
+  buildCEOZone();buildDevBEZone();buildDevFEZone();buildQAZone();
+  await new Promise(r=>setTimeout(r,50));
+  buildDevOpsZone();buildPMZone();buildUXZone();
+  await new Promise(r=>setTimeout(r,50));
+  buildDataZone();buildHubZone();buildAllPlants();
+  await new Promise(r=>setTimeout(r,50));
+  buildAgents();initClock(scene);drawMMStatic();
   rebuildInteractives();
 
 
@@ -6901,12 +7156,13 @@ tickAct(dt);
       else if(camZTgt&&uIdle){orb.tgt.lerp(new THREE.Vector3(camZTgt.x,2,camZTgt.z),.05);orb.radius+=(camZTgt.r-orb.radius)*.05;refreshCam();camZTimer-=dt;if(camZTimer<=0)camZTgt=null;}
       // Desk lights handled by lerpDayNight()
     }
-    if(frameCt%8===0)updateDevScreens();
-    if(frameCt%10===0)updateQAScr();
-    if(frameCt%12===0)updateDeskScreens();
+    // Distribuimos la carga de actualizar los monitores (canvas -> GPU upload) para evitar lag
+    if(frameCt%23===0)updateDevScreens();
+    if(frameCt%29===2)updateQAScr();
+    if(frameCt%31===4)updateDeskScreens();
 
     if(frameCt%60===0)updateClock();
-    if(frameCt%3===0)updateBurndown();
+    if(frameCt%17===8)updateBurndown();
     if(frameCt%2===0)updateSkylineParallax();
     if(frameCt%600===0)updateVIP();
     if(frameCt%3600===0){updateAutoDayNight();checkWorkCycle();} // check every ~60s
@@ -6967,7 +7223,7 @@ if(ag.state!=='working')ag._subSpawned=false;
 // #3 Rack status modal
 const rm=document.createElement('div');rm.id='rackModal';
 rm.style.cssText='display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.85);align-items:center;justify-content:center';
-rm.innerHTML=`<div style="background:var(--bg2);border:1px solid #4caf5044;border-left:3px solid #4caf50;padding:20px;width:380px;display:flex;flex-direction:column;gap:8px" onclick="event.stopPropagation()">
+rm.innerHTML=`<div style="background:linear-gradient(180deg,var(--bg2),rgba(11,15,18,.95));border:1px solid #4caf5044;border-radius:18px;border-left:4px solid #4caf50;box-shadow:0 24px 60px rgba(0,0,0,.4);backdrop-filter:blur(10px);padding:20px;width:380px;display:flex;flex-direction:column;gap:8px" onclick="event.stopPropagation()">
   <div style="font-family:var(--mono);font-size:11px;font-weight:800;color:#4caf50;letter-spacing:.1em">⚙ SERVER RACK · Dev Teams</div>
   <div id="rackStats" style="display:flex;flex-direction:column;gap:4px"></div>
   <button onclick="document.getElementById('rackModal').style.display='none'" style="font-family:var(--mono);font-size:9px;padding:5px 12px;background:var(--bg3);border:1px solid var(--b2);color:var(--t2);cursor:pointer;align-self:flex-end;margin-top:4px">Cerrar</button>
@@ -6981,7 +7237,7 @@ document.getElementById('boardModal')?.remove();
 const bm=document.createElement('div');
 bm.id='boardModal';
 bm.style.cssText='display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.88);align-items:center;justify-content:center';
-bm.innerHTML=`<div style="background:var(--bg2);border:1px solid var(--b2);padding:20px;width:580px;max-height:88vh;overflow-y:auto;display:flex;flex-direction:column;gap:10px" onclick="event.stopPropagation()">
+bm.innerHTML=`<div style="background:linear-gradient(180deg,var(--bg2),rgba(11,15,18,.95));border:1px solid var(--b2);border-radius:18px;box-shadow:0 24px 60px rgba(0,0,0,.4);backdrop-filter:blur(10px);padding:20px;width:580px;max-height:88vh;overflow-y:auto;display:flex;flex-direction:column;gap:10px" onclick="event.stopPropagation()">
   <div style="display:flex;justify-content:space-between;align-items:center">
     <div style="font-family:var(--mono);font-size:11px;font-weight:800;color:var(--t1);letter-spacing:.1em">📋 WHITEBOARD · Dev Teams</div>
     <div style="display:flex;gap:4px">
@@ -7112,7 +7368,7 @@ function openTableMenu(){
   const existing=document.getElementById('tableMenuOv');if(existing)existing.remove();
   const ov=document.createElement('div');ov.id='tableMenuOv';
   ov.style.cssText='position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.88);display:flex;align-items:center;justify-content:center';
-  ov.innerHTML=`<div style="background:var(--bg2);border:1px solid #0fa85544;border-left:4px solid #0fa855;padding:22px;width:480px;display:flex;flex-direction:column;gap:10px" onclick="event.stopPropagation()">
+  ov.innerHTML=`<div style="background:linear-gradient(180deg,var(--bg2),rgba(11,15,18,.95));border:1px solid #0fa85544;border-radius:18px;border-left:4px solid #0fa855;box-shadow:0 24px 60px rgba(0,0,0,.4);backdrop-filter:blur(10px);padding:22px;width:480px;display:flex;flex-direction:column;gap:10px" onclick="event.stopPropagation()">
     <div style="display:flex;justify-content:space-between;align-items:center">
       <div style="font-family:var(--mono);font-size:11px;font-weight:800;color:var(--t1)">🪑 SALA DE REUNIONES</div>
       <button onclick="document.getElementById('tableMenuOv').remove()" style="background:none;border:none;color:var(--t3);font-size:16px;cursor:pointer">X</button>
@@ -7163,7 +7419,7 @@ function openSprintCalendar(){
   const ov=document.createElement('div');ov.id='calOv';
   ov.style.cssText='position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.88);display:flex;align-items:center;justify-content:center';
   const monthName=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'][now.getMonth()];
-  let calHTML=`<div style="background:var(--bg2);border:1px solid var(--b2);padding:20px;width:480px;display:flex;flex-direction:column;gap:10px" onclick="event.stopPropagation()">
+  let calHTML=`<div style="background:linear-gradient(180deg,var(--bg2),rgba(11,15,18,.95));border:1px solid var(--b2);border-radius:18px;box-shadow:0 24px 60px rgba(0,0,0,.4);backdrop-filter:blur(10px);padding:20px;width:480px;display:flex;flex-direction:column;gap:10px" onclick="event.stopPropagation()">
     <div style="display:flex;justify-content:space-between;align-items:center">
       <div style="font-family:var(--mono);font-size:11px;font-weight:800;color:var(--t1)">📅 SPRINT · ${monthName} ${now.getFullYear()}</div>
       <button onclick="document.getElementById('calOv').remove()" style="background:none;border:none;color:var(--t3);font-size:16px;cursor:pointer">X</button>
@@ -7458,6 +7714,8 @@ function initConsole(){
   const ms=document.getElementById('cmsgs'),ip=document.querySelector('.cinp-area');
   const tw=document.getElementById('toolMiniWrap'),sw=document.getElementById('chatSearchWrap');
   const rail=document.getElementById('consoleRail');
+  const providerTag=document.getElementById('noKeyProvider');
+  if(providerTag)providerTag.textContent=providerLabel();
   if(!GKEY){
     nk.style.display='block';
     if(cb)cb.style.display='none';
@@ -7495,6 +7753,7 @@ function _buildCommandPaletteEntries(){
     _paletteAction('Workspace · Ultimo archivo','Reabrir ultimo archivo',()=>workspaceQuickAction('last')),
     _paletteAction('Workspace · Leer archivo','Abrir picker o leer ultimo',()=>workspaceQuickAction('read')),
     _paletteAction('Workspace · Analizar archivo','Enviar archivo al agente actual',()=>workspaceQuickAction('analyze')),
+    _paletteAction('Workspace · Subir documentos','Carga archivos nuevos al folder uploads',()=>workspaceQuickAction('upload')),
     _paletteAction('Ir a Chat','Panel conversacional',()=>switchPanel('consola')),
     _paletteAction('Ir a Equipo','Arbol del equipo',()=>switchPanel('tree')),
     _paletteAction('Ir a Estado','Vista operativa',()=>switchPanel('status')),
@@ -7607,7 +7866,7 @@ function refreshOpsBar(){
 
   const panelMap={tree:'equipo',flujo:'flujo',consola:'chat',status:'estado',dash:'dashboard'};
   metaEl.textContent=[
-    GKEY?'Groq online':'modo demo',
+    hasActiveKey()?`${providerLabel()} online`:'modo demo',
     `panel ${panelMap[currentPanel]||currentPanel}`,
     `${_activeAgentsCount()} activos`
   ].join(' - ');
@@ -8129,8 +8388,8 @@ function renderDashboard() {
     <div class="dash-row">
       <div class="dash-dot" style="background:var(--cyan)"></div>
       <div class="dash-main">
-        <div class="dash-strong">Groq</div>
-        <div class="dash-sub">${GKEY ? 'Conectado' : 'Demo mode'}</div>
+        <div class="dash-strong">${providerLabel()}</div>
+        <div class="dash-sub">${hasActiveKey() ? 'Conectado' : 'Demo mode'}</div>
       </div>
     </div>
   `;
@@ -8138,6 +8397,18 @@ function renderDashboard() {
 
 
 /*  GROQ  */
+
+function _advanceOpenRouterModel() {
+  if (API_PROVIDER !== 'openrouter') return;
+  const mods = API_PROVIDERS.openrouter.models;
+  let idx = mods.indexOf(GMOD);
+  idx = (idx + 1) % mods.length;
+  GMOD = mods[idx];
+  const modSel = document.getElementById('modelSel');
+  if (modSel) modSel.value = GMOD;
+  try { localStorage.setItem(MODEL_STORAGE_KEYS.openrouter, GMOD); } catch(e) {}
+  console.log(`[Auto-Fallback] Switched to next OpenRouter model: ${GMOD}`);
+}
 
 function readGroqText(content){
   if(Array.isArray(content)){
@@ -8147,39 +8418,79 @@ function readGroqText(content){
 }
 async function groq(msgs,onTok,maxTok=200,temp=0.35){
   if(!GKEY)return null;
-  setSt('groq...',true,'api');
+  const provider=providerConfig();
+  const allowStream=API_PROVIDER==='groq';
+  setSt(`${providerLabel()}...`,true,'api');
 
   const rawMsgs=Array.isArray(msgs)?msgs:[];
   const metricAg=((rawMsgs[0]?.role==='system'&&typeof rawMsgs[0]?.content==='string'&&rawMsgs[0].content.match(/\[\[AG:([a-z0-9_]+)\]\]/i))||[])[1]||activeAg||null;
   const lastUserMsg=[...rawMsgs].reverse().find(m=>m?.role==='user')?.content||'';
   const lastUserWords=String(lastUserMsg).trim().split(/\s+/).filter(Boolean).length;
   const hasComplexHint=rawMsgs.some(m=>m?.role==='system'&&typeof m?.content==='string'&&m.content.includes('Modo de respuesta: complex'));
-  const wantsStream=GMOD!=='groq/compound'&&!hasComplexHint&&lastUserWords<=12&&maxTok<=120;
+  const wantsStream=allowStream&&GMOD!=='groq/compound'&&!hasComplexHint&&lastUserWords<=12&&maxTok<=120;
 
-  const reqMsgs=rawMsgs.map(m=>{
-    if(m?.role!=='system'||typeof m?.content!=='string')return m;
-    return {...m,content:m.content.replace(/\[\[AG:[a-z0-9_]+\]\]\s*/i,'')};
-  });
+  const reqMsgs=rawMsgs
+    .filter(m=>m&&typeof m.content==='string'&&m.content.trim()!=='')
+    .map(m=>{
+      let content=m.content;
+      if(m.role==='system') content=content.replace(/\[\[AG:[a-z0-9_]+\]\]\s*/i,'');
+      return {role:m.role||'user',content};
+    });
+
+  let payload = {
+    model: GMOD,
+    messages: reqMsgs
+  };
+
+  if (API_PROVIDER !== 'openrouter') {
+    payload.temperature = Math.min(temp, 2);
+    payload.max_tokens = Math.floor(maxTok);
+  }
+
+  if (API_PROVIDER === 'openrouter' && (GMOD.includes('google') || GMOD.includes('gemma'))) {
+    const sysMsgIndex = payload.messages.findIndex(m => m.role === 'system');
+    if (sysMsgIndex !== -1) {
+      const sysContent = payload.messages[sysMsgIndex].content;
+      payload.messages.splice(sysMsgIndex, 1);
+      const userMsgIndex = payload.messages.findIndex(m => m.role === 'user');
+      if (userMsgIndex !== -1) {
+        payload.messages[userMsgIndex].content = `[System Instructions: ${sysContent}]\n\n${payload.messages[userMsgIndex].content}`;
+      } else {
+        payload.messages.push({ role: 'user', content: `[System Instructions: ${sysContent}]` });
+      }
+    }
+  }
+
+  if (wantsStream) {
+    payload.stream = true;
+  }
+  
+  // OpenRouter free models a menudo rechazan parametros no soportados.
+  const isOpenRouterFree = API_PROVIDER === 'openrouter' && String(GMOD).includes(':free');
+
+  if (temp !== undefined && temp !== null && !isOpenRouterFree) {
+    payload.temperature = temp;
+  }
+
+  if (maxTok && !isOpenRouterFree) {
+    payload.max_tokens = Math.floor(maxTok);
+  }
 
   let r;
   try{
-    r=await fetch('https://api.groq.com/openai/v1/chat/completions',{
+    r=await fetch(provider.endpoint,{
       method:'POST',
       headers:{
         'Authorization':`Bearer ${GKEY}`,
-        'Content-Type':'application/json'
+        'Content-Type':'application/json',
+        'HTTP-Referer': 'https://dev-teams-local.app/',
+        'X-Title': 'Dev Teams AI'
       },
-      body:JSON.stringify({
-        model:GMOD,
-        messages:reqMsgs,
-        stream:wantsStream,
-        max_tokens:maxTok,
-        temperature:temp
-      })
+      body: JSON.stringify(payload)
     });
   }catch(e){
     setSt('error de red',false);
-    showToast('Error de red con Groq','#cc3344');
+    showToast(`Error de red con ${providerLabel()}`,'#cc3344');
     return null;
   }
 
@@ -8187,10 +8498,51 @@ async function groq(msgs,onTok,maxTok=200,temp=0.35){
     let em='';
     try{
       const j=await r.json();
-      em=j?.error?.message||'';
+      em=j?.error?.message||j?.message||'';
+      console.warn('API Error Payload:', JSON.stringify(j, null, 2));
     }catch{}
+    if(r.status===400){
+      setSt('error 400',false);
+      let errMsg = em ? em.slice(0, 60) : 'Parámetros no soportados por el modelo.';
+      if(em.toLowerCase().includes('developer instruction') || em.toLowerCase().includes('system instruction')){
+         errMsg = 'El modelo no soporta "system prompts".';
+      }
+      
+      if(API_PROVIDER==='openrouter'){
+        showToast(`${providerLabel()}: (400) ${errMsg}. Cambia el modelo manualmente.`,`#cc3344`);
+        // _advanceOpenRouterModel();
+      } else {
+        showToast(`${providerLabel()} (400): ${errMsg}`,`#cc3344`);
+      }
+      return null;
+    }
+    if(r.status===402){
+      setSt('error 402',false);
+      showToast(`${providerLabel()}: Fondos insuficientes (402).`,`#cc3344`);
+      return null;
+    }
+    if(r.status===429){
+      setSt('límite 429',false);
+      if(API_PROVIDER==='openrouter'){
+        showToast(`${providerLabel()}: Modelo saturado (429). Cambia el modelo manualmente.`,`#cc3344`);
+        // _advanceOpenRouterModel();
+      } else {
+        showToast(`${providerLabel()}: Demasiadas peticiones. Espera unos segundos.`,`#cc3344`);
+      }
+      return null;
+    }
+    if(r.status===404){
+      setSt('error 404',false);
+      if(API_PROVIDER==='openrouter'){
+        showToast(`${providerLabel()}: (404) Modelo obsoleto. Cambia el modelo manualmente.`,`#cc3344`);
+        // _advanceOpenRouterModel();
+      } else {
+        showToast(`${providerLabel()}: Modelo actual no encontrado o no disponible.`,`#cc3344`);
+      }
+      return null;
+    }
     setSt('err '+r.status,false);
-    showToast(`Groq error ${r.status}${em?' - '+em.slice(0,50):''}`,'#cc3344');
+    showToast(`${providerLabel()} error ${r.status}${em?' - '+em.slice(0,50):''}`,'#cc3344');
     return null;
   }
 
@@ -8201,13 +8553,15 @@ async function groq(msgs,onTok,maxTok=200,temp=0.35){
       let full=readGroqText(choice?.message?.content);
       let tc=data?.usage?.completion_tokens||((full&&full.trim())?full.trim().split(/\s+/).length:0);
 
-      if(full&&choice?.finish_reason==='length'){
+      if(allowStream&&full&&choice?.finish_reason==='length'){
         try{
-          const r2=await fetch('https://api.groq.com/openai/v1/chat/completions',{
+          const r2=await fetch(provider.endpoint,{
             method:'POST',
             headers:{
               'Authorization':`Bearer ${GKEY}`,
-              'Content-Type':'application/json'
+              'Content-Type':'application/json',
+              'HTTP-Referer': window.location.href.startsWith('file:') ? 'https://dev-teams-local.app' : window.location.href,
+              'X-Title': 'Dev Teams AI'
             },
             body:JSON.stringify({
               model:GMOD,
@@ -8246,7 +8600,7 @@ async function groq(msgs,onTok,maxTok=200,temp=0.35){
       return null;
     }catch(e){
       setSt('json invalido',false);
-      showToast('Respuesta invalida de Groq','#cc3344');
+      showToast(`Respuesta invalida de ${providerLabel()}`,'#cc3344');
       return null;
     }
   }
@@ -8486,7 +8840,7 @@ function openYaredStats(){
   const loc=Math.floor(_yaredIdle.linesOfCode);
   const ov=document.createElement('div');ov.id='yaredStatsOv';
   ov.style.cssText='position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.88);display:flex;align-items:center;justify-content:center';
-  ov.innerHTML=`<div style="background:var(--bg2);border:1px solid #3a8ccc44;border-left:4px solid #3a8ccc;padding:22px;width:380px;display:flex;flex-direction:column;gap:10px" onclick="event.stopPropagation()">
+  ov.innerHTML=`<div style="background:linear-gradient(180deg,var(--bg2),rgba(11,15,18,.95));border:1px solid #3a8ccc44;border-radius:18px;border-left:4px solid #3a8ccc;box-shadow:0 24px 60px rgba(0,0,0,.4);backdrop-filter:blur(10px);padding:22px;width:380px;display:flex;flex-direction:column;gap:10px" onclick="event.stopPropagation()">
     <div style="display:flex;justify-content:space-between;align-items:center">
       <div style="font-family:var(--mono);font-size:11px;font-weight:800;color:#3a8ccc;letter-spacing:.1em">⚡ YARED · FOUNDER STATS</div>
       <button onclick="document.getElementById('yaredStatsOv').remove()" style="background:none;border:none;color:var(--t3);font-size:16px;cursor:pointer">X</button>
@@ -8539,7 +8893,7 @@ function startFlowMetrics(agKey){
 }
 function addFlowTokens(agKey,n){if(_flowMetrics[agKey])_flowMetrics[agKey].tokens+=n;}
 function addFlowTool(agKey){if(_flowMetrics[agKey])_flowMetrics[agKey].tools++;}
-const COST_PER_1K={'llama-3.3-70b-versatile':0.00059,'llama-3.1-8b-instant':0.00005,'meta-llama/llama-4-maverick-17b-128e-instruct':0.0004,'moonshotai/kimi-k2-instruct-0905':0.0009,'groq/compound':0.001};
+const COST_PER_1K={'llama-3.3-70b-versatile':0.00059,'llama-3.1-8b-instant':0.00005,'meta-llama/llama-4-maverick-17b-128e-instruct':0.0004,'moonshotai/kimi-k2-instruct-0905':0.0009,'groq/compound':0.001,'openrouter/gpt-4o-mini':0.006,'openrouter/gpt-4o':0.01,'openrouter/gpt-3.5-turbo-instruct':0.0005,'openrouter/deepseek-r1-0528':0.002};
 function showFlowMetrics(agKey){
   const m=_flowMetrics[agKey];if(!m)return;
   const cfg=ACFG[agKey];
@@ -8948,7 +9302,7 @@ function openMeetHistory(){
   const existing=document.getElementById('meetHistOv');if(existing)existing.remove();
   const ov=document.createElement('div');ov.id='meetHistOv';
   ov.style.cssText='position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.88);display:flex;align-items:center;justify-content:center';
-  ov.innerHTML=`<div style="background:var(--bg2);border:1px solid var(--b2);padding:20px;width:480px;max-height:80vh;display:flex;flex-direction:column;gap:10px" onclick="event.stopPropagation()">
+  ov.innerHTML=`<div style="background:linear-gradient(180deg,var(--bg2),rgba(11,15,18,.95));border:1px solid var(--b2);border-radius:18px;box-shadow:0 24px 60px rgba(0,0,0,.4);backdrop-filter:blur(10px);padding:20px;width:480px;max-height:80vh;display:flex;flex-direction:column;gap:10px" onclick="event.stopPropagation()">
     <div style="display:flex;justify-content:space-between;align-items:center">
       <div style="font-family:var(--mono);font-size:11px;font-weight:800;color:var(--t1);letter-spacing:.1em">⇄ HISTORIAL DE REUNIONES</div>
       <button onclick="document.getElementById('meetHistOv').remove()" style="background:none;border:none;color:var(--t3);font-size:16px;cursor:pointer">X</button>
@@ -9735,7 +10089,7 @@ async function compressMemory(k){
 }
 
 function clearAgentMemory(k){chatH[k]=[];localStorage.removeItem('chat_'+k);if(chatAgent===k){document.getElementById('cmsgs').innerHTML='';addGreeting();}showToast('Memoria de '+ACFG[k].name.split(' ')[0]+' limpiada','#cc3344');}
-function initConsole(){const nk=document.getElementById('noKeyMsg'),cb=document.getElementById('casBar');const ms=document.getElementById('cmsgs'),ip=document.querySelector('.cinp-area');const tw=document.getElementById('toolMiniWrap');const sw=document.getElementById('chatSearchWrap');const rail=document.getElementById('consoleRail');if(!GKEY){nk.style.display='block';if(cb)cb.style.display='none';if(ms)ms.style.display='none';if(ip)ip.style.display='none';if(tw)tw.style.display='none';if(sw)sw.style.display='none';if(rail)rail.style.display='none';return;}nk.style.display='none';if(rail)rail.style.display='flex';if(ms)ms.style.display='flex';if(ip)ip.style.display='flex';_refreshWorkspaceQuickUI();applyConsoleSections();updateConsoleContextHint();if(chatAgent!=='all'&&chatH[chatAgent].length===0)addGreeting();}
+function initConsole(){const nk=document.getElementById('noKeyMsg'),cb=document.getElementById('casBar');const ms=document.getElementById('cmsgs'),ip=document.querySelector('.cinp-area');const tw=document.getElementById('toolMiniWrap');const sw=document.getElementById('chatSearchWrap');const rail=document.getElementById('consoleRail');const providerTag=document.getElementById('noKeyProvider');if(providerTag)providerTag.textContent=providerLabel();if(!GKEY){nk.style.display='block';if(cb)cb.style.display='none';if(ms)ms.style.display='none';if(ip)ip.style.display='none';if(tw)tw.style.display='none';if(sw)sw.style.display='none';if(rail)rail.style.display='none';return;}nk.style.display='none';if(rail)rail.style.display='flex';if(ms)ms.style.display='flex';if(ip)ip.style.display='flex';_refreshWorkspaceQuickUI();applyConsoleSections();updateConsoleContextHint();if(chatAgent!=='all'&&chatH[chatAgent].length===0)addGreeting();}
 const GREETS={
   ceo:'Hola, soy Ana Garcia, CEO de Dev Teams.',
   pm:'Hola, soy Sofia Castro, Product Manager de Dev Teams.',
@@ -9870,6 +10224,98 @@ function _isWordFile(name){
 
 function _workspaceToolAgentKey(){
   return chatAgent==='all'?'pm':(chatAgent||'pm');
+}
+
+const _WORKSPACE_UPLOAD_TYPES=[{
+  description:'Documentos y hojas',
+  accept:{
+    'application/pdf':['.pdf'],
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document':['.docx'],
+    'application/msword':['.doc'],
+    'application/vnd.ms-excel':['.xls','.xlsx'],
+    'text/plain':['.txt','.md','.json','.csv','.log'],
+    'text/javascript':['.js'],
+    'text/typescript':['.ts','.tsx']
+  }
+}];
+
+async function _selectWorkspaceUploadFiles(){
+  if(window.showOpenFilePicker){
+    try{
+      const handles=await window.showOpenFilePicker({multiple:true,types:_WORKSPACE_UPLOAD_TYPES});
+      return Promise.all(handles.map(async handle=>({name:handle.name,file:await handle.getFile()})));
+    }catch(e){
+      if(/abort/i.test(`${e?.name||''} ${e?.message||''}`))return [];
+      throw e;
+    }
+  }
+  return new Promise(resolve=>{
+    const input=document.createElement('input');
+    input.type='file';
+    input.multiple=true;
+    input.accept='.txt,.md,.pdf,.docx,.doc,.xlsx,.xls,.json,.csv,.js,.ts,.tsx';
+    input.style.position='fixed';
+    input.style.left='-9999px';
+    input.style.opacity='0';
+    document.body.appendChild(input);
+    let finished=false;
+    const done=(files)=>{
+      if(finished)return;
+      finished=true;
+      input.remove();
+      resolve(files.map(file=>({name:file.name,file})));
+    };
+    input.addEventListener('change',()=>done(Array.from(input.files||[])));
+    input.addEventListener('blur',()=>setTimeout(()=>{
+      if(!finished && !input.files?.length)done([]);
+    },250),{once:true});
+    input.click();
+  });
+}
+
+async function _uniqueWorkspaceFileName(dirHandle,name){
+  const dot=name.lastIndexOf('.');
+  const base=dot>0?name.slice(0,dot):name;
+  const ext=dot>0?name.slice(dot):'';
+  let candidate=name;
+  let counter=1;
+  while(true){
+    try{
+      await dirHandle.getFileHandle(candidate);
+      candidate=`${base} (${counter++})${ext}`;
+    }catch(e){
+      const reason=`${e?.name||''} ${e?.code||''} ${e?.message||''}`;
+      if(/notfound/i.test(reason))return candidate;
+      throw e;
+    }
+  }
+}
+
+async function _uploadWorkspaceFiles(){
+  if(!_workspaceDirHandle){
+    await _pickWorkspaceFolder();
+  }
+  const selections=await _selectWorkspaceUploadFiles();
+  if(!selections.length)return {message:'No se seleccionaron archivos.',files:[]};
+  const uploads=await _workspaceDirHandle.getDirectoryHandle('uploads',{create:true});
+  const created=[];
+  for(const item of selections){
+    const name=item.name||'documento';
+    const targetName=await _uniqueWorkspaceFileName(uploads,name);
+    const dest=await uploads.getFileHandle(targetName,{create:true});
+    const writable=await dest.createWritable();
+    await writable.write(item.file);
+    await writable.close();
+    const rel=`uploads/${targetName}`;
+    created.push(rel);
+    _rememberWorkspaceFile(rel);
+  }
+  await _indexWorkspace(true);
+  const humanList=created.map(p=>_workspaceDisplayName(p)).join(', ');
+  return {
+    message:`Subidos ${created.length} archivos a uploads/: ${humanList}`,
+    files:created
+  };
 }
 
 function _workspaceDisplayName(pathLike){
@@ -10405,6 +10851,7 @@ function _workspaceToolHelp(){
     '/leer ruta -> abrir archivo',
     '/buscar texto -> buscar en proyecto',
     '/analizar ruta -> revisar archivo con Groq',
+    '/subir -> subir nuevos documentos al folder uploads del workspace',
     '/exportar -> bajar chat actual'
   ].join('\n');
 }
@@ -10488,6 +10935,18 @@ async function _handleBrowserToolCommand(rawText, agentKey, userLabel = '') {
       return reply(`Análisis completado:\n\n${data.analysis}`);
     } catch (e) {
       return reply(`Error al analizar: ${e.message}`);
+    }
+  }
+
+  if (/^\/subir\b/i.test(text)) {
+    try {
+      const result = await _uploadWorkspaceFiles();
+      if (result.files.length) {
+        updateSharedDecision(agentKey, `Subió ${result.files.length} documentos: ${result.files.map(f => _workspaceDisplayName(f)).join(', ')}`);
+      }
+      return reply(result.message);
+    } catch (e) {
+      return reply(`Error al subir archivos: ${e.message}`);
     }
   }
 
@@ -10597,6 +11056,28 @@ async function workspaceQuickAction(kind){
   if(kind==='folder')return _handleBrowserToolCommand('/carpeta',agentKey,'Tools > Carpeta');
   if(kind==='files')return _handleBrowserToolCommand('/archivos',agentKey,'Tools > Archivos');
   if(kind==='export')return _handleBrowserToolCommand('/exportar',agentKey,'Tools > Exportar chat');
+  if(kind==='upload'){
+    try{
+      const result=await _uploadWorkspaceFiles();
+      if(result.files.length){
+        updateSharedDecision(agentKey,`Subió ${result.files.length} documentos: ${result.files.map(f=>_workspaceDisplayName(f)).join(', ')}`);
+        _workspaceToolReply(agentKey,'Tools > Subir',result.message);
+        
+        if(result.files.length === 1){
+          const uploadedFile = result.files[0];
+          _setWorkspaceQuickQuery(uploadedFile);
+          return _handleBrowserToolCommand(`/analizar ${uploadedFile}`, agentKey, `Tools > Analizar ${_workspaceDisplayName(uploadedFile)}`);
+        } else {
+          // Si son múltiples, abrir el selector para que decida cuál analizar
+          return openWorkspaceFilePicker('analyze');
+        }
+      } else {
+        return _workspaceToolReply(agentKey,'Tools > Subir',result.message);
+      }
+    }catch(e){
+      return _workspaceToolReply(agentKey,'Tools > Subir',`Error al subir archivos: ${e?.message||'error'}`);
+    }
+  }
 
   if(kind==='last'){
     if(!_workspaceLastFilePath){
@@ -11582,8 +12063,13 @@ function triggerDeployEffect(x,y,z,col='#0fa855'){
     scene.add(mesh);
     _deployFx.push({m:mesh,t:0,vx:(Math.random()-.5)*1.8,vy:2+Math.random()*2.5,vz:(Math.random()-.5)*1.8});
   }
-  const flash=pL(parseInt(col.replace('#','0x')),4,18,x,y+2,z);
-  setTimeout(()=>scene.remove(flash),700);
+  // Particula central
+  if(window._deployFxLight){
+    window._deployFxLight.color.setHex(parseInt(col.replace('#','0x')));
+    window._deployFxLight.position.set(x, y+2, z);
+    window._deployFxLight.intensity = 4;
+    setTimeout(() => { window._deployFxLight.intensity = 0; }, 700);
+  }
   showToast('🚀 Deploy lanzado a produccion!',col);
   if(AG['devops'])AG['devops'].say('🚀 Deploy en prod!');
 }
@@ -11714,24 +12200,47 @@ function handleObjectClick(action){
   else if(action==='pingpong')startPingPong();
   else if(action==='elevator')callElevator();
   else if(action==='rack')openRackStatus();
-  else if(action==='monitor_devbe'){document.getElementById('monitorModal').style.display='flex';AG['devbe']?.say('👀 mirando el codigo');}
+  else if(action==='monitor_devbe'){
+    const m = document.getElementById('monitorModal');
+    if(m) m.style.display='flex';
+    openAgentMonitor('devbe');
+  }
   else if(action==='table')openTableMenu();
 else if(action==='plant')waterPlant(action);
 }
 
-// #11 CLIMA REAL CARTAGENA
+// #11 CLIMA DINAMICO MUNDIAL
 let _weatherData=null;
+let _userCity = null;
+let _userLat = 10.3997; // Fallback Cartagena
+let _userLon = -75.5144;
+
 async function fetchWeather(){
   try{
-    const r=await fetch('https://api.open-meteo.com/v1/forecast?latitude=10.3997&longitude=-75.5144&current=temperature_2m,weathercode,windspeed_10m,precipitation&timezone=America/Bogota');
+    if (!_userCity) {
+      try {
+        const geoRes = await fetch('https://get.geojs.io/v1/ip/geo.json');
+        const geoData = await geoRes.json();
+        if (geoData.latitude && geoData.longitude) {
+          _userLat = geoData.latitude;
+          _userLon = geoData.longitude;
+          _userCity = geoData.city || geoData.country || 'Tu ubicación';
+        }
+      } catch(e) {
+        console.warn('GeoIP failed', e);
+        _userCity = 'Cartagena';
+      }
+    }
+
+    const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${_userLat}&longitude=${_userLon}&current=temperature_2m,weathercode,windspeed_10m,precipitation&timezone=auto`);
     const d=await r.json();
     _weatherData=d.current;
     applyWeatherToScene(_weatherData);
     const label=getWeatherLabel(_weatherData.weathercode);
-    showToast(`🌡 Cartagena ahora: ${_weatherData.temperature_2m}°C · ${label}`,'#00bcd4');
+    showToast(`🌡 ${_userCity}: ${_weatherData.temperature_2m}°C · ${label}`,'#00bcd4');
   }catch(e){
     console.warn('Weather fetch failed',e);
-    showToast('âš  Clima no disponible  reintentando...','#d97020');
+    showToast('⚠️ Clima no disponible  reintentando...','#d97020');
     setTimeout(fetchWeather,120000);
   }
 }
@@ -11746,11 +12255,12 @@ function applyWeatherToScene(w){
   const code=w.weathercode||0;
   const temp=w.temperature_2m||30;
   const wind=w.windspeed_10m||5;
+  const cName = _userCity || 'tu zona';
   // Temperatura afecta color de luz
   if(temp>32){
     // Calor  luz mas amarilla/naranja
     _ambLight.color.set(0xffe8c0);
-    showToast('🥵 Calor intenso en Cartagena  luz calida','#d97020');
+    showToast(`🥵 Calor intenso en ${cName}  luz calida`,'#d97020');
   }else if(temp<24){
     // Fresco  luz mas fria
     _ambLight.color.set(0xd0e8ff);
@@ -11760,7 +12270,7 @@ function applyWeatherToScene(w){
     _ambLight.color.set(0x8090a0);
     if(_sunLight)_sunLight.intensity=.3;
     scene.fog.color.set(0x0a0e14);scene.fog.near=20;scene.fog.far=60;
-    showToast('🌧 Lluvia en Cartagena  visibilidad reducida','#3a8ccc');
+    showToast(`🌧 Lluvia en ${cName}  visibilidad reducida`,'#3a8ccc');
     startRainEffect();
     // Agentes caminan mas lento
     Object.values(AG).forEach(ag=>ag._weatherSlowdown=.55);
@@ -11836,7 +12346,7 @@ function pushNotif(title,body,col='#0fa855'){
 }
 
 /*  INIT  */
-function _boot(){
+async function _boot(){
   const _ld=document.createElement('div');_ld.id='ldScr';_ld.style.cssText='position:fixed;inset:0;z-index:9999;background:#0d0f0e;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;font-family:var(--mono)';
   _ld.innerHTML='<div style="font-size:22px;font-weight:800;color:#0fa855">Dev Teams</div><div style="font-size:10px;color:#2a3830;letter-spacing:.14em">CARGANDO ESCENA...</div><div id="ldBar" style="width:200px;height:2px;background:#1e2422"><div id="ldFill" style="height:100%;background:#0fa855;width:0%;transition:width .3s"></div></div>';
   document.body.appendChild(_ld);
@@ -11844,13 +12354,13 @@ function _boot(){
   let _lp=0;const _li=setInterval(()=>{_lp=Math.min(90,_lp+Math.random()*12);if(_lf)_lf.style.width=_lp+'%';},200);
   buildNav();
   reqNotifPerm();
-  initThree();
-  setTimeout(()=>{clearInterval(_li);if(_lf)_lf.style.width='100%';setTimeout(()=>{_ld.style.opacity='0';_ld.style.transition='opacity .4s';setTimeout(()=>_ld.remove(),400);},300);},1800);
-// #7: boot Web Worker after NAV is built
-initPathWorker();
-updateClock();
-setTimeout(fetchWeather,2000); // fetch after scene loads
-setTimeout(renderDashboard, 1200);
+  await initThree();
+  setTimeout(()=>{clearInterval(_li);if(_lf)_lf.style.width='100%';setTimeout(()=>{_ld.style.opacity='0';_ld.style.transition='opacity .4s';setTimeout(()=>_ld.remove(),400);},300);},800);
+  // #7: boot Web Worker after NAV is built
+  initPathWorker();
+  updateClock();
+  setTimeout(fetchWeather,2000); // fetch after scene loads
+  setTimeout(renderDashboard, 1200);
 }
 if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',_boot);}else{_boot();}
 
@@ -12155,6 +12665,11 @@ function visualCleanupEffect() {
     }, i * 150);
   });
 }
+
+setTimeout(()=>{
+  updateImprovementPanel();
+  setInterval(updateImprovementPanel,30000);
+},3500);
 
 </script>
 
