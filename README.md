@@ -3,7 +3,7 @@
 ![Status](https://img.shields.io/badge/estado-alpha-0fa855?style=for-the-badge)
 ![Build](https://img.shields.io/badge/build-static_app-111111?style=for-the-badge)
 ![Three.js](https://img.shields.io/badge/Three.js-r128-black?style=for-the-badge&logo=threedotjs&logoColor=white)
-![Groq](https://img.shields.io/badge/Groq-llama_4_%2F_kimi_k2-f55036?style=for-the-badge)
+![Groq](https://img.shields.io/badge/Groq-llama_4_%2F_deepseek_r1-f55036?style=for-the-badge)
 ![License](https://img.shields.io/badge/licencia-MIT-blue?style=for-the-badge)
 
 Una oficina 3D interactiva con ocho agentes de IA. Con una arquitectura modular y limpia, funciona en modo demo sin credenciales y escala a respuestas reales en cuanto conectas una API key de Groq.
@@ -85,11 +85,13 @@ La app valida la key con una llamada real antes de confirmar la conexión. Si fa
 
 | Identificador | Descripción |
 |---|---|
-| `llama-3.3-70b-versatile` | Default equilibrado |
-| `llama-3.1-8b-instant` | Respuestas más rápidas |
-| `meta-llama/llama-4-maverick-17b-128e-instruct` | Mayor razonamiento |
-| `moonshotai/kimi-k2-instruct-0905` | Contexto de 256K |
-| `groq/compound` | Búsqueda en tiempo real |
+| `meta-llama/llama-4-scout-17b-16e-instruct` | Nuevo standard Llama 4 Scout |
+| `meta-llama/llama-4-maverick-17b-128e-instruct` | Razonamiento avanzado Llama 4 |
+| `llama-3.3-70b-versatile` | Llama 3.3 equilibrado (70B) |
+| `deepseek-r1-distill-llama-70b` | Razonamiento especializado R1 |
+| `qwen/qwen3-32b` | Potencia en lógica y código |
+| `google/gemma-4-31b-it:free` | Gemma 4 vía OpenRouter |
+| `whisper-large-v3-turbo` | Transcripción de voz ultra-rápida |
 
 ---
 
@@ -158,7 +160,8 @@ La app ha sido refactorizada para ser modular y mantenible. No hay build step, n
 - **PDF.js** — lectura de archivos PDF locales
 - **SheetJS (xlsx)** — lectura de hojas de cálculo
 - **Mammoth.js** — extracción de texto de archivos Word
-- **Groq API** — inferencia LLM (llama 4, kimi k2 y otros)
+- **Groq API** — inferencia LLM de baja latencia (Llama 4, DeepSeek R1, Qwen 3)
+- **OpenRouter** — acceso a modelos gratuitos (Gemma 4, Qwen Coder)
 - **File System Access API** — acceso a carpetas locales sin subir archivos
 - **Web Workers** — pathfinding A* fuera del hilo principal
 - **Web Speech API** — entrada de voz en la consola
