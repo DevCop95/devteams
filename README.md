@@ -48,6 +48,8 @@ Una oficina 3D interactiva con ocho agentes de IA. Con una arquitectura modular 
 
 ## Últimas Optimizaciones (Performance & UI)
 
+- **Refactorización modular:** Extracción completa de CSS y JavaScript de `index.html` a archivos independientes y reutilizables (`js/agents.js`, `js/chat.js`, `js/workspace.js`, `js/ui.js` y `css/styles.css`), mejorando drásticamente la mantenibilidad.
+- **Control de concurrencia y timeout:** Integración de `AbortController` con un límite de 30 segundos en la función `groq()`, gestionando de forma segura y eficiente llamadas simultáneas al LLM y protegiendo el uso de la API key.
 - **Carga optimizada:** Renderizado inicial asíncrono (*chunking*) para evitar congelamientos en la pantalla de bienvenida.
 - **Cero Lag (Shaders):** Pre-alojamiento de luces dinámicas de eventos para evitar pesadas recompilaciones en Three.js.
 - **FPS estables:** Distribución de carga matemática (*staggering*) al actualizar texturas de monitores para garantizar fluidez.
@@ -135,21 +137,16 @@ El mini menú de herramientas en la consola expone las mismas acciones sin tener
 .
 ├── index.html          # Estructura HTML y contenedores de UI
 ├── css/
-│   └── styles.css      # Todos los estilos visuales (Layout, Animaciones)
+│   └── styles.css      # Estilos visuales (Layout, Animaciones, responsive y efectos premium)
 ├── js/
-│   ├── main.js         # Punto de entrada e inicialización
-│   └── modules/
-│       ├── api.js      # Lógica de Groq, Prompts y Planificador
-│       ├── audio.js    # Efectos de sonido y música generativa
-│       ├── scene.js    # Motor Three.js, Luces y Clima
-│       ├── navigation.js # Sistema de Pathfinding A*
-│       ├── workspace.js # Acceso a archivos locales (PDF, Office, TXT)
-│       ├── agents.js   # Lógica de Agentes, Sub-agentes y Visitantes
-│       └── ui.js       # Dashboard, Modales, Consola y Estado
+│   ├── agents.js       # Lógica e inicialización de agentes, simulación 3D y pathfinding
+│   ├── chat.js         # Consola de chat, integraciones con Groq API, planner y mensajería
+│   ├── ui.js           # Renderizado de componentes UI, dashboard, atajos y control de modales
+│   └── workspace.js    # Acceso a archivos locales y tools del workspace (File System Access)
 └── README.md
 ```
 
-La app ha sido refactorizada para ser modular y mantenible. No hay build step, no hay dependencias npm, no hay backend. Todo lo que necesitas está en los módulos y en las CDN declaradas en el `index.html`.
+La app ha sido refactorizada para ser modular y mantenible, extrayendo el CSS y JS embebido del `index.html` original hacia archivos independientes. No hay build step, no hay dependencias npm, no hay backend. Todo lo que necesitas está en los archivos de la carpeta `js/` y `css/` y en las CDN declaradas en el `index.html`.
 
 ---
 
