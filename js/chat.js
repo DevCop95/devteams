@@ -16,9 +16,9 @@ async function groq(msgs,onTok,maxTok=200,temp=0.35){
   const signal = _currentGroqController.signal;
 
   const rawMsgs=Array.isArray(msgs)?msgs:[];
-  const metricAg=((rawMsgs[0]?.role==='system'&&typeof rawMsgs[0]?.content==='string'&&rawMsgs[0].content.match(/\\[\\[AG:([a-z0-9_]+)\\]\\]/i))||[])[1]||activeAg||null;
+  const metricAg=((rawMsgs[0]?.role==='system'&&typeof rawMsgs[0]?.content==='string'&&rawMsgs[0].content.match(/\[\[AG:([a-z0-9_]+)\]\]/i))||[])[1]||activeAg||null;
   const lastUserMsg=[...rawMsgs].reverse().find(m=>m?.role==='user')?.content||'';
-  const lastUserWords=String(lastUserMsg).trim().split(/\\s+/).filter(Boolean).length;
+  const lastUserWords=String(lastUserMsg).trim().split(/\s+/).filter(Boolean).length;
   const hasComplexHint=rawMsgs.some(m=>m?.role==='system'&&typeof m?.content==='string'&&m.content.includes('Modo de respuesta: complex'));
   const wantsStream=allowStream&&GMOD!=='groq/compound'&&!hasComplexHint&&lastUserWords<=12&&maxTok<=120;
 
@@ -26,7 +26,7 @@ async function groq(msgs,onTok,maxTok=200,temp=0.35){
     .filter(m=>m&&typeof m.content==='string'&&m.content.trim()!=='')
     .map(m=>{
       let content=m.content;
-      if(m.role==='system') content=content.replace(/\\[\\[AG:[a-z0-9_]+\\]\\]\\s*/i,'');
+      if(m.role==='system') content=content.replace(/\[\[AG:[a-z0-9_]+\]\]\s*/i,'');
       return {role:m.role||'user',content};
     });
 
@@ -317,11 +317,37 @@ if(GKEY){
 }
 const DEAD=['llama3-8b-8192','llama3-70b-8192','mixtral-8x7b-32768','gemma2-9b-it','llama-3.1-70b-versatile'];
 if(DEAD.includes(GMOD)){GMOD='llama-3.3-70b-versatile';localStorage.setItem('gm',GMOD);}
-renderApiModelOptions();
-if(GKEY){
-  document.getElementById('keyinp').value=GKEY;
-  document.getElementById('msel').value=GMOD;
-  updApiUI();
+
+// Define getter/setter properties on window to keep agents.js and chat.js in sync
+window.API_PROVIDERS = API_PROVIDERS;
+window.MODEL_STORAGE_KEYS = MODEL_STORAGE_KEYS;
+window.PROVIDER_KEY_NAMES = PROVIDER_KEY_NAMES;
+
+Object.defineProperty(window, 'API_PROVIDER', {
+  get: () => API_PROVIDER,
+  set: (v) => { API_PROVIDER = v; },
+  configurable: true
+});
+Object.defineProperty(window, 'GKEY', {
+  get: () => GKEY,
+  set: (v) => { GKEY = v; },
+  configurable: true
+});
+Object.defineProperty(window, 'GMOD', {
+  get: () => GMOD,
+  set: (v) => { GMOD = v; },
+  configurable: true
+});
+
+if (window.setApiProvider) {
+  window.setApiProvider(API_PROVIDER, { quiet: true });
+} else {
+  renderApiModelOptions();
+  if(GKEY){
+    document.getElementById('keyinp').value=GKEY;
+    document.getElementById('msel').value=GMOD;
+    updApiUI();
+  }
 }
 
 let meetSpeaker=null;

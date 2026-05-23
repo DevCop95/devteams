@@ -1,4 +1,7 @@
 // agents.js - Three.js and Agents movement/behaviors
+import * as THREE from 'https://unpkg.com/three@0.158.0/build/three.module.js';
+window.THREE = THREE;
+
 /*  SOUND  */
 let sndOn=localStorage.getItem('snd')!=='0';let audioCtx=null;
 function getACtx(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();return audioCtx;}
@@ -568,7 +571,7 @@ function setApiProvider(provider,{quiet=false}={}){
     showToast(`${providerLabel()} activo. Antes de aplicar la nueva ruta, confirmemos.`,providerConfig(provider).accent);
   }
 };
-(function(){setApiProvider(API_PROVIDER,{quiet:true});})();
+// (function(){setApiProvider(API_PROVIDER,{quiet:true});})();
 
 let _apiPresenceTimer=hasActiveKey()?(110+Math.random()*70):(35+Math.random()*45);
 let _apiPresenceMode=hasActiveKey()?'live':'demo';
