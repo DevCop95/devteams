@@ -32,6 +32,7 @@
     </button>
     <button class="hbtn" id="chatHdrBtn" onclick="switchPanel('consola')" title="Ir al chat">Chat</button>
     <button class="hbtn" id="directorBtnHdr" onclick="toggleDirectorMode()" title="Modo director">Director</button>
+    <button class="hbtn" id="themeBtnHdr" onclick="toggleTheme()" title="Cambiar tema">☀️ Claro</button>
     <div class="header-more-wrap" id="headerMoreWrap">
       <button class="hbtn" id="moreBtnHdr" onclick="toggleHeaderMenu(event)" title="Mas acciones">Mas</button>
       <div class="header-menu" id="headerMenu" onclick="event.stopPropagation()">
@@ -147,7 +148,7 @@
           <div class="ops-k">Command Center</div>
           <div class="ops-now" id="opsNow">Listo para lanzamiento</div>
         </div>
-        <div style="display:flex;gap:4px;flex-shrink:0">
+        <div class="ops-actions" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px">
           <button class="cas-btn" id="opsCompactBtn" onclick="toggleOpsCompact()">Expandir</button>
           <button class="cas-btn" onclick="openCommandPalette()">Acciones</button>
           <button class="cas-btn todos" onclick="startDemoTour()">Demo</button>
@@ -311,11 +312,6 @@
     <button class="btn" id="btnAuto" onclick="toggleAuto()">Auto</button>
     <button class="btn" onclick="resetSim()">Reset</button>
 <button class="btn" onclick="try{if(_deliveryMesh){if(_deliveryMesh.userData?.shadowGroup)scene.remove(_deliveryMesh.userData.shadowGroup);scene.remove(_deliveryMesh);_deliveryMesh=null;}_deliveryInside=false;_refreshDoorLock();setDoorOpen(false,{force:true});_deliveryTimer=0;}catch(e){}" title="Forzar delivery">📦</button>
-  </div>
-  <div class="spds">vel:
-    <button class="spd sel" onclick="setSpd(1400,this)">1×</button>
-    <button class="spd" onclick="setSpd(700,this)">2×</button>
-    <button class="spd" onclick="setSpd(180,this)">4×</button>
   </div>
   <div class="stline"><div class="sd" id="sd"></div><span id="stxt">listo</span></div>
 </footer>

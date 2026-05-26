@@ -302,7 +302,12 @@ if(!API_PROVIDERS[API_PROVIDER])API_PROVIDER='groq';
 let _sessionProviderKeys={groq:'',openrouter:''};
 try{_sessionProviderKeys.groq=sessionStorage.getItem('gk')||'';}catch(e){}
 try{_sessionProviderKeys.openrouter=sessionStorage.getItem('ork')||'';}catch(e){}
-let activeAg='ceo',simOn=false,step=-1,autoM=false,spd=1400,typing=false;
+window.activeAg='ceo';
+window.simOn=false;
+window.step=-1;
+window.autoM=false;
+window.spd=1400;
+window.typing=false;
 let GKEY=_sessionProviderKeys[API_PROVIDER]||(localStorage.getItem(PROVIDER_KEY_NAMES[API_PROVIDER])||'');
 let GMOD=localStorage.getItem(MODEL_STORAGE_KEYS[API_PROVIDER])||API_PROVIDERS[API_PROVIDER].defaultModel;
 
@@ -350,15 +355,16 @@ if (window.setApiProvider) {
   }
 }
 
-let meetSpeaker=null;
-let _meetingActive=false,_meetingRunId=0;
+window.meetSpeaker=null;
+window._meetingActive=false;
+window._meetingRunId=0;
 const _bootTime=Date.now();
 const _moods={};
 const MOOD_COLS={happy:'#0fa855',stressed:'#cc3344',focused:'#3a8ccc',idle:'#444444'};
 function setMood(k,mood){_moods[k]=mood;const ag=AG[k];if(!ag)return;ag.halo.material.color.setStyle(MOOD_COLS[mood]||'#444');ag.halo.material.opacity=mood==='idle'?0:.18;showToast(`${ACFG[k].name.split(' ')[0]} → ${mood}`,MOOD_COLS[mood],k);}
 function updateMoods(){Object.keys(ACFG).forEach(k=>{const ag=AG[k];if(!ag)return;const s=ag.state;const cur=_moods[k]||'idle';let next=cur;if(s==='working'&&ag.stateTime>10)next='focused';else if(s==='thinking'&&ag.stateTime>8)next='stressed';else if(s==='idle'&&ag.stateTime>15)next='happy';else if(s==='idle')next='idle';if(next!==cur)setMood(k,next);});}
 let _meetCurrentLog=null;
-let profileKey=null;
+window.profileKey=null;
 
 /*  #13 INTERRUPCIÓN POR QA  */
 let _interruptedAg=null,_interruptedStep=-1,_interruptActive=false;
@@ -471,8 +477,8 @@ function selAgent(k){
   typing=false;
   renderStages();
   startFlowMetrics(k);
-  followAg=null;
-  camZTgt=null;
+  window.followAg=null;
+  window.camZTgt=null;
   document.getElementById('btnNext').disabled=false;
   setSt(ACFG[k].name.split(' ')[0]+' seleccionado',false);
   switchPanel('flujo');
@@ -822,7 +828,7 @@ async function typeItEl(el,txt,delay=18){
 
 
 /*  CONSOLE  */
-let chatAgent='ceo';
+window.chatAgent='ceo';
 function filterChatSearch(q){
   const msgs=document.getElementById('cmsgs');
   if(!msgs)return;
@@ -1861,7 +1867,7 @@ async function runAgentChain(startKey,userMsg){
 
 
 //  INTERRUPCIONES ESPONT?NEAS 
-let _interruptCooldown=0;
+window._interruptCooldown=0;
 async function maybeInterrupt(agentKey,userMsg,agentReply){
   if(!GKEY||_interruptCooldown>0||Math.random()>.28)return;
   const others=Object.keys(ACFG).filter(k=>k!==agentKey&&AG[k]?.state==='idle');

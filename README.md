@@ -48,6 +48,9 @@ Una oficina 3D interactiva con ocho agentes de IA. Con una arquitectura modular 
 
 ## Últimas Optimizaciones (Performance & UI)
 
+- **Modo Claro / Oscuro completo:** Toggle integrado en la cabecera (`#themeBtnHdr`) para cambiar instantáneamente entre tema claro y oscuro, con persistencia automática en `localStorage` y sincronización dinámica de iconos/textos del botón.
+- **Diseño espacioso y sin apiñamiento:** Rediseño visual del panel lateral (sidebar) aumentando márgenes, gaps y el padding de tarjetas, botones (`.cas-btn`), nodos del árbol (`.tnode`) y la consola de comandos, eliminando por completo la sensación de saturación.
+- **Escena 3D sin obstrucciones:** Remoción total de los degradados (*vignettes*) oscuros y claros del canvas en la parte superior e inferior (`.cwrap::before` y `.cwrap::after`), eliminando cualquier efecto de neblina o humo blanco y maximizando la visibilidad del escenario desde cualquier perspectiva.
 - **Refactorización modular:** Extracción completa de CSS y JavaScript de `index.html` a archivos independientes y reutilizables (`js/agents.js`, `js/chat.js`, `js/workspace.js`, `js/ui.js` y `css/styles.css`), mejorando drásticamente la mantenibilidad.
 - **Control de concurrencia y timeout:** Integración de `AbortController` con un límite de 30 segundos en la función `groq()`, gestionando de forma segura y eficiente llamadas simultáneas al LLM y protegiendo el uso de la API key.
 - **Carga optimizada:** Renderizado inicial asíncrono (*chunking*) para evitar congelamientos en la pantalla de bienvenida.
@@ -170,6 +173,7 @@ La app ha sido refactorizada para ser modular y mantenible, extrayendo el CSS y 
 | Dato | Dónde se guarda |
 |---|---|
 | API key | `sessionStorage` (no persiste entre sesiones) |
+| Tema seleccionado (Claro/Oscuro) | `localStorage` |
 | Modelo seleccionado | `localStorage` |
 | Historial de chat por agente | `localStorage` |
 | Historial de reuniones | `localStorage` |

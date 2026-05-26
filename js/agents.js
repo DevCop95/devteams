@@ -350,14 +350,17 @@ function updateSkylineParallax(){
 
 function toggleTheme(){
   const isLight=document.body.classList.contains('light-mode');
+  const btn=document.getElementById('themeBtnHdr');
   if(isLight){
     document.body.classList.remove('light-mode');
     localStorage.setItem('theme','dark');
     showToast('🌑 Tema oscuro activado');
+    if(btn) btn.innerHTML = '☀️ Claro';
   }else{
     document.body.classList.add('light-mode');
     localStorage.setItem('theme','light');
     showToast('☀ Tema claro Linear activado','#0a8a44');
+    if(btn) btn.innerHTML = '🌑 Oscuro';
   }
 }
 function toggleDayNight(){
@@ -378,7 +381,7 @@ function toggleDayNight(){
 
 function lerpDayNight(dt){
   if(!_ambLight||!scene)return;const s=dt*1.35;
-  _ambLight.intensity+=((dayMode?1.2:.3)-_ambLight.intensity)*s;
+  _ambLight.intensity+=((dayMode?0.35:.12)-_ambLight.intensity)*s;
   _ambLight.color.lerp(dayMode?_dayAmbCol:_nightAmbCol,s*.7);
   if(_sunLight){_sunLight.intensity+=((dayMode?1.5:0)-_sunLight.intensity)*s;_sunLight.castShadow=_sunLight.intensity>.05;}
   _zoneLights.forEach((l,i)=>{l.intensity+=(_zoneLightBaseInt[i]*(dayMode?1:.12)-l.intensity)*s;});
@@ -389,7 +392,6 @@ function lerpDayNight(dt){
     l.intensity+=(tI-l.intensity)*Math.min(s*.5,.05);
     l.distance+=((dayMode?(atDesk?5:3.2):(atDesk?10:5))-l.distance)*s;
   });
-  scene.fog.color.lerp(dayMode?_dayFogCol:_nightFogCol,s*.5);
 }
 
 /*  TOAST  */
@@ -520,7 +522,18 @@ function providerConfig(provider=API_PROVIDER){return API_PROVIDERS[provider]||A
 function providerLabel(provider=API_PROVIDER){return providerConfig(provider).label;}
 function providerInstruction(provider=API_PROVIDER){return providerConfig(provider).instruction;}
 function providerDocs(provider=API_PROVIDER){return providerConfig(provider).docsUrl;}
-function hasActiveKey(){return !!GKEY;}
+function hasActiveKey(){
+  if(typeof window!=='undefined'&&window.GKEY)return true;
+  if(typeof GKEY!=='undefined'&&GKEY)return true;
+  try{
+    const provider=localStorage.getItem('apiProvider')||'groq';
+    const keyName=provider==='openrouter'?'openrouter_api_key':'groq_api_key';
+    const key=sessionStorage.getItem(provider==='openrouter'?'ork':'gk')||localStorage.getItem(keyName)||'';
+    return !!key;
+  }catch(e){
+    return false;
+  }
+}
 function loadProviderKey(provider){try{return sessionStorage.getItem(PROVIDER_KEY_NAMES[provider])||localStorage.getItem(PROVIDER_KEY_NAMES[provider])||'';}catch(e){return '';}}
 function persistProviderKey(provider,key){try{if(key)sessionStorage.setItem(PROVIDER_KEY_NAMES[provider],key);}catch(e){};localStorage.removeItem(PROVIDER_KEY_NAMES[provider]);}
 function clearStoredProviderKey(provider){try{sessionStorage.removeItem(PROVIDER_KEY_NAMES[provider]);}catch(e){};localStorage.removeItem(PROVIDER_KEY_NAMES[provider]);}
@@ -887,10 +900,10 @@ ux:   {name:'Valentina Ramos',role:'UX Designer',    col:'#e91e8c',homeX:-22.6,h
 data: {name:'Andres Torres', role:'Data Analyst',    col:'#00bcd4',homeX:9, homeZ:-.4,  bodyC:0x0898aa,pantsC:0x041018,skinC:0xa07848,hairC:0x100c06},
 };
 
-let _uiMode='launch';
-let _eventLog=[];
-try{_eventLog=JSON.parse(localStorage.getItem('eventLog')||'[]');}catch(e){}
-let _demoTourOn=false;
+window._uiMode='launch';
+window._eventLog=[];
+try{window._eventLog=JSON.parse(localStorage.getItem('eventLog')||'[]');}catch(e){}
+window._demoTourOn=false;
 
 function saveEventLog(){
   try{localStorage.setItem('eventLog',JSON.stringify(_eventLog.slice(0,120)));}catch(e){}
@@ -1258,7 +1271,11 @@ function poolGeo(type,...args){
 }
 
 /*  THREE.JS SCENE  */
-let scene,camera,renderer,clock3,animTime=0,frameCt=0,AG={};
+window.scene=null;
+window.camera=null;
+window.renderer=null;
+window.AG={};
+let clock3,animTime=0,frameCt=0;
 let deskLights={},deskScreens={};
 let cFrustum=new THREE.Frustum(),cProjM=new THREE.Matrix4();
 const globalRay=new THREE.Raycaster();
@@ -1300,14 +1317,17 @@ function getViewportSize(){
 
 const ORB0={theta:0.52,phi:0.62,radius:62,tgtX:0,tgtY:1,tgtZ:0};
 const orb={theta:ORB0.theta,phi:ORB0.phi,radius:ORB0.radius,minR:7,maxR:110,dragging:false,panning:false,lx:0,ly:0,tgt:null,lastUI:0};
-let followAg=null,followT=0,camZTgt=null,camZTimer=0;
-const ACT=new Array(60).fill(0);let actIdx=0,actTimer=0;
-function tickAct(dt){actTimer+=dt;if(actTimer>=1){actTimer-=1;actIdx=(actIdx+1)%60;ACT[actIdx]=0;}}
-function recAct(n=1){ACT[actIdx]+=n;}
+window.followAg=null; window.followT=0; window.camZTgt=null; let camZTimer=0;
+const ACT=new Array(60).fill(0); window.actIdx=0; window.actTimer=0;
+let _lastHovered=null;
+function tickAct(dt){window.actTimer+=dt;if(window.actTimer>=1){window.actTimer-=1;window.actIdx=(window.actIdx+1)%60;ACT[window.actIdx]=0;}}
+function recAct(n=1){ACT[window.actIdx]+=n;}
 
-let fpsMode=false,fpsAgKey=null;
-const fpsEuler=new THREE.Euler(0,0,0,'YXZ');
-let fpsPitch=0,fpsYaw=0;
+window.fpsMode=false;
+window.fpsAgKey=null;
+window.fpsPitch=0;
+window.fpsYaw=0;
+let fpsEuler=new THREE.Euler(0,0,0,'YXZ');
 let fpsDragging=false,fpsLx=0,fpsLy=0;
 let _orbSave=null; // saved orbit state to restore on exit
 
@@ -1318,7 +1338,7 @@ function enterFPS(agKey){
   if(AG[agKey]){fpsYaw=AG[agKey].group.rotation.y+Math.PI;fpsPitch=0;}
   // save orbit so we can restore
   _orbSave={theta:orb.theta,phi:orb.phi,radius:orb.radius,tx:orb.tgt.x,ty:orb.tgt.y,tz:orb.tgt.z};
-  followAg=null;camZTgt=null;
+  window.followAg=null;window.camZTgt=null;
   document.getElementById('fpsOverlay').classList.add('show');
   document.getElementById('fpsBtnHdr').classList.add('fps-on');
   document.getElementById('fpsBtnHdr').textContent='FPS EXIT';
@@ -1383,8 +1403,8 @@ function resetCam(){
   Object.assign(orb,ORB0);
   orb.tgt.set(ORB0.tgtX,ORB0.tgtY,ORB0.tgtZ);
   orb.lastUI=0;
-  followAg=null;
-  camZTgt=null;
+  window.followAg=null;
+  window.camZTgt=null;
   refreshCam();
   showToast('📷 Vista general','#0fa855');
 }
@@ -1710,6 +1730,12 @@ function _drawDeskScreen(k,isOn){
 function updateDeskScreens(){
   Object.keys(deskScreens).forEach(k=>{
     if(k==='devbe'||k==='qa')return;
+    const cfg=ACFG[k];
+    if(cfg){
+      const pos=new THREE.Vector3(cfg.homeX,2,cfg.homeZ);
+      const s=new THREE.Sphere(pos,6);
+      if(!cFrustum.intersectsSphere(s))return;
+    }
     _drawDeskScreen(k,_isAgentAtDesk(k,2.55));
   });
 }
@@ -4552,10 +4578,12 @@ function showBroadcastLines(msg){
 }
 
 //  PUERTA ANIMADA 
-let _doorOpen=false,_doorAnim=null,_doorLocked=false,_deliveryInside=false,_psychInside=false;
+let _doorOpen=false,_doorAnim=null,_doorLocked=false;
+window._deliveryInside=false;
+window._psychInside=false;
 
 function _refreshDoorLock(){
-  _doorLocked=!!(_deliveryInside||_psychInside);
+  _doorLocked=!!(window._deliveryInside||window._psychInside);
   _syncDoorLook();
 }
 
@@ -4694,12 +4722,12 @@ function callElevator(){
   }catch(e){}
 }
 
-let _deliveryTimer=15;
-let _deliveryMesh=null;
+window._deliveryTimer=15;
+window._deliveryMesh=null;
 // estado del delivery para el loop principal
 let _dPath=[],_dIdx=0,_dPhase='go',_dWalkT=0,_dWaitT=0;
 function spawnDelivery(){
-  if(_deliveryMesh)return;
+  if(window._deliveryMesh)return;
   const g=new THREE.Group();
 
   const deliveryShadowGroup=new THREE.Group();
@@ -4791,17 +4819,17 @@ tape.position.set(.42*DS,1.62*DS,.1*DS);g.add(tape);
   });
 
   scene.add(g);
-  _deliveryMesh=g;
+  window._deliveryMesh=g;
   g.userData.onMoto=true;
 
   // Puerta: abre para entrar, luego se cierra y queda bloqueada mientras esta dentro
-  _deliveryInside=false;
+  window._deliveryInside=false;
   _refreshDoorLock();
   setTimeout(()=>{try{setDoorOpen(true,{force:true});}catch(e){}},1800);
   setTimeout(()=>{
     try{
-      if(_deliveryMesh===g&&_dPhase!=='ret'&&_dPhase!=='fade'){
-        _deliveryInside=true;
+      if(window._deliveryMesh===g&&_dPhase!=='ret'&&_dPhase!=='fade'){
+        window._deliveryInside=true;
         _refreshDoorLock();
         setDoorOpen(false,{force:true});
       }
@@ -4851,10 +4879,10 @@ tape.position.set(.42*DS,1.62*DS,.1*DS);g.add(tape);
   });
 }
 function updateDelivery(dt){
-  if(_deliveryMesh){
-    if(!_deliveryMesh.parent){_deliveryMesh=null;return;}
+  if(window._deliveryMesh){
+    if(!window._deliveryMesh.parent){window._deliveryMesh=null;return;}
     if(_dPhase==='loading')return;
-    const g=_deliveryMesh;
+    const g=window._deliveryMesh;
     const lLeg=g.userData.lLeg,rLeg=g.userData.rLeg;
     const tx=g.userData.tx,tz=g.userData.tz,tk=g.userData.tk;
     const shadowGroup=g.userData.shadowGroup,shadowMesh=g.userData.shadowMesh;
@@ -4895,7 +4923,7 @@ function updateDelivery(dt){
     } else if(_dPhase==='wait'){
       _dWaitT+=dt;
       if(_dWaitT>2.5){
-        _deliveryInside=false;
+        window._deliveryInside=false;
         _refreshDoorLock();
         if(g.userData.exitDoorReady){
           g.userData.exitDoorReady=false;
@@ -4911,29 +4939,31 @@ function updateDelivery(dt){
     } else if(_dPhase==='fade'){
       g.position.z+=dt*5;
       if(g.position.z>28){
-        _deliveryInside=false;
+        window._deliveryInside=false;
         _refreshDoorLock();
         try{setDoorOpen(false,{force:true});}catch(e){}
 
         if(g.userData.shadowGroup)scene.remove(g.userData.shadowGroup);
         scene.remove(g);
-        _deliveryMesh=null;
+        window._deliveryMesh=null;
         showToast('📦 Repartidor se fue en moto','#8b6914');
       }
 
     }
     return;
   }
-  _deliveryTimer-=dt;
-  if(_deliveryTimer<=0){
-    _deliveryTimer=120+Math.random()*120;
+  window._deliveryTimer-=dt;
+  if(window._deliveryTimer<=0){
+    window._deliveryTimer=120+Math.random()*120;
     try{spawnDelivery();}catch(e){console.error('delivery:',e);}
   }
 }
 
-let _psychVisitor=null;
-let _psychPath=[],_psychIdx=0,_psychPhase='idle',_psychWalkT=0,_psychTalkT=0,_psychCooldown=0;
-let _psychPending=null,_psychBusy=false;
+window._psychVisitor=null;
+let _psychPath=[],_psychIdx=0,_psychWalkT=0,_psychTalkT=0,_psychCooldown=0;
+window._psychPhase='idle';
+window._psychPending=null;
+window._psychBusy=false;
 const _psychCol='#ff8ab3';
 const _psychSpot={x:1.8,z:8.2};
 
@@ -4952,8 +4982,8 @@ function _queuePsychologistVisit(text,agentKey){
   if(!GKEY)return;
   const clean=String(text||'').trim();
   if(!_looksInappropriatePrompt(clean))return;
-  if(_psychVisitor||_psychPending||_psychBusy)return;
-  _psychPending={text:clean,agentKey:agentKey||'pm'};
+  if(window._psychVisitor||window._psychPending||window._psychBusy)return;
+  window._psychPending={text:clean,agentKey:agentKey||'pm'};
   showToast('Paula viene a bajar el tono de la conversacion',_psychCol);
 }
 
@@ -5023,12 +5053,12 @@ async function _psychologistTeamReaction(agentKey,msg){
 }
 
 function _clearPsychologistVisitor(){
-  if(!_psychVisitor)return;
+  if(!window._psychVisitor)return;
   try{
-    const sg=_psychVisitor.userData?.shadowGroup;
-    const sm=_psychVisitor.userData?.shadowMesh;
+    const sg=window._psychVisitor.userData?.shadowGroup;
+    const sm=window._psychVisitor.userData?.shadowMesh;
 
-    _psychVisitor.traverse(o=>{
+    window._psychVisitor.traverse(o=>{
       if(!o.isMesh)return;
       if(o.geometry&&o.geometry.dispose)o.geometry.dispose();
       if(o.material){
@@ -5043,20 +5073,20 @@ function _clearPsychologistVisitor(){
     }
     if(sg)scene.remove(sg);
 
-    _psychInside=false;
+    window._psychInside=false;
     _refreshDoorLock();
     try{setDoorOpen(false,{force:true});}catch(e){}
 
 
 
-    scene.remove(_psychVisitor);
+    scene.remove(window._psychVisitor);
   }catch(e){}
-  _psychVisitor=null;
+  window._psychVisitor=null;
 }
 
 
 function spawnPsychologistVisit(triggerText,agentKey){
-  if(_psychVisitor||!GKEY)return;
+  if(window._psychVisitor||!GKEY)return;
   const g=new THREE.Group();
 
   const shadowGroup=new THREE.Group();
@@ -5131,10 +5161,10 @@ function spawnPsychologistVisit(triggerText,agentKey){
   });
 
   scene.add(g);
-  _psychVisitor=g;
+  window._psychVisitor=g;
   _psychPath=[];
   _psychIdx=0;
-  _psychPhase='loading';
+  window._psychPhase='loading';
   _psychWalkT=0;
   _psychTalkT=0;
 
@@ -5150,11 +5180,11 @@ function spawnPsychologistVisit(triggerText,agentKey){
 
   _pushPsychologistArrival();
 
-  _psychInside=false;
+  window._psychInside=false;
   _refreshDoorLock();
   setTimeout(()=>{
     try{
-      if(_psychVisitor===g&&_psychPhase!=='ret'&&_psychPhase!=='fade'){
+      if(window._psychVisitor===g&&window._psychPhase!=='ret'&&window._psychPhase!=='fade'){
         setDoorOpen(true,{force:true});
       }
     }catch(e){}
@@ -5162,8 +5192,8 @@ function spawnPsychologistVisit(triggerText,agentKey){
 
   setTimeout(()=>{
     try{
-      if(_psychVisitor===g&&_psychPhase!=='ret'&&_psychPhase!=='fade'){
-        _psychInside=true;
+      if(window._psychVisitor===g&&window._psychPhase!=='ret'&&window._psychPhase!=='fade'){
+        window._psychInside=true;
         _refreshDoorLock();
         setDoorOpen(false,{force:true});
       }
@@ -5175,16 +5205,16 @@ function spawnPsychologistVisit(triggerText,agentKey){
     const inner=(p&&p.length)?p:[{x:_psychSpot.x,z:_psychSpot.z}];
     _psychPath=[{x:0,z:22},{x:0,z:16},...inner];
     _psychIdx=0;
-    _psychPhase='go';
+    window._psychPhase='go';
   });
 
 }
 
 async function _psychologistTalk(){
-  if(!_psychVisitor||_psychBusy||!GKEY)return;
-  _psychBusy=true;
+  if(!window._psychVisitor||window._psychBusy||!GKEY)return;
+  window._psychBusy=true;
 
-  const g=_psychVisitor;
+  const g=window._psychVisitor;
   const agentKey=g.userData.agentKey||'pm';
   const triggerText=g.userData.triggerText||'';
 
@@ -5199,30 +5229,30 @@ async function _psychologistTalk(){
   if(res)msg=_cleanPsychologistMsg(res);
 
   const finalMsg=_pushPsychologistNote(msg);
-  _psychPhase='talk';
+  window._psychPhase='talk';
   _psychTalkT=0;
 
   await _psychologistTeamReaction(agentKey,finalMsg);
 
-  _psychBusy=false;
+  window._psychBusy=false;
 }
 
 function updatePsychologist(dt){
   if(_psychCooldown>0)_psychCooldown-=dt;
 
   if(!GKEY){
-    _psychPending=null;
+    window._psychPending=null;
     _clearPsychologistVisitor();
     return;
   }
 
-  if(!_psychVisitor&&_psychPending&&!_meetingActive&&!_demoTourOn&&!_convRunning){
-    if(_deliveryMesh&&_dPhase!=='fade'&&_dPhase!=='ret'){
+  if(!window._psychVisitor&&window._psychPending&&!_meetingActive&&!_demoTourOn&&!_convRunning){
+    if(window._deliveryMesh&&_dPhase!=='fade'&&_dPhase!=='ret'){
       showToast('Paula espera a que termine el delivery',_psychCol);
       return;
     }
-    const next=_psychPending;
-    _psychPending=null;
+    const next=window._psychPending;
+    window._psychPending=null;
     spawnPsychologistVisit(next.text,next.agentKey);
     return;
   }
@@ -5230,14 +5260,14 @@ function updatePsychologist(dt){
 
 
 
-  if(!_psychVisitor)return;
+  if(!window._psychVisitor)return;
 
-  const g=_psychVisitor;
+  const g=window._psychVisitor;
   const lLeg=g.userData.lLeg;
   const rLeg=g.userData.rLeg;
   const shadowGroup=g.userData.shadowGroup;
   const shadowMesh=g.userData.shadowMesh;
-  const path=_psychPhase==='go'?_psychPath:(_psychPhase==='ret'?g.userData.retPath:null);
+  const path=window._psychPhase==='go'?_psychPath:(window._psychPhase==='ret'?g.userData.retPath:null);
   const SPD=4.5*dt;
 
   if(shadowGroup&&shadowMesh){
@@ -5250,7 +5280,7 @@ function updatePsychologist(dt){
     shadowMesh.material.opacity=Math.max(0,.42-h*0.12)*(dayMode?1:.5);
   }
 
-  if(_psychPhase==='loading')return;
+  if(window._psychPhase==='loading')return;
 
   if(path&&_psychIdx<path.length){
     const np=path[_psychIdx];
@@ -5271,7 +5301,7 @@ function updatePsychologist(dt){
     return;
   }
 
-  if(_psychPhase==='go'){
+  if(window._psychPhase==='go'){
     if(lLeg)lLeg.rotation.x=0;
     if(rLeg)rLeg.rotation.x=0;
     g.position.y=0;
@@ -5287,13 +5317,13 @@ function updatePsychologist(dt){
     return;
   }
 
-  if(_psychPhase==='talk'){
+  if(window._psychPhase==='talk'){
     _psychTalkT+=dt;
     if(g.userData.retReady&&_psychTalkT>4.8){
-      _psychInside=false;
+      window._psychInside=false;
       _refreshDoorLock();
       try{setDoorOpen(true,{force:true});}catch(e){}
-      _psychPhase='ret';
+      window._psychPhase='ret';
       _psychIdx=0;
 
     }
@@ -5301,15 +5331,15 @@ function updatePsychologist(dt){
   }
 
 
-  if(_psychPhase==='ret'&&(!g.userData.retPath||_psychIdx>=g.userData.retPath.length)){
-    _psychPhase='fade';
+  if(window._psychPhase==='ret'&&(!g.userData.retPath||_psychIdx>=g.userData.retPath.length)){
+    window._psychPhase='fade';
     return;
   }
 
-  if(_psychPhase==='fade'){
+  if(window._psychPhase==='fade'){
     g.position.z+=dt*4.8;
     if(g.position.z>28){
-      _psychInside=false;
+      window._psychInside=false;
       _refreshDoorLock();
       try{setDoorOpen(false,{force:true});}catch(e){}
       _clearPsychologistVisitor();
@@ -5327,7 +5357,7 @@ function buildAgents(){AG={};Object.keys(ACFG).forEach(k=>{AG[k]=new Agent3D(k);
 
 
 /*  #14 SUB-AGENTES  */
-const _subAgents=[];
+window._subAgents=[];
 function spawnSubAgent(parentKey,taskLabel){
   if(!AG[parentKey])return;
   const cfg=ACFG[parentKey];
@@ -5401,7 +5431,7 @@ async function initThree(){
   const W=wrap.clientWidth||900,H=wrap.clientHeight||500;
   scene=new THREE.Scene();
   scene.background=new THREE.Color(0x0a0a0a);
-  scene.fog=new THREE.Fog(0x0a0a0a,120,200);
+  scene.fog=new THREE.Fog(0x0a0a0a,1000,2000);
 
   _deliveryLight=new THREE.PointLight(0xd45000,0,5);scene.add(_deliveryLight);
   _psychLight=new THREE.PointLight(0xff8ab3,0,5);scene.add(_psychLight);
@@ -5465,8 +5495,8 @@ renderer.setClearColor(0x1a1208);
     mmDrag=false;
     pointerDownT=Date.now();
     orb.lastUI=performance.now();
-    followAg=null;
-    camZTgt=null;
+    window.followAg=null;
+    window.camZTgt=null;
 
     // Drag normal = mover camara por el espacio
     if(e.button===2||e.altKey){
@@ -5505,7 +5535,7 @@ document.addEventListener('pointerlockchange', () => {
 
 
 // #5 Hover highlight for interactable objects
-let _lastHovered=null;
+_lastHovered=null;
 window.addEventListener('mousemove',e=>{
   if(fpsMode&&fpsDragging){
     fpsYaw-=e.movementX*.003;
@@ -5531,8 +5561,8 @@ window.addEventListener('mousemove',e=>{
     if(Math.abs(dx)+Math.abs(dy)>3){
       mmDrag=true;
       orb.lastUI=performance.now();
-      followAg=null;
-      camZTgt=null;
+      window.followAg=null;
+      window.camZTgt=null;
     }
 
     if(orb.panning){
@@ -5583,8 +5613,8 @@ window.addEventListener('mousemove',e=>{
 // listener duplicado removido
   cv.addEventListener('wheel',e=>{
     if(fpsMode)return;
-    followAg=null;
-    camZTgt=null;
+    window.followAg=null;
+    window.camZTgt=null;
     orb.radius=Math.max(orb.minR,Math.min(orb.maxR,orb.radius+e.deltaY*.03));
     orb.lastUI=performance.now();
     refreshCam();
@@ -5606,8 +5636,8 @@ window.addEventListener('mousemove',e=>{
       orb.radius=Math.max(orb.minR,Math.min(orb.maxR,orb.radius*(_tPinch/d)));
       _tPinch=d;
       orb.lastUI=performance.now();
-      followAg=null;
-      camZTgt=null;
+      window.followAg=null;
+      window.camZTgt=null;
       refreshCam();
       e.preventDefault();
       return;
@@ -5619,8 +5649,8 @@ window.addEventListener('mousemove',e=>{
     ty=e.touches[0].clientY;
 
     orb.lastUI=performance.now();
-    followAg=null;
-    camZTgt=null;
+    window.followAg=null;
+    window.camZTgt=null;
     panOrbit(dx,dy);
     e.preventDefault();
   },{passive:false});
@@ -5671,8 +5701,8 @@ window.addEventListener('mousemove',e=>{
     Object.entries(AG).forEach(([k,ag])=>{const d=(ag.group.position.x-wx)**2+(ag.group.position.z-wz)**2;if(d<bd){bd=d;best=k;}});
     if(best&&bd<36){
       selAgent(best);
-      followAg=null;
-      camZTgt=null;
+      window.followAg=null;
+      window.camZTgt=null;
       orb.tgt.set(AG[best].group.position.x,1.2,AG[best].group.position.z);
       orb.radius=Math.max(10,Math.min(orb.maxR,orb.radius*.82));
       orb.lastUI=performance.now();
@@ -5698,6 +5728,7 @@ window.addEventListener('mousemove',e=>{
   function bGrid(){sgrid.clear();Object.entries(AG).forEach(([k,ag])=>{const key=`${Math.floor(ag.group.position.x/GCELL)},${Math.floor(ag.group.position.z/GCELL)}`;if(!sgrid.has(key))sgrid.set(key,[]);sgrid.get(key).push({k,ag});});}
   function gNeighbors(x,z){const cx=Math.floor(x/GCELL),cz=Math.floor(z/GCELL),res=[];for(let dx=-1;dx<=1;dx++)for(let dz=-1;dz<=1;dz++){const n=sgrid.get(`${cx+dx},${cz+dz}`);if(n)res.push(...n);}return res;}
 
+  bGrid();
   (function loop(){
     requestAnimationFrame(loop);
     const dt=Math.min(clock3.getDelta(),.033);animTime+=dt;frameCt++;
@@ -5710,8 +5741,8 @@ tickAct(dt);
       updateFPSCamera();
     } else {
       const uIdle=performance.now()-orb.lastUI>300;
-      if(followAg&&AG[followAg]&&uIdle){
-  const ag=AG[followAg];
+      if(window.followAg&&AG[window.followAg]&&uIdle){
+  const ag=AG[window.followAg];
   const isWalking=ag.state==='walking'&&ag.path.length>0;
   // Target ligeramente adelante del agente si camina
   let lookAheadX=ag.group.position.x,lookAheadZ=ag.group.position.z;
@@ -5730,13 +5761,13 @@ tickAct(dt);
   const targetPhi=isWalking?.78:.72;
   orb.phi+=(targetPhi-orb.phi)*.04;
   refreshCam();
-  followT-=dt;
-  if(followT<=0){
-    followAg=null;
+  window.followT-=dt;
+  if(window.followT<=0){
+    window.followAg=null;
     showToast('📷 Camara libre','#0fa855');
   }
 }
-      else if(camZTgt&&uIdle){orb.tgt.lerp(new THREE.Vector3(camZTgt.x,2,camZTgt.z),.05);orb.radius+=(camZTgt.r-orb.radius)*.05;refreshCam();camZTimer-=dt;if(camZTimer<=0)camZTgt=null;}
+      else if(window.camZTgt&&uIdle){orb.tgt.lerp(new THREE.Vector3(window.camZTgt.x,2,window.camZTgt.z),.05);orb.radius+=(window.camZTgt.r-orb.radius)*.05;refreshCam();camZTimer-=dt;if(camZTimer<=0)window.camZTgt=null;}
       // Desk lights handled by lerpDayNight()
     }
     // Distribuimos la carga de actualizar los monitores (canvas -> GPU upload) para evitar lag
@@ -5750,7 +5781,7 @@ tickAct(dt);
     if(frameCt%600===0)updateVIP();
     if(frameCt%3600===0){updateAutoDayNight();checkWorkCycle();} // check every ~60s
     if(frameCt%600===0)checkPlantHealth(); // every 10s check
-    bGrid();
+    if(frameCt%3===0)bGrid();
     Object.entries(AG).forEach(([k,ag])=>{
 
       ag.update(dt,gNeighbors);updNodeStatus(k,ag.state);
@@ -5773,7 +5804,7 @@ if(ag.state!=='working')ag._subSpawned=false;
     updateTalkLines(dt);
     updateNeonPaths(dt); // <--- HOOKED UP
     updateDataStreams(dt); // <--- CLAW3D PHASE 2
-    updateEnvironmentSentiment(dt); // <--- CLAW3D PHASE 3
+    if(frameCt%8===0)updateEnvironmentSentiment(dt*8); // <--- CLAW3D PHASE 3
     updateCollaboration(dt); // <--- WAR ROOM ROTATION
     updateYaredIdle(dt);
     updateStretches(dt);
@@ -6091,13 +6122,13 @@ function applyWeatherToScene(w){
   if(code>=51){
     _ambLight.color.set(0x8090a0);
     if(_sunLight)_sunLight.intensity=.3;
-    scene.fog.color.set(0x0a0e14);scene.fog.near=20;scene.fog.far=60;
-    showToast(`🌧 Lluvia en ${cName}  visibilidad reducida`,'#3a8ccc');
+    scene.fog.near=1000;scene.fog.far=2000;
+    showToast(`🌧 Lluvia en ${cName}`,'#3a8ccc');
     startRainEffect();
     // Agentes caminan mas lento
     Object.values(AG).forEach(ag=>ag._weatherSlowdown=.55);
   }else{
-    scene.fog.near=120;scene.fog.far=200;
+    scene.fog.near=1000;scene.fog.far=2000;
     Object.values(AG).forEach(ag=>ag._weatherSlowdown=1);
   }
   // Viento fuerte
@@ -6192,8 +6223,9 @@ function updateEnvironmentSentiment(dt) {
   _currentEnvColor.lerp(_targetEnvColor, dt * 0.5);
   
   if (_ambLight) _ambLight.color.copy(_currentEnvColor);
-  if (scene.fog) scene.fog.color.copy(_currentEnvColor);
-  if (scene.background) scene.background.copy(_currentEnvColor);
+  const darkEnvColor = _currentEnvColor.clone().multiplyScalar(0.08);
+  if (scene.fog) scene.fog.color.copy(darkEnvColor);
+  if (scene.background) scene.background.copy(darkEnvColor);
 }
 
 function createNeonFlow(fromKey, toKey) {
@@ -6226,7 +6258,9 @@ function createNeonFlow(fromKey, toKey) {
     scene.add(pMesh);
     particles.push({ mesh: pMesh, offset: i / pCount });
   }
-  _dataStreams.push({ curve, particles, life: 3.0, color: ACFG[fromKey].col });
+  const threeColor = new THREE.Color(ACFG[fromKey].col);
+  const whiteColor = new THREE.Color(0xffffff);
+  _dataStreams.push({ curve, particles, life: 3.0, color: threeColor, whiteColor });
 }
 
 function updateDataStreams(dt) {
@@ -6239,7 +6273,7 @@ function updateDataStreams(dt) {
       const pos = ds.curve.getPoint(p.offset);
       p.mesh.position.copy(pos);
       p.mesh.material.opacity = (ds.life / 3.0);
-      p.mesh.material.color.set(Math.random() > 0.4 ? ds.color : '#ffffff');
+      p.mesh.material.color.copy(Math.random() > 0.4 ? ds.color : ds.whiteColor);
     });
     if (ds.life <= 0) {
       ds.particles.forEach(p => { scene.remove(p.mesh); p.mesh.geometry.dispose(); p.mesh.material.dispose(); });
@@ -6326,11 +6360,9 @@ window.appendRichText = appendRichText;
 window.applyPlantDeathEffect = applyPlantDeathEffect;
 window.applyWeatherToScene = applyWeatherToScene;
 window.astar = astar;
-window.bGrid = bGrid;
 window.buildAgents = buildAgents;
 window.buildAllPlants = buildAllPlants;
 window.buildCEOZone = buildCEOZone;
-window.buildCoffeeZone = buildCoffeeZone;
 window.buildDataZone = buildDataZone;
 window.buildDesk = buildDesk;
 window.buildDevBEZone = buildDevBEZone;
@@ -6338,15 +6370,10 @@ window.buildDevFEZone = buildDevFEZone;
 window.buildDevOpsZone = buildDevOpsZone;
 window.buildFloor = buildFloor;
 window.buildHubZone = buildHubZone;
-window.buildLibrary = buildLibrary;
 window.buildLighting = buildLighting;
-window.buildLounge = buildLounge;
 window.buildNav = buildNav;
 window.buildPMZone = buildPMZone;
-window.buildPingPong = buildPingPong;
-window.buildPosters = buildPosters;
 window.buildQAZone = buildQAZone;
-window.buildSeasonal = buildSeasonal;
 window.buildUXZone = buildUXZone;
 window.buildWalls = buildWalls;
 window.bx = bx;
@@ -6368,7 +6395,6 @@ window.exitFPS = exitFPS;
 window.exportScene = exportScene;
 window.fetchWeather = fetchWeather;
 window.fmtEventTime = fmtEventTime;
-window.gNeighbors = gNeighbors;
 window.gW = gW;
 window.getACtx = getACtx;
 window.getRelTone = getRelTone;
@@ -6386,7 +6412,6 @@ window.inspectImprovementHeuristics = inspectImprovementHeuristics;
 window.lerpDayNight = lerpDayNight;
 window.loadProviderKey = loadProviderKey;
 window.logEvent = logEvent;
-window.loop = loop;
 window.los = los;
 window.makeTex = makeTex;
 window.nearestWalkable = nearestWalkable;
@@ -6497,7 +6522,6 @@ window.ACFG = ACFG;
 window.ACT = ACT;
 window.CHAT = CHAT;
 window.CODE = CODE;
-window.DS = DS;
 window.GW = GW;
 window.IMPROVEMENT_REPOS = IMPROVEMENT_REPOS;
 window.M = M;
@@ -6590,71 +6614,13 @@ window._windStrength = _windStrength;
 window._workDone = _workDone;
 window._workState = _workState;
 window._zoneLights = _zoneLights;
-window.bag = bag;
-window.band = band;
-window.bm = bm;
-window.cFrustum = cFrustum;
-window.cHit = cHit;
-window.ckCvs = ckCvs;
-window.dFrameL = dFrameL;
-window.dFrameR = dFrameR;
-window.dGlassL = dGlassL;
-window.dGlassR = dGlassR;
-window.dHandleL = dHandleL;
-window.dHandleR = dHandleR;
-window.dTrimL = dTrimL;
-window.dTrimR = dTrimR;
 window.dayMode = dayMode;
-window.deskLights = deskLights;
-window.devCvs = devCvs;
-window.dk = dk;
-window.doorFrameMat = doorFrameMat;
-window.doorGlassMat = doorGlassMat;
-window.doorHandleMat = doorHandleMat;
-window.doorHit = doorHit;
-window.doorMetalMat = doorMetalMat;
-window.doorTrimMat = doorTrimMat;
-window.fCtx = fCtx;
-window.floorC = floorC;
-window.floorMesh = floorMesh;
-window.floorTex = floorTex;
-window.followAg = followAg;
+window.followAg = window.followAg;
 window.fpsDragging = fpsDragging;
 window.fpsEuler = fpsEuler;
 window.fpsMode = fpsMode;
 window.fpsPitch = fpsPitch;
-window.gW = gW;
 window.globalRay = globalRay;
-window.head = head;
-window.helm = helm;
-window.hm = hm;
 window.interactiveObjects = interactiveObjects;
-window.lArm = lArm;
-window.lLeg = lLeg;
-window.lShoe = lShoe;
-window.meetTableMat = meetTableMat;
-window.moodPrefix = moodPrefix;
 window.orb = orb;
-window.pathWorker = pathWorker;
-window.pkg = pkg;
-window.qaCvs = qaCvs;
-window.rArm = rArm;
-window.rCtx = rCtx;
-window.rLeg = rLeg;
-window.rShoe = rShoe;
-window.refl = refl;
-window.reflTex = reflTex;
-window.reflectC = reflectC;
-window.rg = rg;
-window.roundTop = roundTop;
-window.sm = sm;
 window.sndOn = sndOn;
-window.stem = stem;
-window.stripe1 = stripe1;
-window.stripe2 = stripe2;
-window.tape = tape;
-window.topic = topic;
-window.torso = torso;
-window.um = um;
-window.vestM = vestM;
-window.wG = wG;
