@@ -2549,7 +2549,7 @@ function updateClock(){
   ctx.strokeRect(2,2,W-4,H-4);
 
   // Fecha
-  const dias=['DOM','LUN','MAR','MIÉ','JUE','VIE','S?B'];
+  const dias=['DOM','LUN','MAR','MIÉ','JUE','VIE','SÁB'];
   const meses=['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'];
   ctx.fillStyle='#2e3a2e';
   ctx.font='bold 9px monospace';
@@ -4490,7 +4490,7 @@ function _doChatResponseGesture(agKey,text){
   }
 }
 
-//  L?NEA DE ENERG?A AL HABLAR 
+//  LÍNEA DE ENERGÍA AL HABLAR 
 let _talkLines=[];
 function _showTalkLine(k1,k2){
   const ag1=AG[k1],ag2=AG[k2];if(!ag1||!ag2)return;
@@ -6193,7 +6193,7 @@ setTimeout(()=>{
   },50);
   // Remove after 12 seconds
   setTimeout(()=>{clearInterval(_upd);badge.remove();},12000);
-  showToast(`â­ Destacado hoy: ${cfg.name.split(' ')[0]}  ${ach}`,cfg.col);
+  showToast(`⭐ Destacado hoy: ${cfg.name.split(' ')[0]}  ${ach}`,cfg.col);
 },2500);
 // --- NEON FLOW PATHS (ESTILO CLAW3D) ---
 let _neonPaths = [];

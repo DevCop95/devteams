@@ -380,7 +380,7 @@ function qaInterrupt(){
   showToast('QA interrumpe: bug critico detectado','#cc3344');
   setSt('QA interrumpiendo flujo',true);
   setTimeout(()=>{
-    AG['qa'].say('🚨 BUG CR?TICO  deteniendo sprint');
+    AG['qa'].say('🚨 BUG CRÍTICO  deteniendo sprint');
     AG['qa'].setState('speaking');
     // pausa el auto si esta activo
     if(autoM)stopAuto();
@@ -1866,7 +1866,7 @@ async function runAgentChain(startKey,userMsg){
 }
 
 
-//  INTERRUPCIONES ESPONT?NEAS 
+//  INTERRUPCIONES ESPONTÁNEAS 
 window._interruptCooldown=0;
 async function maybeInterrupt(agentKey,userMsg,agentReply){
   if(!GKEY||_interruptCooldown>0||Math.random()>.28)return;
