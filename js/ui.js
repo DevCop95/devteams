@@ -1,7 +1,8 @@
 // ui.js - Dashboard, overlays, panel switcher, theme & initialization
 window.addEventListener('beforeunload',()=>teardownPathWorker(false));
 
-  if(localStorage.getItem('theme')==='light')document.body.classList.add('light-mode');
+try{localStorage.removeItem('theme');}catch(e){}
+document.body.classList.remove('light-mode');
 'use strict';
 /*  STATE  */
 // #3 Rack status modal
@@ -263,6 +264,7 @@ function updateMMDyn(){
 function updateOverlays(){
   const wrap=document.getElementById('canvasWrap'),{W,H}=getViewportSize();
   const focusKeys=new Set([activeAg,meetSpeaker,window.followAg,profileKey,fpsAgKey].filter(Boolean));
+  const bubbles=[];
 
   Object.entries(AG).forEach(([k,ag],idx)=>{
     if(fpsMode&&ag.key===fpsAgKey){
@@ -274,8 +276,11 @@ function updateOverlays(){
     if(ag.sa>0.04){
       const wp=new THREE.Vector3(ag.group.position.x,ag.group.position.y+6.2,ag.group.position.z);
       wp.project(camera);
-      ag.bubbleEl.style.cssText=`display:block;left:${((wp.x*.5+.5)*W).toFixed(0)}px;top:${((-.5*wp.y+.5)*H).toFixed(0)}px;opacity:${Math.min(1,ag.sa).toFixed(2)};border-color:${ACFG[ag.key].col}55;`;
-      ag.bubbleEl.textContent=ag.speech;
+      if(wp.z<1){
+        ag.bubbleEl.textContent=ag.speech;
+        ag.bubbleEl.style.cssText=`display:block;left:${((wp.x*.5+.5)*W).toFixed(0)}px;top:${((-.5*wp.y+.5)*H).toFixed(0)}px;opacity:${Math.min(1,ag.sa).toFixed(2)};border-color:${ACFG[ag.key].col}55;z-index:13;`;
+        bubbles.push({ag,k,x:(wp.x*.5+.5)*W,y:(-.5*wp.y+.5)*H,priority:(focusKeys.has(k)?100:0)+(k===activeAg?30:0)+ag.sa});
+      }else ag.bubbleEl.style.display='none';
     }else ag.bubbleEl.style.display='none';
 
     const lp=new THREE.Vector3(ag.group.position.x,ag.group.position.y+4.2,ag.group.position.z);
@@ -287,6 +292,11 @@ function updateOverlays(){
       const isRelevant=isFocus||k===activeAg||isBusy;
       const isDim=focusKeys.size>0&&!isFocus&&isBusy;
       if(!isRelevant){
+        ag.labelEl.style.display='none';
+        ag.labelEl.classList.remove('is-focus','is-dim');
+        return;
+      }
+      if(ag.sa>0.04&&!isFocus){
         ag.labelEl.style.display='none';
         ag.labelEl.classList.remove('is-focus','is-dim');
         return;
@@ -306,6 +316,28 @@ function updateOverlays(){
       ag.labelEl.style.display='none';
       ag.labelEl.classList.remove('is-focus','is-dim');
     }
+  });
+
+  // Prevent speech cards from stacking over each other when several agents talk.
+  bubbles.sort((a,b)=>b.priority-a.priority);
+  const placed=[];
+  bubbles.forEach((item,index)=>{
+    const el=item.ag.bubbleEl;
+    if(index>=3){el.style.display='none';return;}
+    const w=Math.max(92,el.offsetWidth||150),h=Math.max(30,el.offsetHeight||48);
+    const offsets=[0,-28,28,-56,56,-84,84];
+    let chosen=null;
+    for(const offset of offsets){
+      const top=item.y+offset;
+      const rect={left:item.x-w/2,right:item.x+w/2,top:top-h,bottom:top};
+      const inside=rect.left>6&&rect.right<W-6&&rect.top>6&&rect.bottom<H-6;
+      const collision=placed.some(p=>rect.left<p.right+8&&rect.right>p.left-8&&rect.top<p.bottom+8&&rect.bottom>p.top-8);
+      if(inside&&!collision){chosen={top,rect};break;}
+    }
+    if(!chosen){el.style.display='none';return;}
+    el.style.left=`${item.x.toFixed(0)}px`;
+    el.style.top=`${chosen.top.toFixed(0)}px`;
+    placed.push(chosen.rect);
   });
 }
 
@@ -926,7 +958,7 @@ function openXPPanel(){
         const data=_agentXP[k]||{xp:0,level:1};
         const pct=_xpLevelProgress(data);
         const title=LEVEL_TITLES[Math.max(0,(data.level||1)-1)]||'Trainee';
-        return `<div class="xp-card" style="border-left:3px solid ${cfg.col}">
+        return `<div class="xp-card" style="--agent-color:${cfg.col}">
           <div class="xp-head">
             <span class="xp-name" style="color:${cfg.col}">${cfg.name.split(' ')[0]}</span>
             <span class="xp-meta"><span>${title} · Lv.${data.level}</span><span>${Math.floor(data.xp)} XP</span></span>
@@ -1965,15 +1997,6 @@ setTimeout(()=>{
   setTimeout(()=>{clearInterval(_upd);badge.remove();},12000);
   showToast(`⭐ Destacado hoy: ${cfg.name.split(' ')[0]}  ${ach}`,cfg.col);
 },2500);
-// Restaurar tema guardado
-if(localStorage.getItem('theme')==='light'){
-  document.body.classList.add('light-mode');
-  const btn=document.getElementById('themeBtnHdr');
-  if(btn) btn.innerHTML = '🌑 Oscuro';
-} else {
-  const btn=document.getElementById('themeBtnHdr');
-  if(btn) btn.innerHTML = '☀️ Claro';
-}
 setTimeout(()=>{
   activeAg='ceo';
     if(isMobileUI())syncMobileChatBtn();

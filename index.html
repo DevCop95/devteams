@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dev Teams - AI Agents v1</title>
+<title>Dev Teams - AI Pentest Lab</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%230fa855'/></svg>">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
@@ -17,7 +17,7 @@
 <header>
   <div class="logo">
     <div class="logo-mark"><svg viewBox="0 0 26 26" fill="none"><rect x="2" y="2" width="10" height="10" rx="1" fill="rgba(15,168,85,0.15)" stroke="#0fa855" stroke-width="1.2"/><rect x="14" y="2" width="10" height="10" rx="1" fill="rgba(15,168,85,0.08)" stroke="rgba(15,168,85,0.4)" stroke-width="1"/><rect x="2" y="14" width="10" height="10" rx="1" fill="rgba(15,168,85,0.08)" stroke="rgba(15,168,85,0.4)" stroke-width="1"/><rect x="14" y="14" width="10" height="10" rx="1" fill="rgba(15,168,85,0.04)" stroke="rgba(15,168,85,0.2)" stroke-width="0.8"/><circle cx="13" cy="13" r="1.5" fill="#0fa855"/></svg></div>
-    <div class="logo-name"><div class="logo-main">Dev Teams</div><div class="logo-sub">AI Operations</div></div>
+    <div class="logo-name"><div class="logo-main">Dev Teams</div><div class="logo-sub">AI Pentest Lab</div></div>
   </div>
 <div class="h-badges">
     <div class="badge" id="apiBadge">demo mode</div>
@@ -32,7 +32,6 @@
     </button>
     <button class="hbtn" id="chatHdrBtn" onclick="switchPanel('consola')" title="Ir al chat">Chat</button>
     <button class="hbtn" id="directorBtnHdr" onclick="toggleDirectorMode()" title="Modo director">Director</button>
-    <button class="hbtn" id="themeBtnHdr" onclick="toggleTheme()" title="Cambiar tema">☀️ Claro</button>
     <div class="header-more-wrap" id="headerMoreWrap">
       <button class="hbtn" id="moreBtnHdr" onclick="toggleHeaderMenu(event)" title="Mas acciones">Mas</button>
       <div class="header-menu" id="headerMenu" onclick="event.stopPropagation()">
@@ -63,7 +62,7 @@
 </header>
 <main>
   <div class="game-panel">
-    <div class="gtbar"><div class="gtdot"></div><div class="gttxt">Dev Teams Corp</div></div>
+    <div class="gtbar"><div class="gtdot"></div><div class="gttxt">Dev Teams Security Lab</div></div>
     <div class="cwrap" id="canvasWrap">
       <div id="speechLayer">
         <div id="agentProfile">
@@ -176,21 +175,21 @@
     <div class="edu-scroll" id="treePanel">
 
       <div class="tree-wrap">
-        <div class="tnode" id="tnode-ceo" onclick="selAgent('ceo')" style="border-left-color:#c8a040"><div class="tav" style="background:rgba(200,160,64,.15);color:#c8a040">AG</div><div class="tin"><div class="tnm">Ana Garcia</div><div class="tro">CEO - Dev Teams</div></div><div class="tst idle" id="ns-ceo">idle</div></div>
-         <div class="tnode" id="tnode-devbe" onclick="selAgent('devbe')" style="border-left-color:#3a8ccc"><div class="tav" style="background:rgba(58,140,204,.15);color:#3a8ccc">YH</div><div class="tin"><div class="tnm">Yared Henriquez</div><div class="tro">Founder & Architect</div></div><div class="tst idle" id="ns-devbe">idle</div></div>
+        <div class="tnode" id="tnode-ceo" onclick="selAgent('ceo')" style="--agent-color:#c8a040"><div class="tav" style="background:rgba(200,160,64,.15);color:#c8a040">AG</div><div class="tin"><div class="tnm">Ana Garcia</div><div class="tro">Security Director</div></div><div class="tst idle" id="ns-ceo">idle</div></div>
+         <div class="tnode" id="tnode-devbe" onclick="selAgent('devbe')" style="--agent-color:#3a8ccc"><div class="tav" style="background:rgba(58,140,204,.15);color:#3a8ccc">YH</div><div class="tin"><div class="tnm">Yared Henriquez</div><div class="tro">Red Team Lead</div></div><div class="tst idle" id="ns-devbe">idle</div></div>
         <div class="tlv1">
-          <div class="tnode" id="tnode-pm" onclick="selAgent('pm')" style="border-left-color:#5b9bd5"><div class="tav" style="background:rgba(91,155,213,.15);color:#5b9bd5">SC</div><div class="tin"><div class="tnm">Sofia Castro</div><div class="tro">Product Manager</div></div><div class="tst idle" id="ns-pm">idle</div></div>
+           <div class="tnode" id="tnode-pm" onclick="selAgent('pm')" style="--agent-color:#5b9bd5"><div class="tav" style="background:rgba(91,155,213,.15);color:#5b9bd5">SC</div><div class="tin"><div class="tnm">Sofia Castro</div><div class="tro">Pentest Program Manager</div></div><div class="tst idle" id="ns-pm">idle</div></div>
           <div class="tlv2">
-            <div class="tnode" id="tnode-ux" onclick="selAgent('ux')" style="border-left-color:#e91e8c"><div class="tav" style="background:rgba(233,30,140,.15);color:#e91e8c">VR</div><div class="tin"><div class="tnm">Valentina Ramos</div><div class="tro">UX Designer</div></div><div class="tst idle" id="ns-ux">idle</div></div>
-            <div class="tnode" id="tnode-data" onclick="selAgent('data')" style="border-left-color:#00bcd4"><div class="tav" style="background:rgba(0,188,212,.15);color:#00bcd4">AT</div><div class="tin"><div class="tnm">Andres Torres</div><div class="tro">Data Analyst</div></div><div class="tst idle" id="ns-data">idle</div></div>
+             <div class="tnode" id="tnode-ux" onclick="selAgent('ux')" style="--agent-color:#e91e8c"><div class="tav" style="background:rgba(233,30,140,.15);color:#e91e8c">VR</div><div class="tin"><div class="tnm">Valentina Ramos</div><div class="tro">Threat Modeling Lead</div></div><div class="tst idle" id="ns-ux">idle</div></div>
+             <div class="tnode" id="tnode-data" onclick="selAgent('data')" style="--agent-color:#00bcd4"><div class="tav" style="background:rgba(0,188,212,.15);color:#00bcd4">AT</div><div class="tin"><div class="tnm">Andres Torres</div><div class="tro">Threat Intelligence</div></div><div class="tst idle" id="ns-data">idle</div></div>
           </div>
         </div>
         <div class="tlv1">
          
           <div class="tlv2">
-            <div class="tnode" id="tnode-devfe" onclick="selAgent('devfe')" style="border-left-color:#9060cc"><div class="tav" style="background:rgba(144,96,204,.15);color:#9060cc">DH</div><div class="tin"><div class="tnm">Diego Herrera</div><div class="tro">Dev Frontend</div></div><div class="tst idle" id="ns-devfe">idle</div></div>
-            <div class="tnode" id="tnode-qa" onclick="selAgent('qa')" style="border-left-color:#d97020"><div class="tav" style="background:rgba(217,112,32,.15);color:#d97020">ML</div><div class="tin"><div class="tnm">Marta Lopez</div><div class="tro">QA Engineer</div></div><div class="tst idle" id="ns-qa">idle</div></div>
-            <div class="tnode" id="tnode-devops" onclick="selAgent('devops')" style="border-left-color:#4caf50"><div class="tav" style="background:rgba(76,175,80,.15);color:#4caf50">LM</div><div class="tin"><div class="tnm">Luis Mendoza</div><div class="tro">DevOps Engineer</div></div><div class="tst idle" id="ns-devops">idle</div></div>
+             <div class="tnode" id="tnode-devfe" onclick="selAgent('devfe')" style="--agent-color:#9060cc"><div class="tav" style="background:rgba(144,96,204,.15);color:#9060cc">DH</div><div class="tin"><div class="tnm">Diego Herrera</div><div class="tro">Application Security</div></div><div class="tst idle" id="ns-devfe">idle</div></div>
+             <div class="tnode" id="tnode-qa" onclick="selAgent('qa')" style="--agent-color:#d97020"><div class="tav" style="background:rgba(217,112,32,.15);color:#d97020">ML</div><div class="tin"><div class="tnm">Marta Lopez</div><div class="tro">Vulnerability Validator</div></div><div class="tst idle" id="ns-qa">idle</div></div>
+             <div class="tnode" id="tnode-devops" onclick="selAgent('devops')" style="--agent-color:#4caf50"><div class="tav" style="background:rgba(76,175,80,.15);color:#4caf50">LM</div><div class="tin"><div class="tnm">Luis Mendoza</div><div class="tro">Cloud Security Engineer</div></div><div class="tst idle" id="ns-devops">idle</div></div>
           </div>
         </div>
       </div>
@@ -256,7 +255,7 @@
       </div>
     <div class="cinp-area">
     <div class="cagbadge" id="cagbadge">CEO</div>
-    <button onclick="workspaceQuickAction('upload')" title="Adjuntar documento al Workspace" style="background:var(--bg2); border:1px solid var(--b2); border-right:1px solid var(--b1); color:var(--t3); cursor:pointer; padding:0 12px; display:flex; align-items:center; transition:all .2s; outline:none;" onmouseover="this.style.color='var(--acc)';this.style.background='var(--bg3)'" onmouseout="this.style.color='var(--t3)';this.style.background='var(--bg2)'">
+    <button onclick="workspaceQuickAction('upload')" title="Adjuntar documento al Workspace" style="background:var(--bg2); border:1px solid var(--b2); border-right:1px solid var(--b1); color:var(--t3); cursor:pointer; padding:0 12px; display:flex; align-items:center; transition:color .1s,background-color .1s,border-color .1s; outline:none;" onmouseover="this.style.color='var(--acc)';this.style.background='var(--bg3)'" onmouseout="this.style.color='var(--t3)';this.style.background='var(--bg2)'">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
     </button>
     <div style="position:relative; flex:1; display:flex;">
@@ -277,9 +276,10 @@
     <button class="csend" id="csend" onclick="sendChat()">→</button>
 
     </div>
+    </div>
     <div class="status-wrap" id="statusPanel">
       <div class="status-scroll" id="statusScroll"></div>
-      <div style="padding:6px 8px;border-top:1px solid var(--b1);border-bottom:1px solid var(--b1);display:flex;gap:3px">
+      <div class="status-tabs">
         <button class="cas-btn on" id="stab-agents" onclick="switchStatusTab('agents')">Agentes</button>
         <button class="cas-btn" id="stab-metrics" onclick="switchStatusTab('metrics')">📊 Metricas</button>
       </div>
@@ -294,7 +294,7 @@
     </div>
     <div class="edu-scroll" id="dashPanel" style="display:none">
   <div class="dash-wrap">
-    <div class="dash-title">📈 Executive Dashboard · Dev Teams</div>
+    <div class="dash-title">📈 Pentest Command Dashboard · Dev Teams</div>
     <div id="dashKpis" class="dash-kpis"></div>
     <div class="dash-section-title">Actividad reciente</div>
     <div id="dashActivity" class="dash-list"></div>
@@ -349,7 +349,7 @@
   <div class="mbox premium" id="taskBox" onclick="event.stopPropagation()" style="max-height:90vh;overflow-y:auto">
     <button class="mx" onclick="closeTask()">×</button><div class="mttl">📋 Asignar Tarea</div>
     <div class="mdsc">Define una tarea y selecciona que agentes la ejecutan.</div>
-    <div><div class="mlbl">Tarea</div><input class="minp" id="taskInp" placeholder="Ej: Revisar performance del checkout..." maxlength="120"></div>
+    <div><div class="mlbl">Tarea autorizada</div><input class="minp" id="taskInp" placeholder="Ej: Validar headers de seguridad en staging..." maxlength="120"></div>
     <div><div class="mlbl">Asignar a</div><div class="task-grid" id="taskAgents"></div></div>
     <div class="mrow"><button class="mbtn" onclick="dispatchTask()">🚀 Ejecutar</button><button class="mbtn sec" onclick="closeTask()">Cancelar</button></div>
     <div class="tresult" id="taskResult"></div>
@@ -400,6 +400,7 @@
 </div>
 
 
+<script src="js/icons.js"></script>
 <script type="module" src="js/agents.js"></script>
 <script type="module" src="js/chat.js"></script>
 <script type="module" src="js/workspace.js"></script>

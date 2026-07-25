@@ -16,74 +16,6 @@ body.night-mode{
   --b1:#171d22;--b2:#20282e;--b3:#2a343b;
   --t2:#66736e;--t3:#3f4a46;
 }
-body.light-mode{
-  --bg:#faf9f6;      /* Soft warm white */
-  --bg2:#f3f1ed;     /* Level 2 */
-  --bg3:#ece8e2;     /* Level 3 */
-  --bg4:#e4dfd7;     /* Level 4 */
-  --b1:#d8d2c9;      /* Border 1 */
-  --b2:#c8c0b4;      /* Border 2 */
-  --b3:#b8afa0;      /* Border 3 */
-  --t1:#1e1c1a;      /* Text 1 - almost black */
-  --t2:#4a4540;      /* Text 2 */
-  --t3:#7a7268;      /* Text 3 */
-  --acc:#0a8a44;
-  --acc2:#087836;
-  --acc3:#0ca850;
-}
-body.light-mode .cbody{
-  background:var(--bg3);
-  border-color:var(--b2);
-}
-body.light-mode header{
-  box-shadow:0 1px 3px rgba(0,0,0,.08);
-}
-body.light-mode .tnode{
-  background:var(--bg2);
-}
-body.light-mode .cblk{
-  background:var(--bg3);
-}
-body.light-mode .mbox,
-body.light-mode #agentProfile,
-body.light-mode .viewer-body,
-body.light-mode .console-wrap,
-body.light-mode .console-context,
-body.light-mode .chat-search-wrap,
-body.light-mode .cas-bar,
-body.light-mode .tool-mini-wrap,
-body.light-mode .scene-cinema-hud,
-body.light-mode #rackModal > div,
-body.light-mode #boardModal > div,
-body.light-mode #tableMenuOv > div,
-body.light-mode #calOv > div,
-body.light-mode #yaredStatsOv > div {
-  background: var(--bg2) !important;
-}
-body.light-mode .kbd-item,
-body.light-mode .meet-card,
-body.light-mode .ach-card,
-body.light-mode .xp-card,
-body.light-mode .taskhist-item,
-body.light-mode .dash-kpi,
-body.light-mode .dash-row,
-body.light-mode .ops-step,
-body.light-mode .ops-item,
-body.light-mode .improve-panel,
-body.light-mode .tool-card-row {
-  background: var(--bg3) !important;
-}
-body.light-mode .edu {
-  background: var(--bg) !important;
-}
-body.light-mode .overlay {
-  background: rgba(236, 232, 226, 0.6) !important;
-}
-body.light-mode .cwrap::before,
-body.light-mode .cwrap::after {
-  display: none !important;
-}
-
 #micBtn.active {
 color: var(--red) !important;
 filter: drop-shadow(0 0 5px var(--red));
@@ -441,7 +373,6 @@ main{display:grid;grid-template-columns:520px 1fr;overflow:hidden}
 .demo-outcome .row b{color:var(--t1)}
 body[data-ui-mode="launch"] .sandbox-only{display:none!important}
 body[data-ui-mode="sandbox"] .launch-only{display:none!important}
-body[data-panel="tree"] #opsBar,
 body[data-panel="consola"] #opsBar{display:none}
 body.scene-focus main{grid-template-columns:480px 1fr}
 body.scene-focus #opsBar,
@@ -939,3 +870,134 @@ footer{display:flex;align-items:center;justify-content:space-between;padding:0 1
 .stline{display:flex;align-items:center;gap:7px;font-family:var(--mono);font-size:17px;color:var(--t3)}
 .sd{width:5px;height:5px;background:var(--t3);border-radius:50%;transition:background .3s}
 .sd.on{background:var(--acc);animation:pulse 1.5s infinite}.sd.api{background:var(--blue);animation:pulse 1s infinite}
+
+/* OPS CONSOLE SKIN - replaces generic accent rails with compact signal markers */
+.header-menu{
+  min-width:214px;padding:7px;background:rgba(7,11,14,.98);border:1px solid #26383d;border-radius:14px;
+  box-shadow:0 22px 50px rgba(0,0,0,.42),inset 0 1px 0 rgba(255,255,255,.045);backdrop-filter:blur(18px)
+}
+.header-menu::before{content:'CONTROL DE ESCENA';display:block;padding:4px 9px 7px;font-family:var(--mono);font-size:10px;letter-spacing:.15em;color:var(--t3);border-bottom:1px solid var(--b1)}
+.header-menu-btn{position:relative;border:0;border-bottom:1px solid rgba(255,255,255,.045);border-radius:8px;background:transparent;padding:9px 10px 9px 18px;letter-spacing:.09em}
+.header-menu-btn::before{content:'';position:absolute;left:7px;top:50%;width:4px;height:4px;border-radius:50%;background:var(--t3);transform:translateY(-50%);transition:background .16s,box-shadow .16s}
+.header-menu-btn:hover{background:rgba(103,177,141,.08);border-color:transparent;color:var(--t1);transform:translateX(2px)}
+.header-menu-btn:hover::before{background:var(--acc);box-shadow:0 0 9px var(--acc)}
+.header-menu-btn.acc{background:rgba(103,177,141,.08);color:var(--acc3);border-color:transparent}
+.header-menu-btn.acc::before{background:var(--acc);box-shadow:0 0 8px var(--acc)}
+
+.tree-wrap{padding:16px 14px 22px;gap:7px}
+.tnode{
+  min-height:58px;padding:10px 12px;border:1px solid var(--b1)!important;border-left:1px solid var(--b1)!important;border-radius:10px;
+  background:linear-gradient(110deg,rgba(20,27,30,.98),rgba(12,17,20,.94));box-shadow:0 7px 16px rgba(0,0,0,.1);overflow:hidden
+}
+.tnode::after{content:'';position:absolute;right:11px;top:11px;width:5px;height:5px;border-radius:50%;background:var(--agent-color,var(--acc));box-shadow:0 0 10px var(--agent-color,var(--acc));opacity:.8}
+.tnode:hover{background:linear-gradient(110deg,rgba(28,39,41,.98),rgba(14,21,24,.96));border-color:var(--b2)!important;transform:translateX(2px)}
+.tnode.active{background:linear-gradient(110deg,rgba(31,46,43,.98),rgba(15,23,25,.96));border-color:var(--agent-color,var(--b2))!important;box-shadow:0 0 0 1px rgba(103,177,141,.08),0 12px 24px rgba(0,0,0,.2)}
+.tav{width:32px;height:32px;border-radius:8px;box-shadow:inset 0 0 0 1px var(--agent-color,var(--b2));font-family:var(--mono);font-size:13px}
+.tro{font-size:12px;color:var(--t3);letter-spacing:.06em;text-transform:uppercase}
+.tst{margin-right:8px;border:1px solid var(--b1);border-radius:999px;padding:2px 7px;font-size:10px;letter-spacing:.08em;text-transform:uppercase}
+.tlv1,.tlv2{gap:6px}
+
+.cas-bar,.console-context,.chat-search-wrap,.tool-mini-wrap{border-radius:11px;background:linear-gradient(110deg,rgba(18,26,29,.98),rgba(10,15,18,.96));box-shadow:0 12px 26px rgba(0,0,0,.14),inset 0 1px 0 rgba(255,255,255,.035)}
+.cas-btn,.console-pill{border-radius:6px;background:transparent;border-color:transparent;padding:7px 10px;font-size:11px;letter-spacing:.11em}
+.cas-btn:hover,.console-pill:hover{background:rgba(103,177,141,.08);border-color:transparent;box-shadow:none}
+.cas-btn.on,.console-pill.on{background:rgba(103,177,141,.1);border-color:var(--acc2);color:var(--acc3);box-shadow:inset 0 -2px 0 var(--acc)}
+
+.ops-bar{position:relative;padding:14px 18px;background:radial-gradient(circle at 88% 12%,rgba(78,159,122,.09),transparent 32%),linear-gradient(145deg,var(--bg2),var(--bg));border-bottom:1px solid var(--b2)}
+.ops-bar::before{content:'OPS / LIVE';position:absolute;right:18px;top:12px;font-family:var(--mono);font-size:10px;letter-spacing:.15em;color:var(--t3)}
+.ops-k{font-size:11px;letter-spacing:.18em}
+.ops-chip{border-radius:6px;background:rgba(255,255,255,.025);padding:5px 9px;font-size:10px}
+.ops-item,.improve-item,.demo-outcome{position:relative;border-left:1px solid var(--b1)!important;border-radius:10px;background:linear-gradient(110deg,rgba(20,27,30,.98),rgba(12,17,20,.94));padding:11px 13px 11px 19px;box-shadow:0 7px 16px rgba(0,0,0,.1)}
+.ops-item::before,.improve-item::before,.demo-outcome::before{content:'';position:absolute;left:9px;top:15px;width:4px;height:4px;border-radius:50%;background:var(--event-color,var(--acc));box-shadow:0 0 8px var(--event-color,var(--acc))}
+.improve-item::before,.demo-outcome::before{background:var(--acc);box-shadow:0 0 8px var(--acc)}
+.ops-item:hover,.improve-item:hover{border-color:var(--b2)!important;transform:translateX(2px)}
+.ops-item strong,.improve-item strong{font-size:12px;letter-spacing:.05em}
+.ops-item span,.improve-item span{font-size:12px}
+
+.sc-card,.xp-card,.flow-metric-card,.meeting-log-entry{position:relative;border-left:1px solid var(--b1)!important;border-radius:10px;background:linear-gradient(110deg,rgba(20,27,30,.98),rgba(12,17,20,.94));box-shadow:0 7px 16px rgba(0,0,0,.1)}
+.sc-card::before,.xp-card::before,.flow-metric-card::before,.meeting-log-entry::before{content:'';position:absolute;left:9px;top:13px;width:4px;height:4px;border-radius:50%;background:var(--agent-color,var(--flow-color,var(--acc)));box-shadow:0 0 8px var(--agent-color,var(--flow-color,var(--acc)))}
+.flow-metric-card{margin:8px 12px;padding:10px 12px 10px 18px;font-family:var(--mono);font-size:17px;line-height:1.8;animation:fadeUp .3s}
+.meeting-log-entry{display:flex;gap:6px;padding:7px 8px 7px 18px;animation:fadeUp .2s}
+.xp-card{padding:10px 12px 10px 18px}
+.sc-card{padding-left:18px}
+.sc-card:hover{transform:translateX(2px);border-color:var(--b2)!important;box-shadow:0 10px 20px rgba(0,0,0,.15)}
+
+/* LEFT CONSOLE LAYOUT - keep long ops panels inside the viewport */
+.app,main,.edu{min-height:0}
+#opsBar{min-height:0;max-height:100%;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:var(--b2) transparent}
+#opsBar::-webkit-scrollbar{width:7px}
+#opsBar::-webkit-scrollbar-track{background:transparent}
+#opsBar::-webkit-scrollbar-thumb{background:var(--b2);border-radius:999px}
+.improve-panel{min-height:0;max-height:clamp(190px,34vh,330px);display:flex;flex-direction:column;margin-top:14px;padding:14px 16px}
+.improve-list{min-height:0;flex:1 1 auto;max-height:none;overflow-y:auto}
+
+/* COMPACT OPS DENSITY - more signal, less vertical stacking */
+.ops-bar{padding:10px 16px;gap:7px}
+.ops-top{gap:5px}
+.ops-now{font-size:15px;line-height:1.15}
+.ops-meta{font-size:13px;line-height:1.35}
+.ops-summary{gap:5px;margin-top:3px}
+.ops-chip{font-size:11px;padding:4px 8px;letter-spacing:.06em}
+.ops-feed{max-height:112px;gap:5px}
+.ops-item{padding:8px 11px 8px 17px;gap:2px}
+.ops-item strong{font-size:11px}
+.ops-item span{font-size:11px;line-height:1.3}
+.ops-item small{font-size:10px}
+.improve-panel{max-height:clamp(180px,31vh,285px);margin-top:10px;padding:11px 13px}
+.improve-head{margin-bottom:8px}
+.improve-title{font-size:14px;letter-spacing:.08em}
+.improve-pill{font-size:10px;padding:4px 8px}
+.improve-list{gap:6px;margin-bottom:8px}
+.improve-item{font-size:11px;padding:8px 11px 8px 17px;line-height:1.25}
+.improve-item span{font-size:10px;line-height:1.25;margin-top:2px}
+.improve-repos{gap:5px;margin-bottom:8px}
+.improve-repo{font-size:10px;padding:4px 8px}
+.improve-action{gap:5px}
+
+/* FLOW PANEL - avoid stacking the command center over its own workspace */
+body[data-panel="flujo"] #opsBar{display:none}
+
+/* Restore readable density after compact mode */
+.ops-bar{padding:13px 18px;gap:9px}
+.ops-top{gap:7px}
+.ops-now{font-size:16px;line-height:1.2}
+.ops-meta{font-size:14px;line-height:1.5}
+.ops-summary{gap:7px;margin-top:5px}
+.ops-chip{font-size:12px;padding:5px 10px;letter-spacing:.07em}
+.ops-feed{max-height:135px;gap:6px}
+.ops-item{padding:9px 13px 9px 18px;gap:3px}
+.ops-item strong{font-size:12px}
+.ops-item span{font-size:12px;line-height:1.4}
+.ops-item small{font-size:11px}
+.improve-panel{max-height:clamp(210px,33vh,315px);margin-top:14px;padding:13px 16px}
+.improve-head{margin-bottom:10px}
+.improve-title{font-size:16px;letter-spacing:.09em}
+.improve-pill{font-size:11px;padding:5px 10px}
+.improve-list{gap:8px;margin-bottom:10px}
+.improve-item{font-size:12px;padding:9px 13px 9px 18px;line-height:1.35}
+.improve-item span{font-size:11px;line-height:1.35;margin-top:3px}
+.improve-repos{gap:6px;margin-bottom:10px}
+.improve-repo{font-size:11px;padding:4px 9px}
+.improve-action{gap:7px}
+
+/* PANEL CONSISTENCY - each workspace owns the left console surface */
+body[data-panel="status"] #opsBar,
+body[data-panel="dash"] #opsBar,
+body.clean-mode[data-panel="status"] #opsBar,
+body.clean-mode[data-panel="dash"] #opsBar{display:none!important}
+.status-wrap{background:linear-gradient(180deg,#0b1215,#080d10);border-top:1px solid var(--b1)}
+.status-wrap::before{content:'SECURITY STATUS  /  ACTIVE AGENTS';display:block;flex:0 0 auto;padding:14px 16px 10px;font-family:var(--mono);font-size:11px;letter-spacing:.16em;color:var(--acc);border-bottom:1px solid var(--b1)}
+.status-scroll{padding:12px 14px;gap:8px}
+.status-tabs{display:flex;gap:5px;padding:8px 14px;border-top:1px solid var(--b1);border-bottom:1px solid var(--b1);background:#0a1114}
+.status-tabs .cas-btn{flex:1;text-align:center}
+.sc-card{background:linear-gradient(140deg,#111a1e,#0b1215)!important;border:1px solid #21343a!important;border-radius:10px;box-shadow:inset 0 1px 0 rgba(255,255,255,.025)}
+.sc-card:hover{background:linear-gradient(140deg,#17252a,#0e171a)!important;border-color:#3b5b5f!important;transform:none}
+.sc-card.is-active{box-shadow:inset 0 0 0 1px var(--b2),0 8px 18px rgba(0,0,0,.18)}
+.act-foot{background:#0a1114;border-top:1px solid #21343a;padding:9px 14px 8px}
+
+/* ICONS + RESPONSIVE MOTION: keep menus crisp on integrated graphics */
+.ui-icon{display:inline-flex;width:1em;height:1em;vertical-align:-.16em;align-items:center;justify-content:center;color:currentColor;flex:0 0 auto}
+.ui-icon svg{width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.header-menu,.overlay,.mbox,#agentProfile,.scene-cinema-hud,.console-context,.chat-search-wrap,.cas-bar,.tool-mini-wrap{backdrop-filter:none;-webkit-backdrop-filter:none}
+.header-menu,.header-menu-btn,.ptbtn,.cas-btn,.console-pill,.btn,.spd,.tcb,.dash-row,.tool-picker-item{transition-duration:.1s}
+.header-menu{box-shadow:0 12px 24px rgba(0,0,0,.24)}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.001ms!important}}

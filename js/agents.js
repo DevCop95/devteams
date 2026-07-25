@@ -181,21 +181,21 @@ function checkWorkCycle(){
         // Entran desde la puerta
         ag.group.position.set(-22+(Math.random()-.5)*3,0,16);
         ag.moveTo(ACFG[k].homeX,ACFG[k].homeZ);
-        const _greets={ceo:['Buenos dias equipo 💼','Arrancamos el sprint 🚀','¡A trabajar!'],pm:['Hola! Tengo el roadmap 📋','¡Buenos dias!','Sprint listo 📊'],devbe:['Sistema online ⚡','Buenos dias, a codear','Commits pendientes 💻'],devfe:['Buenos dias! Storybook up','UI lista 🎨','¡A darle!'],qa:['Testing mode ON 🧪','Buenos dias equipo','Bugs detectados? 🐞'],devops:['Infra estable ✅','Buenos dias! k8s OK','Pods running 🟢'],ux:['Diseños listos ✨','Buenos dias!','Figma abierto 🎯'],data:['Metricas cargadas 📈','Buenos dias!','Dashboard listo 📊']};
+        const _greets={ceo:['Alcance autorizado y listo','Revisemos el riesgo','Briefing de seguridad iniciado'],pm:['Engagement listo para coordinar','Priorizo los hallazgos','Retest en calendario'],devbe:['Recon autorizada en marcha','Mapeando superficie de ataque','PoC controlado preparado'],devfe:['Revisando OWASP Top 10','Headers bajo revision','Validando entradas'],qa:['Evidencia lista para validar','Reproduccion en staging','Retest de vulnerabilidades'],devops:['Cloud bajo auditoria','Logs y alertas activos','Segmentacion verificada'],ux:['Modelando amenazas','Flujos bajo revision','Defensas anti-phishing listas'],data:['Indicadores correlacionados','CVSS en calculo','Threat intel actualizada']};
         ag.say((_greets[k]||['Buenos dias! ☀'])[Math.floor(Math.random()*3)]);
         try{if(!_doorOpen)toggleDoor();}catch(e){}
       },i*1200);
     });
     setTimeout(()=>{try{if(_doorOpen)toggleDoor();}catch(e){}},12000);
   }
-  // 13:00  almuerzo
+  // 13:00  pausa de triage
   if(mins>=780&&mins<783&&!_workDone.lunch){
     _workDone.lunch=true;
-    showToast('13:00 - Hora del almuerzo','#c8a040');
+    showToast('13:00 - Pausa de triage de hallazgos','#c8a040');
     Object.entries(AG).forEach(([k,ag],i)=>{
       setTimeout(()=>{
         ag.moveTo(-20+Math.random()*4,11+Math.random()*3);
-        ag.say(['almuerzo!','pausa','a comer'][Math.floor(Math.random()*3)]);
+        ag.say(['triage de hallazgos','revisando evidencia','priorizando riesgos'][Math.floor(Math.random()*3)]);
       },i*600);
     });
   }
@@ -207,21 +207,21 @@ function checkWorkCycle(){
       setTimeout(()=>{ag.moveTo(ACFG[k].homeX,ACFG[k].homeZ);ag.say('De vuelta 💪');},i*500);
     });
   }
-  // 15:30  pausa cafe
+  // 15:30  pausa de evidencia
   if(mins>=930&&mins<933&&!_workDone.coffee){
     _workDone.coffee=true;
-    showToast('☕ 15:30  Pausa cafe','#8b4513');
+    showToast('15:30  Pausa de evidencia y retest','#8b4513');
     const goers=Object.keys(ACFG).slice(0,4);
-    goers.forEach((k,i)=>{setTimeout(()=>{AG[k]?.moveTo(-21.5+Math.random()*2,12.5);AG[k]?.say('☕ cafe!');if(k==='devbe')yaredDrinkCoffee();},i*700);});
+    goers.forEach((k,i)=>{setTimeout(()=>{AG[k]?.moveTo(-21.5+Math.random()*2,12.5);AG[k]?.say(['comparando evidencia','revisando alcance','preparando retest'][i%3]);},i*700);});
     setTimeout(()=>goers.forEach(k=>AG[k]?.back()),5000);
   }
   // 18:00  salida
   if(mins>=1080&&mins<1083&&!_workDone.leave){
     _workDone.leave=true;
-    showToast('🌆 18:00  Fin del dia laboral','#9060cc');
+    showToast('🌆 18:00  Cierre del engagement y reporte','#9060cc');
     Object.entries(AG).forEach(([k,ag],i)=>{
       setTimeout(()=>{
-        ag.say(['¡Hasta mañana!','Chao equipo 👋','Buenas noches 🌙'][Math.floor(Math.random()*3)]);
+        ag.say(['Reporte enviado','Evidencia archivada','Retest pendiente'][Math.floor(Math.random()*3)]);
         setTimeout(()=>{
           try{if(!_doorOpen)toggleDoor();}catch(e){}
           ag.moveTo(-22+Math.random()*2,15.5);
@@ -290,9 +290,10 @@ function _rebuildSkyline(){
   cv.width=W;cv.height=H;
   const ctx=cv.getContext('2d');
   ctx.scale(3,1.7);
+  const visualDay=dayMode;
   const sky=ctx.createLinearGradient(0,0,0,300);
-  sky.addColorStop(0,dayMode?'#1a3a6a':'#02040e');
-  sky.addColorStop(1,dayMode?'#c87040':'#08080a');
+  sky.addColorStop(0,visualDay?'#1a3a6a':'#02040e');
+  sky.addColorStop(1,visualDay?'#c87040':'#08080a');
   ctx.fillStyle=sky;ctx.fillRect(-100,-100,1200,600); 
   if(!dayMode){
     for(let i=0;i<120;i++){
@@ -313,7 +314,7 @@ function _rebuildSkyline(){
     for(let wy=y+10;wy<300-20;wy+=17)
       for(let wx=x+7;wx<x+w-7;wx+=13)
         if(Math.random()>.42){
-          ctx.fillStyle=dayMode
+        ctx.fillStyle=visualDay
             ?`rgba(200,180,100,.25)`
             :`rgba(255,220,80,${.08+Math.random()*.38})`;
           ctx.fillRect(wx,wy,5,8);
@@ -324,7 +325,7 @@ function _rebuildSkyline(){
   ctx.fillStyle='#1a1420';ctx.beginPath();ctx.moveTo(458,55);ctx.lineTo(474,25);ctx.lineTo(490,55);ctx.fill();
   ctx.fillStyle='rgba(200,160,64,.55)';ctx.beginPath();ctx.arc(474,90,13,0,Math.PI*2);ctx.fill();
   // Sol o Luna
-  if(dayMode){
+  if(visualDay){
     ctx.fillStyle='#f0c040';ctx.beginPath();ctx.arc(820,75,22,0,Math.PI*2);ctx.fill();
     ctx.fillStyle='rgba(240,192,64,.12)';ctx.beginPath();ctx.arc(820,75,42,0,Math.PI*2);ctx.fill();
   }else{
@@ -348,20 +349,21 @@ function updateSkylineParallax(){
   window._skylineMesh.position.x+=(px-window._skylineMesh.position.x)*.04;
 }
 
-function toggleTheme(){
-  const isLight=document.body.classList.contains('light-mode');
-  const btn=document.getElementById('themeBtnHdr');
-  if(isLight){
-    document.body.classList.remove('light-mode');
-    localStorage.setItem('theme','dark');
-    showToast('🌑 Tema oscuro activado');
-    if(btn) btn.innerHTML = '☀️ Claro';
-  }else{
-    document.body.classList.add('light-mode');
-    localStorage.setItem('theme','light');
-    showToast('☀ Tema claro Linear activado','#0a8a44');
-    if(btn) btn.innerHTML = '🌑 Oscuro';
+function applySceneTheme(){
+  if(renderer)renderer.toneMappingExposure=1.1;
+  if(_ambLight){_ambLight.intensity=1.2;_ambLight.color.set(dayMode?0x262626:0x08080f);}
+  if(_sunLight){_sunLight.intensity=dayMode?1.5:0;_sunLight.castShadow=dayMode;}
+  if(scene?.background)scene.background.set(0x0a0a0a);
+  if(scene?.fog)scene.fog.color.set(0x0a0a0a);
+  if(window._sceneFloorMesh?.material){
+    window._sceneFloorMesh.material.map=window._sceneFloorTex;
+    window._sceneFloorMesh.material.color.set(0xffffff);
+    window._sceneFloorMesh.material.needsUpdate=true;
   }
+  if(scene)_rebuildSkyline();
+}
+if(typeof MutationObserver!=='undefined'){
+  new MutationObserver(()=>applySceneTheme()).observe(document.body,{attributes:true,attributeFilter:['class']});
 }
 function toggleDayNight(){
   dayMode=!dayMode;
@@ -593,7 +595,7 @@ let _lastApiPresenceMsg='';
 let _lastApiPresenceAgent='';
 let _apiDemoPool=[];
 let _apiLivePool=[];
-const IMPROVEMENT_REPOS=['AutoGPT visualizers','Three.js multi-agent dashboards','AgentSim orchestration','Open-source AI worker agencies','Multi-agent operations playbooks'];
+const IMPROVEMENT_REPOS=['OWASP ASVS validation','Authorized recon playbooks','Cloud attack surface baselines','Threat modeling workbench','Evidence and retest ledger'];
 function inspectImprovementHeuristics(){
   if(typeof AG==='undefined')return[];
   const suggestions=[];
@@ -890,15 +892,32 @@ function updApiUI(){
 
 const ACFG={
 // Colores MUY contrastados tipo Claw3D
-ceo:  {name:'Ana Garcia',    role:'CEO',             col:'#c8a040',homeX:-22,homeZ:-12, bodyC:0xc8a040,pantsC:0x2a2010,skinC:0xf0c8a0,hairC:0x0a0806},
-pm:   {name:'Sofia Castro',  role:'Product Manager', col:'#5b9bd5',homeX:-22.9,homeZ:7.8,  bodyC:0x1a5fa8,pantsC:0x0e1a28,skinC:0xc8946a,hairC:0x180e06},
-devbe:{name:'Yared Henriquez',role:'Founder & Architect',col:'#3a8ccc',homeX:-9,homeZ:-12, bodyC:0x1a4a8a,pantsC:0x0e1428,skinC:0x5c3418,hairC:0x080808},
-devfe:{name:'Diego Herrera', role:'Dev Frontend',    col:'#9060cc',homeX:0, homeZ:-12, bodyC:0x6030aa,pantsC:0x1a0828,skinC:0xecd4b8,hairC:0x060406},
-qa:   {name:'Marta Lopez',   role:'QA Engineer',     col:'#d97020',homeX:11,homeZ:-12, bodyC:0xd97020,pantsC:0x1c0a00,skinC:0xd4926a,hairC:0x3a1008},
-devops:{name:'Luis Mendoza', role:'DevOps Engineer', col:'#4caf50',homeX:23.5,homeZ:-10.2, bodyC:0x2a8a30,pantsC:0x0e1a0e,skinC:0x3c2010,hairC:0x040404},
-ux:   {name:'Valentina Ramos',role:'UX Designer',    col:'#e91e8c',homeX:-22.6,homeZ:-1.4,  bodyC:0xc8106a,pantsC:0x280418,skinC:0xf4d0b8,hairC:0x0c0608},
-data: {name:'Andres Torres', role:'Data Analyst',    col:'#00bcd4',homeX:9, homeZ:-.4,  bodyC:0x0898aa,pantsC:0x041018,skinC:0xa07848,hairC:0x100c06},
+ceo:  {name:'Ana Garcia',    role:'Security Director',       focus:'Scope, risk and authorization',       col:'#c8a040',homeX:-22,homeZ:-12, bodyC:0xc8a040,pantsC:0x2a2010,skinC:0xf0c8a0,hairC:0x0a0806},
+pm:   {name:'Sofia Castro',  role:'Pentest Program Manager',  focus:'Engagement planning and retest',     col:'#5b9bd5',homeX:-22.9,homeZ:7.8,  bodyC:0x1a5fa8,pantsC:0x0e1a28,skinC:0xc8946a,hairC:0x180e06},
+devbe:{name:'Yared Henriquez',role:'Red Team Lead',           focus:'Reconnaissance and attack paths',    col:'#3a8ccc',homeX:-9,homeZ:-12, bodyC:0x1a4a8a,pantsC:0x0e1428,skinC:0x5c3418,hairC:0x080808},
+devfe:{name:'Diego Herrera', role:'Application Security',     focus:'OWASP testing and secure code',     col:'#9060cc',homeX:0, homeZ:-12, bodyC:0x6030aa,pantsC:0x1a0828,skinC:0xecd4b8,hairC:0x060406},
+qa:   {name:'Marta Lopez',   role:'Vulnerability Validator',  focus:'Evidence, reproduction and retest', col:'#d97020',homeX:11,homeZ:-12, bodyC:0xd97020,pantsC:0x1c0a00,skinC:0xd4926a,hairC:0x3a1008},
+devops:{name:'Luis Mendoza', role:'Cloud Security Engineer',  focus:'Infrastructure and detection',      col:'#4caf50',homeX:23.5,homeZ:-10.2, bodyC:0x2a8a30,pantsC:0x0e1a0e,skinC:0x3c2010,hairC:0x040404},
+ux:   {name:'Valentina Ramos',role:'Threat Modeling Lead',   focus:'Abuse cases and human risk',        col:'#e91e8c',homeX:-22.6,homeZ:-1.4,  bodyC:0xc8106a,pantsC:0x280418,skinC:0xf4d0b8,hairC:0x0c0608},
+data: {name:'Andres Torres', role:'Threat Intelligence',      focus:'Indicators, CVSS and correlation', col:'#00bcd4',homeX:9, homeZ:-.4,  bodyC:0x0898aa,pantsC:0x041018,skinC:0xa07848,hairC:0x100c06},
 };
+
+const PTEST_ACTIONS={
+  ceo:['Define alcance autorizado','Revisar riesgo critico','Aprobar plan de remediacion'],
+  pm:['Validar reglas del engagement','Priorizar hallazgos por impacto','Coordinar el retest'],
+  devbe:['Enumerar superficie de ataque','Mapear una cadena de ataque','Documentar un PoC controlado'],
+  devfe:['Revisar OWASP Top 10','Inspeccionar headers y CSP','Validar sanitizacion de entradas'],
+  qa:['Reproducir hallazgo en staging','Validar evidencia del PoC','Confirmar correccion y retest'],
+  devops:['Auditar configuracion cloud','Revisar logs y alertas','Verificar segmentacion de red'],
+  ux:['Modelar amenazas del flujo','Revisar abuso de permisos','Disenar defensa anti-phishing'],
+  data:['Correlacionar indicadores','Calcular severidad CVSS','Actualizar tablero de riesgos']
+};
+
+function mkSys(agentKey){
+  const cfg=ACFG[agentKey]||ACFG.ceo;
+  return `[[AG:${agentKey||'ceo'}]] Eres ${cfg.name}, ${cfg.role}, en un laboratorio de pentesting etico. Tu foco es ${cfg.focus}. Trabaja solo con sistemas, cuentas y datos autorizados; prioriza alcance, evidencia reproducible, minimizacion de impacto y remediacion. No ejecutes acciones destructivas, persistencia, robo de credenciales ni acceso fuera de alcance. Responde en espanol, con claridad y pasos seguros.`;
+}
+window.mkSys=mkSys;
 
 window._uiMode='launch';
 window._eventLog=[];
@@ -920,7 +939,7 @@ function renderEventFeed(limit=6){
     return;
   }
   el.innerHTML=_eventLog.slice(0,limit).map(ev=>`
-    <div class="ops-item" style="border-left-color:${ev.col||'#0fa855'}">
+    <div class="ops-item" style="--event-color:${ev.col||'#0fa855'}">
       <strong>${escapeHtml(ev.title||'Evento')}</strong>
       <span>${escapeHtml(ev.detail||'')}</span>
       <small>${fmtEventTime(ev.ts)}${ev.agKey&&ACFG[ev.agKey]?` · ${ACFG[ev.agKey].name.split(' ')[0]}`:''}</small>
@@ -962,26 +981,26 @@ function _activeAgentsCount(){
 
 function _nextActionFor(agKey){
   return {
-    ceo:'Comunicar prioridades y convertir acuerdos en tareas',
-    pm:'Bajar decisiones a roadmap y owners',
-    devbe:'Validar arquitectura y desbloquear ejecucion',
-    devfe:'Cerrar UI y preparar handoff',
-    qa:'Confirmar riesgos y liberar con evidencia',
-    devops:'Asegurar deploy y monitoreo post-release',
-    ux:'Convertir hallazgos en cambios concretos',
-    data:'Actualizar metricas y compartir lectura ejecutiva'
+    ceo:'Confirmar alcance, riesgo y criterios de salida',
+    pm:'Coordinar pruebas, propietarios y ventanas de retest',
+    devbe:'Completar reconocimiento autorizado y validar servicios',
+    devfe:'Revisar controles OWASP y cerrar casos reproducibles',
+    qa:'Reproducir hallazgos y conservar evidencia mínima',
+    devops:'Verificar exposición cloud, logs y alertas',
+    ux:'Priorizar abusos de flujo y controles defensivos',
+    data:'Correlacionar indicadores y actualizar severidad'
   }[agKey]||'Validar resultado y definir siguiente paso';
 }
 function _riskFor(agKey){
   return {
-    ceo:'Prioridades sin owner claro',
-    pm:'Roadmap sin fecha o criterio de cierre',
-    devbe:'Bloqueos tecnicos no visibilizados',
-    devfe:'Cambio visual sin validacion final',
-    qa:'Hallazgos sin reproducibilidad',
-    devops:'Deploy sin monitoreo suficiente',
-    ux:'Decisiones sin validacion de usuario',
-    data:'Lectura de metricas sin contexto operativo'
+    ceo:'Alcance no firmado o activo fuera de ventana',
+    pm:'Retest sin propietario, fecha o criterio de cierre',
+    devbe:'Reconocimiento fuera de scope o sin trazabilidad',
+    devfe:'Control débil sin caso reproducible',
+    qa:'Hallazgo sin evidencia suficiente para remediar',
+    devops:'Exposición pública sin alerta o registro central',
+    ux:'Abuso de permisos sin control compensatorio',
+    data:'Señal sin contexto, severidad o confianza'
   }[agKey]||'Falta seguimiento posterior';
 }
 function appendOutcomeCard(target,{title='Resumen operativo',ownerKey='ceo',outcome='',nextStep='',risk=''}={}){
@@ -1027,7 +1046,7 @@ async function startDemoTour(){
     await sleep(700);
 
     switchPanel('status');
-    await executeTask('Preparar release v1: prioridades, validacion QA y despliegue controlado',['pm','devbe','qa','devops'],{origin:'demo'});
+    await executeTask('Ejecutar engagement autorizado: alcance, recon, validacion y retest',['ceo','devbe','qa','devops'],{origin:'demo'});
     await sleep(400);
 
     switchPanel('dash');
@@ -1477,7 +1496,31 @@ function cy(rt,rb,h,seg,mat,x=0,y=0,z=0,p=null){
 function pL(col,int,dist,x,y,z){const l=new THREE.PointLight(col,int,dist);l.position.set(x,y,z);scene.add(l);return l;}
 function makeTex(w,h,fn){const c=document.createElement('canvas');c.width=w;c.height=h;fn(c.getContext('2d'));return _tuneTexture(new THREE.CanvasTexture(c));}
 function zSign(lbl,col,x,y,z,ry=0){
-  return;
+  const c=document.createElement('canvas');c.width=640;c.height=150;
+  const ctx=c.getContext('2d');
+  ctx.fillStyle='#05090d';ctx.fillRect(0,0,c.width,c.height);
+  ctx.fillStyle=col+'12';ctx.fillRect(0,0,c.width,12);
+  ctx.strokeStyle=col+'55';ctx.lineWidth=2;ctx.strokeRect(3,3,c.width-6,c.height-6);
+  ctx.strokeStyle=col+'18';ctx.lineWidth=1;
+  for(let gx=24;gx<c.width;gx+=32){ctx.beginPath();ctx.moveTo(gx,18);ctx.lineTo(gx,c.height-8);ctx.stroke();}
+  for(let gy=34;gy<c.height;gy+=24){ctx.beginPath();ctx.moveTo(8,gy);ctx.lineTo(c.width-8,gy);ctx.stroke();}
+  ctx.fillStyle=col;ctx.font='bold 28px monospace';ctx.textAlign='left';ctx.fillText(lbl,24,62);
+  ctx.fillStyle='#8ca19d';ctx.font='14px monospace';ctx.fillText('AUTHORIZED SECURITY WORKSPACE',24,91);
+  ctx.fillStyle=col;ctx.fillRect(24,111,115,5);
+  ctx.fillStyle='#45615b';ctx.font='12px monospace';ctx.fillText('SCOPE LOCKED  /  EVIDENCE READY',24,137);
+  const tex=_tuneTexture(new THREE.CanvasTexture(c),{anisotropy:4});
+  const panel=new THREE.Mesh(new THREE.PlaneGeometry(4.8,1.12),new THREE.MeshBasicMaterial({map:tex,transparent:true,side:THREE.DoubleSide}));
+  panel.position.set(x,y,z);panel.rotation.y=ry;panel.userData.securitySign=lbl;scene.add(panel);
+  const frameGroup=new THREE.Group();
+  const trimMat=new THREE.MeshBasicMaterial({color:parseInt(col.replace('#','0x')),transparent:true,opacity:.72});
+  [[4.92,.045,0,.59],[4.92,.045,0,-.59],[.045,1.18,-2.44,0],[.045,1.18,2.44,0]].forEach(([w,h,fx,fy])=>{
+    const trim=new THREE.Mesh(new THREE.BoxGeometry(w,h,.06),trimMat);
+    trim.position.set(fx,fy,.055);frameGroup.add(trim);
+  });
+  frameGroup.position.set(x,y,z);frameGroup.rotation.y=ry;scene.add(frameGroup);
+  const glow=pL(parseInt(col.replace('#','0x')),.08,4.5,x,y,z+(ry===0?.3:-.3));
+  glow.userData.securitySign=lbl;
+  return panel;
 }
 
 function buildDesk(cfg){
@@ -1800,6 +1843,7 @@ const floorMesh=new THREE.Mesh(
   new THREE.MeshLambertMaterial({map:floorTex,color:0xd4c8a8})
 );
 floorMesh.rotation.x=-Math.PI/2;floorMesh.position.set(0,.06,0);floorMesh.receiveShadow=true;scene.add(floorMesh);
+window._sceneFloorMesh=floorMesh;window._sceneFloorTex=floorTex;
 // Zonas sutiles solo con luz, sin color de piso
 Object.entries(ACFG).forEach(([k,cfg])=>{
   const spot=new THREE.Mesh(
@@ -1922,7 +1966,7 @@ doorHit.position.set(0,2.4,16.95);doorHit.userData.clickAction='door';scene.add(
   mCtx.fillStyle='#040c10';mCtx.fillRect(0,0,256,320);
   mCtx.strokeStyle='#00bcd444';mCtx.lineWidth=1;mCtx.strokeRect(2,2,252,316);
   mCtx.fillStyle='#00bcd4';mCtx.font='bold 10px monospace';mCtx.textAlign='center';
-  mCtx.fillText('CARTAGENA DE INDIAS',128,18);mCtx.fillText('🇨🇴 Colombia',128,32);
+  mCtx.fillText('CARTAGENA DE INDIAS',128,18);mCtx.fillText('Colombia',128,32);
   // grid
   mCtx.strokeStyle='#0a1a1a';mCtx.lineWidth=1;
   for(let i=0;i<16;i++){mCtx.beginPath();mCtx.moveTo(i*16,40);mCtx.lineTo(i*16,316);mCtx.stroke();}
@@ -1953,7 +1997,7 @@ doorHit.position.set(0,2.4,16.95);doorHit.userData.clickAction='door';scene.add(
   for(let i=0;i<20;i++){lgCtx.beginPath();lgCtx.moveTo(i*16,0);lgCtx.lineTo(i*16,200);lgCtx.stroke();}
   for(let i=0;i<13;i++){lgCtx.beginPath();lgCtx.moveTo(0,i*16);lgCtx.lineTo(320,i*16);lgCtx.stroke();}
   lgCtx.fillStyle='#e8ede8';lgCtx.font='bold 44px Syne,sans-serif';lgCtx.textAlign='center';lgCtx.fillText('Dev Teams',160,98);
-  lgCtx.fillStyle='#1a2a1a';lgCtx.font='9px monospace';lgCtx.fillText('AI OPERATIONS HUB',160,128);
+  lgCtx.fillStyle='#1a2a1a';lgCtx.font='9px monospace';lgCtx.fillText('SECURITY OPERATIONS CENTER',160,128);
   lgCtx.strokeStyle='#0fa85533';lgCtx.lineWidth=1;lgCtx.strokeRect(8,8,304,184);
   const lgTex=new THREE.CanvasTexture(lgC);
   const lgM=new THREE.Mesh(new THREE.PlaneGeometry(2.2,1.4),new THREE.MeshBasicMaterial({map:lgTex,transparent:true}));
@@ -1966,13 +2010,43 @@ doorHit.position.set(0,2.4,16.95);doorHit.userData.clickAction='door';scene.add(
 // techo limpio para vista aerea
 
 }
+function buildSecurityOpsWall(){
+  const c=document.createElement('canvas');c.width=960;c.height=300;
+  const ctx=c.getContext('2d');
+  ctx.fillStyle='#03070b';ctx.fillRect(0,0,c.width,c.height);
+  ctx.strokeStyle='#1e5260';ctx.lineWidth=2;ctx.strokeRect(4,4,c.width-8,c.height-8);
+  ctx.fillStyle='#67d6bd';ctx.font='bold 24px monospace';ctx.fillText('SOC // SECURITY OPERATIONS CENTER',26,38);
+  ctx.fillStyle='#78918d';ctx.font='13px monospace';ctx.fillText('DEV TEAMS PENTEST LAB  /  AUTHORIZED ENGAGEMENT CONTROL',26,61);
+  ctx.strokeStyle='#193039';ctx.beginPath();ctx.moveTo(24,76);ctx.lineTo(936,76);ctx.stroke();
+  const cards=[
+    ['SCOPE','LOCKED','#67d6bd'],['FINDINGS','07 ACTIVE','#d97020'],['COVERAGE','82%','#5b9bd5'],['MONITORING','ONLINE','#0fa855']
+  ];
+  cards.forEach(([label,value,col],i)=>{
+    const x=26+i*226;ctx.fillStyle='#081117';ctx.fillRect(x,96,205,92);ctx.strokeStyle=col+'66';ctx.strokeRect(x,96,205,92);
+    ctx.fillStyle='#718782';ctx.font='12px monospace';ctx.fillText(label,x+14,121);
+    ctx.fillStyle=col;ctx.font='bold 20px monospace';ctx.fillText(value,x+14,151);
+    ctx.fillStyle=col+'55';ctx.fillRect(x+14,166,170,5);ctx.fillStyle=col;ctx.fillRect(x+14,166,Math.max(18,170*(i===2?.82:i===1?.58:1)),5);
+  });
+  ctx.fillStyle='#38514c';ctx.font='12px monospace';ctx.fillText('EVIDENCE CHAIN VERIFIED  //  RETEST WINDOW OPEN  //  NO OUT-OF-SCOPE ACTIVITY',26,236);
+  ctx.fillStyle='#67d6bd';ctx.fillRect(26,258,908,3);
+  const tex=_tuneTexture(new THREE.CanvasTexture(c),{anisotropy:4});
+  const screen=new THREE.Mesh(new THREE.PlaneGeometry(9.4,2.95),new THREE.MeshBasicMaterial({map:tex,transparent:true,side:THREE.DoubleSide}));
+  screen.position.set(0,4.55,-19.72);scene.add(screen);
+  const frameGroup=new THREE.Group();
+  const frameMat=new THREE.MeshBasicMaterial({color:0x67d6bd,transparent:true,opacity:.48});
+  [[9.55,.05,0,1.53],[9.55,.05,0,-1.53],[.05,3.05,-4.75,0],[.05,3.05,4.75,0]].forEach(([w,h,fx,fy])=>{
+    const trim=new THREE.Mesh(new THREE.BoxGeometry(w,h,.06),frameMat);trim.position.set(fx,fy,.05);frameGroup.add(trim);
+  });
+  frameGroup.position.set(0,4.55,-19.66);scene.add(frameGroup);
+  pL(0x67d6bd,.18,12,0,4.3,-18.8);
+}
 function buildCEOZone(){
-  zSign('CEO OFFICE','#c8a040',-16,6,-13);
+  zSign('SECURITY COMMAND','#c8a040',-16,6,-13);
   const gm=new THREE.MeshBasicMaterial({color:0x1a2838,transparent:true,opacity:.15,side:THREE.DoubleSide});
   bx(.1,5,14,gm,-16,2.5,-12);bx(.12,5.2,.12,new THREE.MeshLambertMaterial({color:0x1a1a1a}),-16,2.5,-19);bx(.12,5.2,.12,new THREE.MeshLambertMaterial({color:0x1a1a1a}),-16,2.5,-6);
   buildDesk({key:'ceo',col:'#c8a040',w:5.5,x:-22,z:-14});
   pL(0xffd080,.45,5,-22,3.1,-13.8);
-  const wbt=makeTex(512,320,ctx=>{ctx.fillStyle='#040c04';ctx.fillRect(0,0,512,320);ctx.fillStyle='#0fa855';ctx.font='bold 16px monospace';ctx.textAlign='left';ctx.fillText('Dev Teams · SPRINT Q2 🚀',14,22);const kpis=[['Velocity','94pts','#0fa855',.88],['Coverage','87%','#0fa855',.87],['Bug Rate','2.1/d','#c8a040',.42],['Deploys','14/wk','#0fa855',.7],['P1 Bugs','0 🎯','#0fa855',1],['NPS','72','#3a8ccc',.72]];kpis.forEach(([l,v,c,p],i)=>{const y=38+i*44;ctx.fillStyle='#3a4a3a';ctx.font='9px monospace';ctx.fillText(l,14,y+12);ctx.fillStyle=c;ctx.font='bold 18px monospace';ctx.fillText(v,14,y+30);ctx.fillStyle='rgba(255,255,255,.05)';ctx.fillRect(160,y+18,300,7);ctx.fillStyle=c;ctx.globalAlpha=.7;ctx.fillRect(160,y+18,300*p,7);ctx.globalAlpha=1;});});
+  const wbt=makeTex(512,320,ctx=>{ctx.fillStyle='#040c04';ctx.fillRect(0,0,512,320);ctx.fillStyle='#0fa855';ctx.font='bold 16px monospace';ctx.textAlign='left';ctx.fillText('Dev Teams · SPRINT Q2 · DEPLOY',14,22);const kpis=[['Velocity','94pts','#0fa855',.88],['Coverage','87%','#0fa855',.87],['Bug Rate','2.1/d','#c8a040',.42],['Deploys','14/wk','#0fa855',.7],['P1 Bugs','0','#0fa855',1],['NPS','72','#3a8ccc',.72]];kpis.forEach(([l,v,c,p],i)=>{const y=38+i*44;ctx.fillStyle='#3a4a3a';ctx.font='9px monospace';ctx.fillText(l,14,y+12);ctx.fillStyle=c;ctx.font='bold 18px monospace';ctx.fillText(v,14,y+30);ctx.fillStyle='rgba(255,255,255,.05)';ctx.fillRect(160,y+18,300,7);ctx.fillStyle=c;ctx.globalAlpha=.7;ctx.fillRect(160,y+18,300*p,7);ctx.globalAlpha=1;});});
   const wbm=new THREE.Mesh(new THREE.PlaneGeometry(4.2,2.6),new THREE.MeshBasicMaterial({map:wbt}));
   wbm.position.set(-27.55,4.0,1.5);
   wbm.rotation.y=Math.PI/2;
@@ -2071,7 +2145,7 @@ function updateBurndown(){
 
 const CODE=[{t:'// Dev Teams Auth v2',c:'#3a5a3a'},{t:'import jwt from "jsonwebtoken"',c:'#3a8ccc'},{t:'import bcrypt from "bcrypt"',c:'#3a8ccc'},{t:'',c:''},{t:'const SECRET=process.env.JWT',c:'#c8c040'},{t:'export const login=async(r,s)=>{',c:'#e8ede8'},{t:'  const u=await User.find(r.email)',c:'#0fa855'},{t:'  if(!u) return s.status(401)',c:'#cc3344'},{t:'  const tok=jwt.sign({id},SECRET)',c:'#0fa855'},{t:'  s.json({tok,u})',c:'#c8a040'},{t:'}',c:'#e8ede8'},{t:'',c:''},{t:'// ✓ Tests 14/14  94%',c:'#0fa855'}];
 function buildDevBEZone(){
-  zSign('THE ARCHITECT','#3a8ccc',-5.5,6.5,-13);
+  zSign('RED TEAM LAB','#3a8ccc',-5.5,6.5,-13);
   devCvs=[0,1,2].map(()=>{const c=document.createElement('canvas');c.width=280;c.height=176;return c;});
   devTex=devCvs.map(c=>_tuneTexture(new THREE.CanvasTexture(c),{anisotropy:10}));
 
@@ -2298,10 +2372,10 @@ function updateDevScreens(){
     devTex[ci].needsUpdate=true;
   });
 }
-function buildDevFEZone(){zSign('DEV FRONTEND','#9060cc',5.5,6.5,-13);buildDesk({key:'devfe',col:'#9060cc',w:5.2,x:0,z:-14});plantAt(4,-18.5,.9);}
+function buildDevFEZone(){zSign('APPSEC LAB','#9060cc',5.5,6.5,-13);buildDesk({key:'devfe',col:'#9060cc',w:5.2,x:0,z:-14});plantAt(4,-18.5,.9);}
 let qaCvs=null,qaTex=null,qaFr=0;
 function buildQAZone(){
-  zSign('QA TESTING','#d97020',5.5,6.5,-2,Math.PI);
+  zSign('VULN VALIDATION','#d97020',5.5,6.5,-2,Math.PI);
   if(!qaCvs){
     qaCvs=document.createElement('canvas');
     qaCvs.width=384;
@@ -2429,7 +2503,7 @@ function updateQAScr(){
   ctx.fillRect(0,0,384,240);
   ctx.fillStyle='#d97020';
   ctx.font='bold 13px monospace';
-  ctx.fillText('BUG TRACKER  Dev Teams',10,17);
+  ctx.fillText('VULNERABILITY TRACKER',10,17);
   ctx.strokeStyle='#2a1808';
   ctx.lineWidth=1;
   ctx.beginPath();
@@ -2468,7 +2542,7 @@ function updateQAScr(){
   qaTex.needsUpdate=true;
 }
 function buildDevOpsZone(){
-  zSign('DEVOPS LAB','#4caf50',17,6.5,-13);
+  zSign('CLOUD SECURITY','#4caf50',17,6.5,-13);
   buildDesk({key:'devops',col:'#4caf50',w:4.5,x:26.2,z:-10.2,rotY:-Math.PI/2});
 
 
@@ -2526,8 +2600,8 @@ function buildPMZone(){
 }
 
 
-function buildUXZone(){zSign('UX DESIGN','#e91e8c',5.5,6.5,-1,Math.PI);buildDesk({key:'ux',col:'#e91e8c',w:5.,x:-26.6,z:-1.4,rotY:Math.PI/2});plantAt(-6,-19.5,.9);}
-function buildDataZone(){zSign('DATA ANALYTICS','#00bcd4',5.5,6.5,2.5);buildDesk({key:'data',col:'#00bcd4',w:6.,x:9,z:-2});pL(0x00bcd4,.25,8,9,3,0);plantAt(15,-19.5,1.);}
+function buildUXZone(){zSign('THREAT MODELING','#e91e8c',5.5,6.5,-1,Math.PI);buildDesk({key:'ux',col:'#e91e8c',w:5.,x:-26.6,z:-1.4,rotY:Math.PI/2});plantAt(-6,-19.5,.9);}
+function buildDataZone(){zSign('THREAT INTEL','#00bcd4',5.5,6.5,2.5);buildDesk({key:'data',col:'#00bcd4',w:6.,x:9,z:-2});pL(0x00bcd4,.25,8,9,3,0);plantAt(15,-19.5,1.);}
 let ckCvs=null,ckTex=null;
 function initClock(sc){ckCvs=document.createElement('canvas');ckCvs.width=128;ckCvs.height=128;ckTex=new THREE.CanvasTexture(ckCvs);const m=new THREE.Mesh(new THREE.PlaneGeometry(2.2,2.2),new THREE.MeshBasicMaterial({map:ckTex,transparent:true}));
 m.position.set(22,5.2,-19.6);m.userData.clickAction='clock';sc.add(m);
@@ -2686,7 +2760,7 @@ for(let i=0;i<6;i++){
   const dispC=document.createElement('canvas');dispC.width=64;dispC.height=32;
   const dCtx=dispC.getContext('2d');dCtx.fillStyle='#020804';dCtx.fillRect(0,0,64,32);
   dCtx.fillStyle='#0fa855';dCtx.font='bold 10px monospace';dCtx.fillText('CAFÉ',8,14);
-  dCtx.fillStyle='#c8a040';dCtx.font='8px monospace';dCtx.fillText('LISTO ☕',4,26);
+  dCtx.fillStyle='#c8a040';dCtx.font='8px monospace';dCtx.fillText('LISTO',4,26);
   const dispTex=new THREE.CanvasTexture(dispC);
   const disp=new THREE.Mesh(new THREE.PlaneGeometry(.28,.14),new THREE.MeshBasicMaterial({map:dispTex}));
   disp.position.set(-21.2,3.08,12.84);scene.add(disp);
@@ -2704,7 +2778,7 @@ for(let i=0;i<6;i++){
   const orderC=document.createElement('canvas');orderC.width=128;orderC.height=96;
   const oCtx=orderC.getContext('2d');oCtx.fillStyle='#040c04';oCtx.fillRect(0,0,128,96);
   oCtx.strokeStyle='#0fa85533';oCtx.lineWidth=1;oCtx.strokeRect(2,2,124,92);
-  oCtx.fillStyle='#0fa855';oCtx.font='bold 9px monospace';oCtx.fillText('PEDIDOS ☕',12,14);
+  oCtx.fillStyle='#0fa855';oCtx.font='bold 9px monospace';oCtx.fillText('PEDIDOS',12,14);
   const orders=['Yared: doble','Ana: cortado','Sofia: latte','Luis: negro'];
   orders.forEach((o,i)=>{oCtx.fillStyle=i===0?'#c8a040':'#3a4a3a';oCtx.font='8px monospace';oCtx.fillText(o,8,28+i*15);});
   const orderTex=new THREE.CanvasTexture(orderC);
@@ -2712,7 +2786,7 @@ for(let i=0;i<6;i++){
   orderM.position.set(-20.5,3.2,12.88);scene.add(orderM);
   // Hit zone
   const coffeeHit2=new THREE.Mesh(new THREE.BoxGeometry(5.5,2,1.2),new THREE.MeshBasicMaterial({transparent:true,opacity:0}));
-  coffeeHit2.position.set(-21.5,2,12.6);coffeeHit2.userData.clickAction='coffee';scene.add(coffeeHit2);
+  coffeeHit2.position.set(-21.5,2,12.6);coffeeHit2.userData.clickAction='evidence';scene.add(coffeeHit2);
   pL(0x8b4513,.45,5,-21.5,3.5,12.6);
   pL(0x0fa855,.15,3,-19.2,2.5,12.5);
 })();
@@ -2723,7 +2797,7 @@ for(let i=0;i<6;i++){
   const coffeeBase=new THREE.Mesh(new THREE.BoxGeometry(.7,.9,.5),coffeeMat);coffeeBase.position.set(-22,1.15,12.5);scene.add(coffeeBase);
   const coffeeTop=new THREE.Mesh(new THREE.BoxGeometry(.65,.3,.45),new THREE.MeshLambertMaterial({color:0x111111}));coffeeTop.position.set(-22,1.75,12.5);scene.add(coffeeTop);
   const coffeeBtn=new THREE.Mesh(new THREE.BoxGeometry(.08,.08,.08),new THREE.MeshBasicMaterial({color:0x0fa855}));coffeeBtn.position.set(-22.2,1.6,12.25);scene.add(coffeeBtn);
-  const coffeeHit=new THREE.Mesh(new THREE.BoxGeometry(.8,1.2,.6),new THREE.MeshBasicMaterial({transparent:true,opacity:0}));coffeeHit.position.set(-22,1.3,12.5);coffeeHit.userData.clickAction='coffee';scene.add(coffeeHit);
+  const coffeeHit=new THREE.Mesh(new THREE.BoxGeometry(.8,1.2,.6),new THREE.MeshBasicMaterial({transparent:true,opacity:0}));coffeeHit.position.set(-22,1.3,12.5);coffeeHit.userData.clickAction='evidence';scene.add(coffeeHit);
   pL(0x8b4513,.3,3,-22,2.2,12.5);
 
 
@@ -2761,9 +2835,9 @@ for(let i=0;i<6;i++){
     const tvC=document.createElement('canvas');tvC.width=512;tvC.height=288;
     const tvCtx=tvC.getContext('2d');
     tvCtx.fillStyle='#020408';tvCtx.fillRect(0,0,512,288);
-    tvCtx.fillStyle='#0fa855';tvCtx.font='bold 16px monospace';tvCtx.fillText('Dev Teams · LIVE DASHBOARD',14,24);
+    tvCtx.fillStyle='#67d6bd';tvCtx.font='bold 16px monospace';tvCtx.fillText('SOC TELEMETRY · LIVE',14,24);
     tvCtx.strokeStyle='#0fa85533';tvCtx.lineWidth=1;tvCtx.beginPath();tvCtx.moveTo(0,32);tvCtx.lineTo(512,32);tvCtx.stroke();
-    [['CPU','68%','#0fa855',.68],['RAM','74%','#3a8ccc',.74],['NET','↑142kb/s','#9060cc',.55],['API','12ms','#c8a040',.9]].forEach(([l,v,c,p],i)=>{
+    [['SCOPE','LOCKED','#67d6bd',1],['FINDINGS','07','#d97020',.58],['ALERTS','03','#cc3344',.42],['LATENCY','12ms','#c8a040',.9]].forEach(([l,v,c,p],i)=>{
       const y=50+i*54;tvCtx.fillStyle=c;tvCtx.font='bold 11px monospace';tvCtx.fillText(l,14,y+14);
       tvCtx.fillStyle=c;tvCtx.font='bold 22px monospace';tvCtx.fillText(v,14,y+38);
       tvCtx.fillStyle='rgba(255,255,255,.06)';tvCtx.fillRect(120,y+22,360,10);
@@ -2781,7 +2855,7 @@ for(let i=0;i<6;i++){
       tvCtx.fillStyle='#020408';tvCtx.fillRect(0,32,512,288);
     const _msgs=Object.values(chatH||{}).reduce((a,b)=>a+(b?.length||0),0);
     const _tok=Math.floor((_msgs*42)+Math.random()*200);
-    [['MSGS',_msgs+'','#0fa855'],['TOKENS',_tok+'','#3a8ccc'],['AGENTS',Object.keys(AG||{}).length+'','#9060cc'],['UPTIME',Math.floor((Date.now()-_bootTime)/60000)+'m','#c8a040']].forEach(([l,v,c],i)=>{
+    [['EVENTS',_msgs+'','#67d6bd'],['SIGNALS',_tok+'','#3a8ccc'],['AGENTS',Object.keys(AG||{}).length+'','#9060cc'],['UPTIME',Math.floor((Date.now()-_bootTime)/60000)+'m','#c8a040']].forEach(([l,v,c],i)=>{
         const y=50+i*54;const p=parseFloat(v)/100||.5;
         tvCtx.fillStyle=c;tvCtx.font='bold 11px monospace';tvCtx.fillText(l,14,y+14);
         tvCtx.fillStyle=c;tvCtx.font='bold 22px monospace';tvCtx.fillText(v,14,y+38);
@@ -2793,19 +2867,20 @@ for(let i=0;i<6;i++){
     pL(0x9060cc,.3,8,loungeX,4.5,loungeZ+1);
 })();
 
-//  PING PONG 
+//  WAR ROOM / EVIDENCE TABLE
 (function buildPingPong(){
   const ppX=20,ppZ=4;
-  // Mesa
-  const tableMat=new THREE.MeshLambertMaterial({color:0x0a5a0a});
+  zSign('WAR ROOM / EVIDENCE','#67d6bd',ppX,6.5,ppZ,Math.PI);
+  // Mesa táctica para correlacionar evidencia y preparar retest
+  const tableMat=new THREE.MeshLambertMaterial({color:0x0b1720,roughness:.76,metalness:.12});
   const tableTop=new THREE.Mesh(new THREE.BoxGeometry(5,.08,2.8),tableMat);
   tableTop.position.set(ppX,1.5,ppZ);scene.add(tableTop);
-  // Linea central
-  const lineMat=new THREE.MeshBasicMaterial({color:0xffffff});
+  // Canal central de evidencia
+  const lineMat=new THREE.MeshBasicMaterial({color:0x67d6bd});
   const line=new THREE.Mesh(new THREE.BoxGeometry(.04,.1,2.8),lineMat);
   line.position.set(ppX,1.55,ppZ);scene.add(line);
-  // Red
-  const netMat=new THREE.MeshLambertMaterial({color:0xcccccc,transparent:true,opacity:.7});
+  // Separador de la mesa
+  const netMat=new THREE.MeshLambertMaterial({color:0x67d6bd,transparent:true,opacity:.22});
   const net=new THREE.Mesh(new THREE.BoxGeometry(.05,.25,2.8),netMat);
   net.position.set(ppX,1.65,ppZ);scene.add(net);
   // Patas
@@ -2814,22 +2889,17 @@ for(let i=0;i<6;i++){
     const leg=new THREE.Mesh(new THREE.BoxGeometry(.1,1.5,.1),legMat);
     leg.position.set(ppX+lx,.75,ppZ+lz);scene.add(leg);
   });
-  // Palas
-  const paddleMat1=new THREE.MeshLambertMaterial({color:0xcc2200});
-  const paddleMat2=new THREE.MeshLambertMaterial({color:0x2244cc});
-  const p1=new THREE.Mesh(new THREE.BoxGeometry(.06,.4,.35),paddleMat1);
-  p1.position.set(ppX-2.6,1.8,ppZ);scene.add(p1);
-  const p2=new THREE.Mesh(new THREE.BoxGeometry(.06,.4,.35),paddleMat2);
-  p2.position.set(ppX+2.6,1.8,ppZ);scene.add(p2);
-  // Pelota
-  const ball=new THREE.Mesh(new THREE.SphereGeometry(.07,8,8),new THREE.MeshBasicMaterial({color:0xffffff}));
-  ball.position.set(ppX,1.8,ppZ);scene.add(ball);
-  window._ppBall=ball;window._ppT=0;
+  // Placas de evidencia sobre la mesa
+  [[-1.35,'#d97020'],[0,'#67d6bd'],[1.35,'#5b9bd5']].forEach(([ox,col])=>{
+    const plate=new THREE.Mesh(new THREE.BoxGeometry(.9,.03,.58),new THREE.MeshBasicMaterial({color:parseInt(col.replace('#','0x')),transparent:true,opacity:.78}));
+    plate.position.set(ppX+ox,1.58,ppZ);scene.add(plate);
+  });
+  window._ppBall=null;window._ppT=0;
   window._ppX=ppX;window._ppZ=ppZ;
   pL(0xffffff,.4,8,ppX,4,ppZ);
   // Hit zone para activar juego
   const ppHit=new THREE.Mesh(new THREE.BoxGeometry(5.5,2,3.5),new THREE.MeshBasicMaterial({transparent:true,opacity:0}));
-  ppHit.position.set(ppX,1.5,ppZ);ppHit.userData.clickAction='pingpong';scene.add(ppHit);
+  ppHit.position.set(ppX,1.5,ppZ);ppHit.userData.clickAction='threatboard';scene.add(ppHit);
 })();
 
 /*  BIBLIOTECA  */
@@ -2851,7 +2921,7 @@ for(let i=0;i<6;i++){
   });
   // Luz principal calida
   pL(0xffd080,.6,10,LX-2,5,LZ);
-  zSign('📚 BIBLIOTECA','#c8a040',LX-1,6.5,LZ,Math.PI/2);
+  zSign('BIBLIOTECA','#c8a040',LX-1,6.5,LZ,Math.PI/2);
   // 2 sillas de lectura frente a la pared
   [[LX-3,LZ-3],[LX-3,LZ+3]].forEach(([cx,cz])=>{
     bx(1.4,.12,1.4,new THREE.MeshLambertMaterial({color:0x2a1a08}),cx,.82,cz);
@@ -3714,20 +3784,27 @@ if(this.state==='thinking'&&this.path.length===0){
   _idle(){
     const r=Math.random();
     const Z={ceo:[[-24,-6],[-25,-6],[-17,-9],[-24,2],[-20,-6]],pm:[[-14,3],[-15,3],[-18,5],[-13,3],[-16,3]],devbe:[[-16,-9],[-15,-7],[-12,-9],[-10,-8],[-8,-9]],devfe:[[0,-7],[3,-8],[-3,-7],[2,-8],[-2,-7]],qa:[[11,-7],[11,-7],[14,-5],[11,-8],[13,-7]],devops:[[21,-7],[21,-9],[22,-6],[21,-8],[22,-7]],ux:[[-3,3],[-4,3],[-7,4],[-2,4],[-5,3]],data:[[9,3],[10,3],[11,4],[8,3],[9,4]]};
-    if(r<.5){const pts=Z[this.key];const p=pts[this.idleIdx%pts.length];this.idleIdx++;this.moveTo(p[0]+(Math.random()-.5)*.5,p[1]+(Math.random()-.5)*.5);}
-    else if(r<.65){this.say(CHAT[this.key][Math.floor(Math.random()*CHAT[this.key].length)]);}
-    else if(r<.78){this.moveTo((Math.random()-.5)*4,3+Math.random()*2);}
-    else if(r<.88){
-      const lx=window.LOUNGE_X||22,lz=window.LOUNGE_Z||8;
-      this.moveTo(lx+(Math.random()-.5)*2,lz+(Math.random()-.5)*1.5);
-      const _ag=this;setTimeout(()=>{
-        if(Math.abs(_ag.group.position.x-lx)<4){
-          _ag.setState('reading');_ag.say(['☕ descanso','📱 revisando','🧘 pausa'][Math.floor(Math.random()*3)]);
-          setTimeout(()=>{if(_ag.state==='reading')_ag.setState('idle');},8000+Math.random()*6000);
-        }
-      },4000);
+    const pts=Z[this.key]||[[this.hx,this.hz]];
+    const p=pts[this.idleIdx%pts.length];
+    this.idleIdx++;
+    if(r<.42){
+      this.moveTo(p[0]+(Math.random()-.5)*.5,p[1]+(Math.random()-.5)*.5);
+    }else if(r<.72){
+      const actions=PTEST_ACTIONS[this.key]||PTEST_ACTIONS.ceo;
+      const action=actions[Math.floor(Math.random()*actions.length)];
+      this.setState('working');
+      this.say(action);
+      if(typeof logEvent==='function')logEvent('pentest','Actividad de seguridad',`${ACFG[this.key].name.split(' ')[0]}: ${action}`,ACFG[this.key].col,this.key);
+      setTimeout(()=>{if(this.state==='working'&&!this._lockPos&&!this._activityLock)this.setState('idle');},4200+Math.random()*2600);
+    }else if(r<.88){
+      this.setState('reading');
+      this.say(this.key==='data'?'Correlacionando indicadores':'Revisando evidencia');
+      setTimeout(()=>{if(this.state==='reading'&&!this._lockPos&&!this._activityLock)this.setState('idle');},3800+Math.random()*2200);
+    }else{
+      const cross={ceo:[-9,-9],pm:[-23,-6],devbe:[-15,3],devfe:[-10,-8],qa:[0,-7],devops:[11,-7],ux:[-15,3],data:[-4,3]};
+      const t=cross[this.key];
+      if(t)this.moveTo(t[0]+(Math.random()-.5)*1.5,t[1]+(Math.random()-.5)*1.5);
     }
-    else{const cross={ceo:[-9,-9],pm:[-23,-6],devbe:[-15,3],devfe:[-10,-8],qa:[0,-7],devops:[11,-7],ux:[-15,3],data:[-4,3]};const t=cross[this.key];if(t)this.moveTo(t[0]+(Math.random()-.5)*1.5,t[1]+(Math.random()-.5)*1.5);}
   }
 }
 // #7 Stretch timer
@@ -3804,7 +3881,7 @@ async function updateSpontaneousConv(dt){
   orientAgentToward(k1,k2);
   orientAgentToward(k2,k1);
   _showTalkLine(k1,k2);
-  const topics=['el deploy de hoy','el bug de Marta','las metricas Q2','el roadmap Q3','el cafe de la oficina'];
+ const topics=['el alcance autorizado','el hallazgo de Marta','la evidencia del PoC','el calendario de retest','la severidad CVSS'];
  const tone=getRelTone(k1,k2);
 const topic=topics[Math.floor(Math.random()*topics.length)];
 const moodPrefix=tone>.85?'[colega cercano] ':tone<.6?'[tension laboral] ':'';
@@ -4063,7 +4140,8 @@ async function runMeeting1on1(k1,k2){
       other.lockAt(otherSlot.x,otherSlot.z,{rotY:otherSlot.rotY,state:'reading'});
 
       const entry=document.createElement('div');
-      entry.style.cssText=`display:flex;gap:6px;padding:5px 8px;background:var(--bg2);border:1px solid var(--b1);border-left:3px solid ${cfg.col};animation:fadeUp .2s`;
+      entry.className='meeting-log-entry';
+      entry.style.cssText=`--agent-color:${cfg.col};`;
       entry.innerHTML=`<span style="font-family:var(--mono);font-size:15px;font-weight:700;color:${cfg.col};min-width:48px">${cfg.name.split(' ')[0]}</span><span style="font-family:var(--mono);font-size:17px;color:var(--t1);flex:1"><span class="tcur"></span></span>`;
       log.appendChild(entry);
       log.scrollTop=log.scrollHeight;
@@ -4153,14 +4231,14 @@ function openAgentMonitor(agKey){
   const ov=document.createElement('div');ov.id='monitorAgOv';
   ov.style.cssText='position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.92);display:flex;align-items:center;justify-content:center';
   const screenContents={
-    ceo:`<span style="color:#c8a040;font-weight:800">KPI DASHBOARD - Q2</span>\n\nVelocity: 94 pts\nCoverage: 87%\nBug Rate: 2.1/d\nDeploys: 14/wk\nNPS: 72\nMorale: 88%`,
-    pm:`<span style="color:#5b9bd5;font-weight:800">KANBAN - SPRINT Q2</span>\n\n[TODO] Auth JWT\n       Payment GW v2\n[WIP]  Dashboard activo\n       API v3\n[DONE] Login UI\n       k8s deploy`,
-    devbe:`<span style="color:#3a8ccc;font-weight:800">ARQUITECTURA - Dev Teams</span>\n\nAPI: /v1/messages [OK]\nDB: PostgreSQL 15 [OK]\nCache: Redis 7.2 [OK]\nQueue: BullMQ [OK]\nAuth: JWT + bcrypt [OK]\nTests: 94% coverage`,
-    devfe:`<span style="color:#9060cc;font-weight:800">FRONTEND - METRICS</span>\n\nLighthouse: 97\nBundle: 142kb gz\nReact: 18.3.1\nTests: Vitest [OK]\nStorybook: 62 stories\nPerf: FCP 0.8s`,
-    qa:`<span style="color:#d97020;font-weight:800">BUG TRACKER - ACTIVO</span>\n\n[CRIT] BUG-41 timeout 5032ms\n[CRIT] BUG-42 HTTP 500 refund\n[WARN] BUG-38 race condition\n[OK] BUG-35 img 404 fixed\n\nTests: 14/16 passing`,
-    devops:`<span style="color:#4caf50;font-weight:800">INFRA MONITOR - LIVE</span>\n\nPods: 3/3 RUNNING\nCPU: 34%\nRAM: 67%\nNet: up 142kb/s down 88kb/s\nUp: 12d 3h 44m\nAlerts: 0`,
-    ux:`<span style="color:#e91e8c;font-weight:800">FIGMA - DESIGN SYSTEM</span>\n\nComponents: 124\nPrototypes: 8 activos\nA/B Tests: 3 running\nOnboarding: 42% -> 72%\nUser Tests: 12 sesiones\nFeedback: 4.7/5`,
-    data:`<span style="color:#00bcd4;font-weight:800">ANALYTICS - Q2</span>\n\nDAU: 2847 (+12%)\nRetention: 76% d30\nChurn: -12% vs Q1\nLTV paid: $840\nRisk: 240 usuarios\nML acc: 94%`,
+    ceo:`<span style="color:#c8a040;font-weight:800">SECURITY COMMAND</span>\n\nScope: AUTHORIZED\nCritical: 0 OPEN\nHigh: 3 REVIEW\nEvidence: 18 ITEMS\nRetest: 2 QUEUED\nRisk: LOWERING`,
+    pm:`<span style="color:#5b9bd5;font-weight:800">ENGAGEMENT BOARD</span>\n\n[TODO] Validate scope\n[WIP] Triage findings\n[WIP] Assign remediation\n[DONE] Rules approved\n[DONE] Retest scheduled`,
+    devbe:`<span style="color:#3a8ccc;font-weight:800">RED TEAM RECON</span>\n\nHosts: 12 in scope\nServices: 3 HTTP\nPaths: 8 candidates\nPoC: CONTROLLED\nOut-of-scope: BLOCKED\nEvidence: CAPTURED`,
+    devfe:`<span style="color:#9060cc;font-weight:800">APPSEC REVIEW</span>\n\nOWASP: IN REVIEW\nHeaders: CHECKED\nCSP: PRESENT\nInputs: VALIDATED\nAuthz: MANUAL TEST\nRisk: TRIAGED`,
+    qa:`<span style="color:#d97020;font-weight:800">VULNERABILITY TRACKER</span>\n\n[HIGH] VULN-41 authz review\n[HIGH] VULN-42 CSP gap\n[MED] VULN-38 rate limit\n[OK] VULN-35 retested\n\nEvidence: 18 items`,
+    devops:`<span style="color:#4caf50;font-weight:800">CLOUD SECURITY MONITOR</span>\n\nPublic ports: REVIEW\nLogs: CENTRALIZED\nAlerts: 2 TEST\nIAM: LEAST PRIVILEGE\nSegments: VERIFIED\nDrift: NONE`,
+    ux:`<span style="color:#e91e8c;font-weight:800">THREAT MODEL</span>\n\nAssets: 9 listed\nActors: 4 mapped\nAbuse cases: 3\nControls: 7 proposed\nPhishing defense: READY\nReview: PENDING`,
+    data:`<span style="color:#00bcd4;font-weight:800">THREAT INTELLIGENCE</span>\n\nIndicators: 18\nCVSS: PRELIMINARY\nSignals: CORRELATED\nConfidence: 82%\nRisk trend: DOWN\nNext: RETEST`,
   };
   ov.innerHTML=`<div style="background:#020408;border:1px solid ${cfg.col}44;border-left:3px solid ${cfg.col};padding:20px;width:520px" onclick="event.stopPropagation()">
     <div style="display:flex;justify-content:space-between;margin-bottom:12px">
@@ -5372,6 +5450,7 @@ function spawnSubAgent(parentKey,taskLabel){
   sg.scale.set(.55,.55,.55);scene.add(sg);
   // Label
   const lbl=document.createElement('div');
+  lbl.className='sub-agent-label';
   lbl.style.cssText=`position:absolute;font-family:var(--mono);font-size:14px;color:${cfg.col};background:rgba(0,0,0,.85);border:1px solid ${cfg.col}44;padding:1px 5px;pointer-events:none;display:flex;align-items:center;gap:3px;white-space:nowrap`;
   lbl.innerHTML=`<span style="width:3px;height:3px;border-radius:50%;background:${cfg.col};display:inline-block;animation:pulse .6s infinite"></span>sub·${taskLabel.slice(0,14)}`;
   document.getElementById('speechLayer').appendChild(lbl);
@@ -5404,7 +5483,7 @@ function updateSubAgents(dt){
   }
   }
 }
-const CHAT={ceo:['Pipeline K8s en prod','Board meeting en 1h','¿Paso QA ya?','KPIs listos'],pm:['Sprint review mañana','Roadmap Q3 definido','Features priorizadas','Stakeholders OK'],devbe:['Build CI fallo','PR listo para review','Tests 94% ✓','Merge conflict'],devfe:['Storybook actualizado','Bug mobile fix','Lighthouse 98 🎯','PR listo'],qa:['Bug critico en prod!','E2E fallo en staging','Coverage 78%','Regresion detectada'],devops:['Pipeline actualizado','Deploy en prod OK','Monitoring OK','Infra as code ✓'],ux:['Diseños en Figma ✓','User research listo','Design system v2','A/B test OK'],data:['Dashboard Q2 listo','ML 94% acc','Anomalia en metricas','Reporte semanal OK']};
+const CHAT={ceo:['Alcance autorizado','Riesgo critico revisado','Remediacion aprobada','Reporte ejecutivo listo'],pm:['Engagement priorizado','Hallazgos en triage','Retest coordinado','Reglas de alcance claras'],devbe:['Recon autorizada','Superficie de ataque mapeada','PoC controlado listo','Cadena de ataque documentada'],devfe:['OWASP Top 10 en revision','CSP y headers auditados','Inputs validados','Hallazgo AppSec reproducible'],qa:['Evidencia validada','Hallazgo reproducido en staging','Retest en curso','Reporte de vulnerabilidades listo'],devops:['Cloud bajo auditoria','Logs correlacionados','Segmentacion verificada','Alertas de deteccion activas'],ux:['Amenazas modeladas','Abuso de permisos revisado','Flujo anti-phishing listo','Riesgo humano documentado'],data:['Indicadores correlacionados','CVSS calculado','Threat intel actualizada','Tendencia de riesgo detectada']};
 const REL={
   ceo: {pm:.9,devbe:.85,devfe:.7,qa:.8,devops:.75,ux:.7,data:.75},
   pm:  {ceo:.9,devbe:.8,devfe:.85,qa:.9,devops:.7,ux:.88,data:.82},
@@ -5712,7 +5791,7 @@ window.addEventListener('mousemove',e=>{
 
   });
 
-  buildLighting();buildFloor();buildWalls();
+  buildLighting();buildFloor();buildWalls();buildSecurityOpsWall();
   await new Promise(r=>setTimeout(r,50));
   buildCEOZone();buildDevBEZone();buildDevFEZone();buildQAZone();
   await new Promise(r=>setTimeout(r,50));
@@ -5722,6 +5801,7 @@ window.addEventListener('mousemove',e=>{
   await new Promise(r=>setTimeout(r,50));
   buildAgents();initClock(scene);drawMMStatic();
   rebuildInteractives();
+  applySceneTheme();
 
 
   const GCELL=2.0;const sgrid=new Map();
@@ -5841,9 +5921,9 @@ function spawnStateParticle(agKey){
   if(state==='idle'||state==='walking')return;
   const configs={
     working:{col:0x00ff88,shape:'square',count:1,text:['{}','[]','//','fn','→']},
-    thinking:{col:0x4488ff,shape:'circle',count:1,text:['...','?','💭','~','*']},
-    reading:{col:0x00bcd4,shape:'circle',count:1,text:['📖','//','doc','?','…']},
-    speaking:{col:parseInt(cfg.col.replace('#','0x')),shape:'circle',count:1,text:['💬','!','~']}
+    thinking:{col:0x4488ff,shape:'circle',count:1,text:['...','?','?','~','*']},
+    reading:{col:0x00bcd4,shape:'circle',count:1,text:['doc','//','doc','?','...']},
+    speaking:{col:parseInt(cfg.col.replace('#','0x')),shape:'circle',count:1,text:['say','!','~']}
   };
   const c=configs[state];if(!c||document.hidden||Math.random()>.04)return;
   const canvas=document.createElement('canvas');canvas.width=48;canvas.height=24;
@@ -6044,13 +6124,38 @@ MiB Mem: 16384.0 total, 6963.2 free, 9420.8 used`,
   showToast('⚙ Luis abre el terminal','#4caf50');
 }
 
+function startEvidenceReview(){
+  const keys=Object.keys(AG).filter(k=>AG[k]?.state==='idle');
+  const key=keys[Math.floor(Math.random()*Math.max(1,keys.length))]||'qa';
+  const ag=AG[key];if(!ag)return;
+  ag.moveTo(-21.2,12.5);
+  ag.setState('reading');
+  ag.say('Revisando evidencia del hallazgo');
+  showToast(`${ACFG[key].name.split(' ')[0]} revisa evidencia`,ACFG[key].col,key);
+  if(typeof logEvent==='function')logEvent('pentest','Revision de evidencia','Validacion manual en entorno autorizado',ACFG[key].col,key);
+  setTimeout(()=>{if(ag.state==='reading'&&!ag._lockPos&&!ag._activityLock){ag.say('Evidencia lista para el reporte');ag.setState('idle');ag.back();}},5200);
+}
+
+function startThreatBoard(){
+  const keys=Object.keys(AG).filter(k=>AG[k]?.state==='idle').slice(0,3);
+  if(!keys.length)return;
+  keys.forEach((k,i)=>{
+    const ag=AG[k];
+    ag.moveTo(-1.5+i*1.5,7.5);
+    setTimeout(()=>{ag.setState('thinking');ag.say((PTEST_ACTIONS[k]||PTEST_ACTIONS.ceo)[0]);},1200+i*500);
+  });
+  showToast('Mesa de threat modeling activada','#e91e8c');
+  if(typeof logEvent==='function')logEvent('pentest','Threat modeling','Equipo revisa abuse cases y controles defensivos','#e91e8c',keys[0]);
+  setTimeout(()=>keys.forEach(k=>{const ag=AG[k];if(ag&&!ag._lockPos&&!ag._activityLock){ag.setState('idle');ag.back();}}),7200);
+}
+
 function handleObjectClick(action){
   if(action==='board')openBoard();
   if(action&&action.startsWith('monitor_'))openAgentMonitor(action.replace('monitor_',''));
   if(action==='clock')openSprintCalendar();
-  else if(action==='coffee')useCoffeeMachine();
+  else if(action==='evidence')startEvidenceReview();
   else if(action==='door')toggleDoor();
-  else if(action==='pingpong')startPingPong();
+  else if(action==='threatboard')startThreatBoard();
   else if(action==='elevator')callElevator();
   else if(action==='rack')openRackStatus();
   else if(action==='monitor_devbe'){
@@ -6178,7 +6283,7 @@ setTimeout(()=>{
   // Floating badge above agent
   const badge=document.createElement('div');
   badge.id='featuredBadge';
-  badge.style.cssText=`position:absolute;font-family:var(--mono);font-size:15px;color:${cfg.col};background:rgba(0,0,0,.9);border:1px solid ${cfg.col};padding:2px 7px;pointer-events:none;white-space:nowrap;animation:fadeUp .5s`;
+  badge.style.cssText=`position:absolute;font-family:var(--mono);font-size:15px;color:${cfg.col};background:rgba(0,0,0,.9);border:1px solid ${cfg.col};padding:2px 7px;pointer-events:none;white-space:nowrap;animation:fadeUp .5s;z-index:10`;
   badge.textContent=cfg.name.split(' ')[0]+' · '+ach;
   document.getElementById('speechLayer').appendChild(badge);
   // Update position each frame
@@ -6186,7 +6291,7 @@ setTimeout(()=>{
     if(!ag.group)return;
     const wrap=document.getElementById('canvasWrap');if(!wrap||!camera)return;
     const {W,H}=getViewportSize();
-    const wp = new THREE.Vector3(ag.group.position.x,ag.group.position.y+6.5,ag.group.position.z);
+    const wp = new THREE.Vector3(ag.group.position.x,ag.group.position.y+8.8,ag.group.position.z);
     wp.project(camera);
     if(wp.z<1){badge.style.display='block';badge.style.left=((wp.x*.5+.5)*W)+'px';badge.style.top=((-.5*wp.y+.5)*H)+'px';badge.style.transform='translateX(-50%)';}
     else badge.style.display='none';
@@ -6478,7 +6583,6 @@ window.toggleDoor = toggleDoor;
 window.toggleFPS = toggleFPS;
 window.toggleGenerativeMusic = toggleGenerativeMusic;
 window.toggleSound = toggleSound;
-window.toggleTheme = toggleTheme;
 window.toggleUIMode = toggleUIMode;
 window.tone = tone;
 window.triggerDeployEffect = triggerDeployEffect;

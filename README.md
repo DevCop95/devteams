@@ -1,4 +1,4 @@
-# Dev Teams · AI Operations Hub
+# Dev Teams · AI Pentest Lab
 
 ![Status](https://img.shields.io/badge/estado-alpha-0fa855?style=for-the-badge)
 ![Build](https://img.shields.io/badge/build-static_app-111111?style=for-the-badge)
@@ -6,7 +6,7 @@
 ![Groq](https://img.shields.io/badge/Groq-llama_4_%2F_deepseek_r1-f55036?style=for-the-badge)
 ![License](https://img.shields.io/badge/licencia-MIT-blue?style=for-the-badge)
 
-Una oficina 3D interactiva con ocho agentes de IA. Con una arquitectura modular y limpia, funciona en modo demo sin credenciales y escala a respuestas reales en cuanto conectas una API key de Groq.
+Un laboratorio 3D interactivo de pentesting etico con ocho agentes de IA. La simulacion trabaja con alcance autorizado, evidencia reproducible, remediacion y retest; funciona en modo demo sin credenciales y escala a respuestas reales al conectar Groq.
 
 ---
 
@@ -19,10 +19,11 @@ Una oficina 3D interactiva con ocho agentes de IA. Con una arquitectura modular 
 ## Qué incluye
 
 ### Escena 3D
-- Ocho agentes con personalidad, rol y área de trabajo propia: Ana (CEO), Sofía (PM), Yared (Founder & Architect), Diego (FE), Marta (QA), Luis (DevOps), Valentina (UX) y Andrés (Data)
+- Ocho agentes con personalidad, rol y area de trabajo propia: Ana (Security Director), Sofia (Pentest Program Manager), Yared (Red Team), Diego (AppSec), Marta (Vulnerability Validation), Luis (Cloud Security), Valentina (Threat Modeling) y Andres (Threat Intelligence)
+- Flujo de pentest autorizado: scope, reconocimiento controlado, AppSec, validacion, inteligencia, remediacion y retest
 - Pathfinding A* con Web Worker
 - Sombras dinámicas, ciclo día/noche, modo FPS, clima real de Cartagena vía Open-Meteo
-- Eventos ambientales: delivery, pausas, ping pong, visitante Paula
+- Eventos ambientales: briefing, revision de evidencia, threat modeling y visitante Paula
 
 ### Panel lateral
 - **Árbol** — jerarquía del equipo con estado en tiempo real
@@ -90,13 +91,13 @@ La app valida la key con una llamada real antes de confirmar la conexión. Si fa
 
 | Identificador | Descripción |
 |---|---|
-| `meta-llama/llama-4-scout-17b-16e-instruct` | Nuevo standard Llama 4 Scout |
-| `meta-llama/llama-4-maverick-17b-128e-instruct` | Razonamiento avanzado Llama 4 |
+| `openai/gpt-oss-120b` | Modelo principal para análisis y razonamiento |
+| `openai/gpt-oss-20b` | Variante rápida y ligera |
 | `llama-3.3-70b-versatile` | Llama 3.3 equilibrado (70B) |
-| `deepseek-r1-distill-llama-70b` | Razonamiento especializado R1 |
-| `qwen/qwen3-32b` | Potencia en lógica y código |
+| `llama-3.1-8b-instant` | Respuestas rápidas de baja latencia |
+| `qwen/qwen3.6-27b` | Preview para lógica y código |
+| `openai/gpt-oss-safeguard-20b` | Modelo orientado a salvaguardas |
 | `google/gemma-4-31b-it:free` | Gemma 4 vía OpenRouter |
-| `whisper-large-v3-turbo` | Transcripción de voz ultra-rápida |
 
 ---
 
@@ -205,7 +206,7 @@ Esta versión está pensada para uso local y demos. Algunas consideraciones para
 
 ## Créditos
 
-Construido desde cero en Cartagena de Indias 🇨🇴 por **Yared Henriquez**, Founder & Architect de Dev Teams.
+Construido desde cero en Cartagena de Indias 🇨🇴 por **Yared Henriquez**, Red Team Lead de Dev Teams.
 
 ---
 

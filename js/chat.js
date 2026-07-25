@@ -265,14 +265,14 @@ const API_PROVIDERS={
     keyStorage:'gk',
     instruction:'Gratis en console.groq.com | se guarda solo en esta sesión',
     docsUrl:'https://console.groq.com',
-    defaultModel:'meta-llama/llama-4-scout-17b-16e-instruct',
+    defaultModel:'openai/gpt-oss-120b',
     models:[
-      'meta-llama/llama-4-scout-17b-16e-instruct',
-      'meta-llama/llama-4-maverick-17b-128e-instruct',
+      'openai/gpt-oss-120b',
+      'openai/gpt-oss-20b',
       'llama-3.3-70b-versatile',
-      'deepseek-r1-distill-llama-70b',
-      'qwen/qwen3-32b',
-      'whisper-large-v3-turbo'
+      'llama-3.1-8b-instant',
+      'qwen/qwen3.6-27b',
+      'openai/gpt-oss-safeguard-20b'
     ],
     endpoint:'https://api.groq.com/openai/v1/chat/completions',
     accent:'#0fa855'
@@ -320,8 +320,11 @@ if(GKEY){
   try{sessionStorage.setItem(PROVIDER_KEY_NAMES[API_PROVIDER],GKEY);}catch(e){}
   localStorage.removeItem(PROVIDER_KEY_NAMES[API_PROVIDER]);
 }
-const DEAD=['llama3-8b-8192','llama3-70b-8192','mixtral-8x7b-32768','gemma2-9b-it','llama-3.1-70b-versatile'];
-if(DEAD.includes(GMOD)){GMOD='llama-3.3-70b-versatile';localStorage.setItem('gm',GMOD);}
+const DEAD=['llama3-8b-8192','llama3-70b-8192','mixtral-8x7b-32768','gemma2-9b-it','llama-3.1-70b-versatile','meta-llama/llama-4-scout-17b-16e-instruct','meta-llama/llama-4-maverick-17b-128e-instruct','deepseek-r1-distill-llama-70b','qwen/qwen3-32b'];
+if(API_PROVIDER==='groq' && (!API_PROVIDERS.groq.models.includes(GMOD) || DEAD.includes(GMOD))){
+  GMOD=API_PROVIDERS.groq.defaultModel;
+  localStorage.setItem(MODEL_STORAGE_KEYS.groq,GMOD);
+}
 
 // Define getter/setter properties on window to keep agents.js and chat.js in sync
 window.API_PROVIDERS = API_PROVIDERS;
@@ -380,7 +383,7 @@ function qaInterrupt(){
   showToast('QA interrumpe: bug critico detectado','#cc3344');
   setSt('QA interrumpiendo flujo',true);
   setTimeout(()=>{
-    AG['qa'].say('🚨 BUG CRÍTICO  deteniendo sprint');
+    AG['qa'].say('🚨 Hallazgo alto  pausando validacion');
     AG['qa'].setState('speaking');
     // pausa el auto si esta activo
     if(autoM)stopAuto();
@@ -424,13 +427,33 @@ const SCN={
 };
 
 /*  #15 MÉTRICAS DE FLUJO  */
+// Pentest lab scenarios: every visible flow stays inside an authorized, non-destructive engagement.
+const pentestScenario=(prompt,thought,tool,rows,response)=>({stages:[
+  {label:'Prompt',tag:'input',type:'prompt',content:prompt},
+  {label:'Razonamiento',tag:'chain-of-thought',type:'think',fb:thought,gp:`[PENTEST LAB] Explica el enfoque seguro para: ${prompt}. Max 3 frases.`},
+  {label:'Security Tool',tag:'mcp·tool_use',type:'tool',tool,inp:{scope:'authorized-staging',mode:'safe-validation'}},
+  {label:'Evidence',tag:'mcp·result',type:'result',rows:rows.map(t=>({ok:1,t}))},
+  {label:'Reporte',tag:'output',type:'resp',fb:response,gp:`Pentest autorizado. Resume resultados, riesgo y siguiente paso para: ${prompt}. Max 50 palabras.`},
+  {label:'Remediacion',tag:'loop',type:'auto',steps:[{i:'→',t:'Evidencia archivada'},{i:'⚙',t:'Hallazgos priorizados'},{i:'⚙',t:'Remediacion asignada'},{i:'↩',t:'Retest programado'}]}
+]});
+Object.assign(SCN,{
+  ceo:pentestScenario('Define el alcance y las prioridades del engagement.','Confirmar autorizacion, activos, ventanas y criterios de salida.','scope_review',['Scope firmado','Activos de staging definidos','Criterios de alto riesgo acordados'],'Engagement autorizado. Prioridad: proteger activos criticos y cerrar primero los hallazgos de mayor impacto.'),
+  pm:pentestScenario('Organiza el plan de pruebas y el calendario de retest.','Ordenar actividades por riesgo, dependencias, evidencia y capacidad de remediacion.','engagement_plan',['Alcance validado','Triage preparado','Retest bloqueado en calendario'],'Plan de pentest listo. Cada hallazgo tendra propietario, evidencia, fecha de correccion y retest.'),
+  devbe:pentestScenario('Realiza reconocimiento controlado de la superficie autorizada.','Enumerar activos permitidos sin evadir controles ni generar impacto innecesario.','authorized_recon',['12 hosts en alcance','3 servicios HTTP identificados','Sin acceso fuera de scope'],'Recon completada dentro del alcance. Se documentaron servicios y se derivaron rutas de validacion manual.'),
+  devfe:pentestScenario('Valida controles OWASP en la aplicacion de staging.','Revisar entradas, sesiones, headers y control de acceso con casos seguros y reproducibles.','appsec_review',['Headers revisados','Inputs rechazados correctamente','2 casos para revision manual'],'AppSec sin cambios destructivos. Quedan dos casos para validacion manual y correccion defensiva.'),
+  qa:pentestScenario('Reproduce y valida hallazgos de seguridad en staging.','Confirmar impacto, pasos minimos, evidencia y condicion de retest sin tocar produccion.','finding_validation',['2 hallazgos reproducibles','Evidencia capturada','Produccion fuera de alcance'],'Hallazgos reproducidos en staging. Evidencia suficiente para remediar y repetir la prueba.'),
+  devops:pentestScenario('Audita configuracion cloud, logs y segmentacion autorizada.','Buscar exposicion innecesaria y confirmar controles de deteccion con minimo privilegio.','cloud_audit',['Puertos publicos revisados','Logs centralizados activos','Alertas de prueba recibidas'],'Auditoria cloud completada. Se recomienda cerrar exposicion innecesaria y conservar trazabilidad del cambio.'),
+  ux:pentestScenario('Modela amenazas y abuso de permisos en un flujo de usuario.','Identificar abuso plausible y diseñar controles, avisos y rutas de recuperacion.','threat_model',['Actores y activos listados','3 abuse cases priorizados','Controles propuestos'],'Threat model actualizado. Los riesgos se convierten en controles verificables, no en instrucciones de abuso.'),
+  data:pentestScenario('Correlaciona indicadores y calcula severidad de hallazgos.','Separar señales, evidencia y contexto para priorizar con CVSS y riesgo de negocio.','threat_intel',['18 indicadores correlacionados','CVSS preliminar calculado','Tendencia de riesgo descendente'],'Inteligencia correlacionada. El tablero muestra prioridad, confianza de evidencia y siguiente accion defensiva.')
+});
+
 const _flowMetrics={};
 function startFlowMetrics(agKey){
   _flowMetrics[agKey]={t0:Date.now(),tokens:0,tools:0,cost:0};
 }
 function addFlowTokens(agKey,n){if(_flowMetrics[agKey])_flowMetrics[agKey].tokens+=n;}
 function addFlowTool(agKey){if(_flowMetrics[agKey])_flowMetrics[agKey].tools++;}
-const COST_PER_1K={'llama-3.3-70b-versatile':0.00059,'llama-3.1-8b-instant':0.00005,'meta-llama/llama-4-maverick-17b-128e-instruct':0.0004,'moonshotai/kimi-k2-instruct-0905':0.0009,'groq/compound':0.001,'openrouter/gpt-4o-mini':0.006,'openrouter/gpt-4o':0.01,'openrouter/gpt-3.5-turbo-instruct':0.0005,'openrouter/deepseek-r1-0528':0.002};
+const COST_PER_1K={'openai/gpt-oss-120b':0.00015,'openai/gpt-oss-20b':0.000075,'llama-3.3-70b-versatile':0.00059,'llama-3.1-8b-instant':0.00005,'qwen/qwen3.6-27b':0.0006,'openai/gpt-oss-safeguard-20b':0.000075,'moonshotai/kimi-k2-instruct-0905':0.0009,'groq/compound':0.001,'openrouter/gpt-4o-mini':0.006,'openrouter/gpt-4o':0.01,'openrouter/gpt-3.5-turbo-instruct':0.0005,'openrouter/deepseek-r1-0528':0.002};
 function showFlowMetrics(agKey){
   const m=_flowMetrics[agKey];if(!m)return;
   const cfg=ACFG[agKey];
@@ -440,7 +463,8 @@ function showFlowMetrics(agKey){
   logMetric(agKey,m.tokens,m.tools,cost,elapsed);
 
   const card=document.createElement('div');
-  card.style.cssText=`margin:8px 12px;padding:10px 12px;background:var(--bg2);border:1px solid ${cfg.col}44;border-left:3px solid ${cfg.col};font-family:var(--mono);font-size:17px;line-height:1.8;animation:fadeUp .3s`;
+  card.className='flow-metric-card';
+  card.style.cssText=`--flow-color:${cfg.col};`;
   card.innerHTML=`<div style="font-size:15px;font-weight:700;color:${cfg.col};margin-bottom:4px">Resumen · ${cfg.name.split(' ')[0]}</div>
 <div style="color:var(--t2)">Tiempo: <span style="color:var(--t1)">${elapsed}s</span></div>
 <div style="color:var(--t2)">Tokens: <span style="color:var(--t1)">${m.tokens}</span></div>
@@ -667,33 +691,33 @@ async function runMeeting(){
     log.id='mlog';
     flowWrap.appendChild(log);
 
-    setSt('reunion en curso',true);
-    showToast('Reunion iniciada','#4caf50');
+    setSt('briefing de seguridad en curso',true);
+    showToast('Briefing de pentest iniciado','#4caf50');
     await sleep(600);
     unlockAchievement('first_meeting');
 
     const agenda=[
-      {k:'ceo',gp:'CEO Ana Garcia Dev Teams. Abre la reunion del equipo en 20 palabras.'},
-      {k:'pm',gp:'PM Sofia Castro Dev Teams. Comenta estado del roadmap Q3 en 20 palabras.'},
-      {k:'devbe',gp:'Dev BE Yared Dev Teams. Update tecnico backend en 20 palabras.'},
-      {k:'devfe',gp:'Dev FE Diego Dev Teams. Estado del frontend en 20 palabras.'},
-      {k:'qa',gp:'QA Marta Dev Teams. Reporte de bugs criticos en 20 palabras.'},
-      {k:'devops',gp:'DevOps Luis Dev Teams. Estado infraestructura en 20 palabras.'},
-      {k:'ux',gp:'UX Valentina Dev Teams. Avances en diseno en 20 palabras.'},
-      {k:'data',gp:'Data Andres Dev Teams. Metricas del equipo en 20 palabras.'},
-      {k:'ceo',gp:'CEO Ana Garcia Dev Teams. Cierra la reunion en 15 palabras.'}
+      {k:'ceo',gp:'Security Director Ana. Abre el briefing del engagement autorizado en 20 palabras.'},
+      {k:'pm',gp:'Pentest PM Sofia. Expone alcance, prioridades y calendario de retest en 20 palabras.'},
+      {k:'devbe',gp:'Red Team Yared. Reporta reconocimiento controlado y superficie en 20 palabras.'},
+      {k:'devfe',gp:'AppSec Diego. Reporta validacion OWASP y controles de entrada en 20 palabras.'},
+      {k:'qa',gp:'Validation Marta. Reporta evidencia y reproducibilidad de hallazgos en 20 palabras.'},
+      {k:'devops',gp:'Cloud Security Luis. Reporta logs, IAM y segmentacion en 20 palabras.'},
+      {k:'ux',gp:'Threat Modeling Valentina. Reporta abuse cases y controles defensivos en 20 palabras.'},
+      {k:'data',gp:'Threat Intel Andres. Reporta correlacion de indicadores y CVSS en 20 palabras.'},
+      {k:'ceo',gp:'Security Director Ana. Cierra el briefing con remediacion y retest en 15 palabras.'}
     ];
     agendaLen=agenda.length;
 
     const fallbacks={
-      ceo:['Arrancamos. Sprint Q2 con 3 prioridades clave.','Reunion concluida. Excelente semana equipo.'],
-      pm:['Roadmap Q3 definido. RICE aplicado correctamente.'],
-      devbe:['Backend listo. Auth JWT funcionando correctamente.'],
-      devfe:['Dashboard desplegado. Lighthouse 97, todo bien.'],
-      qa:['2 bugs criticos en pagos. Asignados a Yared.'],
-      devops:['3 pods corriendo en prod. Zero downtime logrado.'],
-      ux:['Onboarding redisenado. Completion subira a 72%.'],
-      data:['Retencion +8%. 240 usuarios en riesgo identificados.']
+      ceo:['Briefing iniciado. Scope autorizado y prioridades de riesgo definidas.','Briefing cerrado. Remediacion y retest asignados.'],
+      pm:['Engagement priorizado. Cada hallazgo tiene owner y fecha de retest.'],
+      devbe:['Recon controlada lista. Superficie documentada sin salir del scope.'],
+      devfe:['Revision AppSec lista. Controles OWASP pendientes de confirmacion manual.'],
+      qa:['Evidencia reproducible. Dos hallazgos listos para remediacion.'],
+      devops:['Logs e IAM revisados. Segmentacion y alertas verificadas.'],
+      ux:['Threat model actualizado. Abuse cases convertidos en controles defensivos.'],
+      data:['Indicadores correlacionados. CVSS preliminar y tendencia de riesgo listos.']
     };
 
     for(let i=0;i<agenda.length;i++){
@@ -1024,14 +1048,14 @@ async function compressMemory(k){
 }
 
 const GREETS={
-  ceo:'Hola, soy Ana Garcia, CEO de Dev Teams.',
-  pm:'Hola, soy Sofia Castro, Product Manager de Dev Teams.',
-  devbe:'Hola, soy Yared Henriquez, Founder and Architect de Dev Teams.',
-  devfe:'Hola, soy Diego Herrera, Dev Frontend de Dev Teams.',
-  qa:'Hola, soy Marta Lopez, QA Engineer de Dev Teams.',
-  devops:'Hola, soy Luis Mendoza, DevOps Engineer de Dev Teams.',
-  ux:'Hola, soy Valentina Ramos, UX Designer de Dev Teams.',
-  data:'Hola, soy Andres Torres, Data Analyst de Dev Teams.'
+  ceo:'Hola, soy Ana Garcia, Security Director del laboratorio de pentesting.',
+  pm:'Hola, soy Sofia Castro, Pentest Program Manager.',
+  devbe:'Hola, soy Yared Henriquez, Red Team Lead.',
+  devfe:'Hola, soy Diego Herrera, especialista en Application Security.',
+  qa:'Hola, soy Marta Lopez, Vulnerability Validator.',
+  devops:'Hola, soy Luis Mendoza, Cloud Security Engineer.',
+  ux:'Hola, soy Valentina Ramos, Threat Modeling Lead.',
+  data:'Hola, soy Andres Torres, analista de Threat Intelligence.'
 };
 function addGreeting(){const t=GREETS[chatAgent];if(!t)return;appendMsg('agent',ACFG[chatAgent].name,t);chatH[chatAgent].push({role:'assistant',content:t});}
 function setChatAgent(k){
